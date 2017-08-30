@@ -1,14 +1,12 @@
-# DNASDKJavaScript
+# DNA : JavaScript-SDK
 
 > Onchain DNA项目的JS-SDK。
 
 
-
-# DNA JAVASCRIPT SDK
-## FUNCTIONS REFERENCE
+## 功能列表：
 
 - ### makeRegisterTransaction($assetName, $assetAmount, $publicKeyEncoded)
-  description:
+  Description:
   Make register transaction and get transaction unsigned data.
 
   paramer:
@@ -20,7 +18,7 @@
 
 
 - ### makeIssueTransaction($issueAssetID, $issueAmount, $publicKeyEncoded)
-  description:
+  Description:
   Make issue transaction and get transaction unsigned data.
 
   paramer:
@@ -31,7 +29,7 @@
   	string TxUnsignedData
 
 - ### makeTransferTransaction($coin, $publicKeyEncoded, $toAddress, $Amount)
-  description:
+  Description:
   Make transfer transaction and get transaction unsigned data.
 
   paramer:
@@ -43,7 +41,7 @@
   	string TxUnsignedData
 
 - ### makeStateUpdateTransaction( $namespace, $key, $value, $publicKeyEncoded )
-  description:
+  Description:
   Make StateUpdate transaction and get transaction unsigned data.
 
   paramer:
@@ -55,7 +53,7 @@
   	string TxUnsignedData
 
 - ### createAccount($privateKey, $password)
-  description:
+  Description:
   Create account use random privatekey.
 
   paramer:
@@ -65,7 +63,7 @@
   	struct Account
 
 - ### createAccountsFromPrivateKey($privateKey)
-  description:
+  Description:
   Create account from privatekey.
 
   paramer:
@@ -74,7 +72,7 @@
   	struct Account
 
 - ### createAccountsFromWIFKey($WIFKey)
-  description:
+  Description:
   Create account from WIFKey.
 
   paramer:
@@ -83,7 +81,7 @@
   	struct Account
 
 - ### signatureData($data, $privateKey)
-  description:
+  Description:
   signature transaction unsigned Data
 
   paramer:
@@ -93,7 +91,7 @@
   	string signedData
 
 - ### toAddress($ProgramHash)
-  description:
+  Description:
   Programhash to address
 
   paramer:
@@ -102,7 +100,7 @@
   	string address
 
 - ### toScriptHash($address)
-  description:
+  Description:
   Address to scriptHash
 
   paramer:
