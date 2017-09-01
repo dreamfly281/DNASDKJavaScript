@@ -379,7 +379,7 @@
 								<span>{{accounts[accountSelectIndex].programHash}}</span><br />
 								
 								<div ng-if="accounts[accountSelectIndex].publickeyEncoded != ''">
-									<label class="control-label" translate="PUBLIC_KEY">PublicKey: </label><br />
+									<label class="control-label" translate="PUBLIC_KEY_ENCODED">PublicKey: </label><br />
 									<span>{{accounts[accountSelectIndex].publickeyEncoded}}</span><br />
 								</div>
 							</div>
@@ -728,20 +728,20 @@
 					<div class="col-lg-12 col-md-12 col-sm-12">
 						<!-- Reverse -->
 						<div class="form-group">
-							<label class="control-label">Reverse</label><br />
+							<label class="control-label" translate="REVERSE">Reverse</label><br />
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="reverse" name="reverse" placeholder="f024c837ce258513a351ad2c1d8ab9174218fee3bec38aa2ea29e261adfda6f1" aria-label="reverse" />
+								<input type="text" class="form-control" ng-model="reverse" name="reverse" placeholder="输入数据，点击GET REVERSE DATA，可以在此处获得反转数据" aria-label="reverse" />
 								<span class="input-group-btn">
-									<button type="button" class="btn btn-primary" ng-click="getReverse()" >&nbspGet Reverse Data&nbsp</button>
+									<button type="button" class="btn btn-primary" ng-click="getReverse()"  translate="BTN_REVERSE_DATA">&nbspGet Reverse Data&nbsp</button>
 								</span>
 							</div>
 						</div>
 						
 						<!-- WIF -->
 						<div class="form-group">
-							<label class="control-label">WIF</label><br />
+							<label class="control-label">WIF（Wallet import Format）格式的私钥</label><br />
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="wif" name="wif" placeholder="KzPb8MDmbLYzSXotG8FDwuRw5zTRba2y1Tzf9szrPFZHC5Ss4DVJ" aria-label="WIF" />
+								<input type="text" class="form-control" ng-model="wif" name="wif" placeholder="输入WIF，点击生成私钥，可以在下方获得私钥" aria-label="WIF" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-primary" ng-click="getPrivateKey()" translate="BTN_GENERATE_PRIVATEKEY">&nbspGenerate PrivateKey&nbsp</button>
 								</span>
@@ -752,7 +752,7 @@
 						<div class="form-group">
 							<label class="control-label" translate="PRIVATE_KEY">Private Key</label><br />
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="privateKey" name="privateKey" placeholder="5e980ec243c32cbbd2b5addc4f643774a6a6bb7123b49244b6e67cf56122eaa0" aria-label="privateKey" />
+								<input type="text" class="form-control" ng-model="privateKey" name="privateKey" placeholder="输入私钥，点击生成公钥，可以在下方获得公钥" aria-label="privateKey" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-primary" ng-click="getPublicKey(0)" translate="BTN_GENERATE_PUBLICKEY">&nbsp&nbspGenerate PublicKey&nbsp&nbsp</button>
 								</span>
@@ -763,7 +763,7 @@
 						<div class="form-group">
 							<label class="control-label" translate="PUBLIC_KEY">Public Key</label><br />
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="publicKey" name="publicKey" placeholder="049fbb47841f7338c0c654addd6225995642b5b6d492413563f7f8755ba83c0ecd645b8145bfbb0d261a398795b88d0f83fecf9773a43c762ab5267b19196c0a93" aria-label="publicKey" />
+								<input type="text" class="form-control" ng-model="publicKey" name="publicKey" placeholder="输入公钥，点击生成压缩公钥，可以在下方获得公钥（压缩）" aria-label="publicKey" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-primary" ng-click="getPublicKeyEncoded()" translate="BTN_GENERATE_PUBLICKEY_ENCODE">&nbsp&nbsp&nbsp&nbspPublicKey Encode&nbsp&nbsp&nbsp&nbsp</button>
 								</span>
@@ -774,7 +774,7 @@
 						<div class="form-group">
 							<label class="control-label" translate="PUBLIC_KEY_ENCODED">Public Key Encoded</label><br />
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="publicKeyEncode" name="publicKeyEncode" placeholder="0276e8dfdf8f0b25ea96fe0fbe179d727970c12fe340ef2ac8121623a78e6eb4a2" aria-label="publicKeyEncode" />
+								<input type="text" class="form-control" ng-model="publicKeyEncode" name="publicKeyEncode" placeholder="输入公钥（压缩），点击生成脚本，可以在下方获得脚本" aria-label="publicKeyEncode" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-primary" ng-click="getScript()" translate="BTN_GENERATE_SCRIPT">&nbsp&nbsp&nbsp&nbsp&nbsp&nbspGenerate Script&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</button>
 								</span>
@@ -785,7 +785,7 @@
 						<div class="form-group">
 							<label class="control-label" translate="SCRIPT">Script</label><br />
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="script" name="script" placeholder="210276e8dfdf8f0b25ea96fe0fbe179d727970c12fe340ef2ac8121623a78e6eb4a2ac" aria-label="script" />
+								<input type="text" class="form-control" ng-model="script" name="script" placeholder="输入脚本，点击生成脚本哈希，可以在下方获得脚本哈希" aria-label="script" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-primary" ng-click="getScriptHash()" translate="BTN_GENERATE_SCRIPTHASH">Generate ScriptHash</button>
 								</span>
@@ -796,7 +796,7 @@
 						<div class="form-group">
 							<label class="control-label" translate="SCRIPTHASH">ScriptHash</label><br />
 							<div class="input-group">
-								<input type="text" class="form-control" ng-model="scriptHash" name="scriptHash" placeholder="c2225536c82a70dd3688d8467b23e2b60d4785a1" aria-label="scriptHash" />
+								<input type="text" class="form-control" ng-model="scriptHash" name="scriptHash" placeholder="输入脚本哈希，点击生成地址，可以在下方获得地址" aria-label="scriptHash" />
 								<span class="input-group-btn">
 									<button type="button" class="btn btn-primary" ng-click="getAddress()" translate="BTN_GENERATE_ADDRESS">&nbsp&nbsp&nbsp&nbspGenerate Address&nbsp&nbsp&nbsp&nbsp</button>
 								</span>
@@ -806,7 +806,7 @@
 						<!-- Address -->
 						<div class="form-group">
 							<label class="control-label" translate="ADDRESS">Address</label><br />
-							<input type="text" class="form-control" ng-model="address" name="address" placeholder="AZUMsCifwXMr3kMXwKuNwge9ZjhFuMEHwM" aria-label="address" />
+							<input type="text" class="form-control" ng-model="address" name="address" placeholder="通过上方脚本哈希，生成的地址" aria-label="address" />
 						</div>
 						
 					</div>
