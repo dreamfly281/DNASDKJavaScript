@@ -269,7 +269,7 @@ Wallet.GetInputData = function ($coin, $amount) {
 
     // input coins
     for (var x = 0; x < k + 1; x++) {
-    // txid
+        // txid
         var pos = 1 + (x * 34);
         data.set(reverseArray(hexstring2ab(coin_ordered[x]['Txid'])),pos);
         //data.set(hexstring2ab(coin_ordered[x]['txid']), pos);
@@ -631,7 +631,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
         ////////////////////////////////////////////////////////////////////
 
     } else {
-    // output num
+        // output num
         data.set(hexstring2ab("02"), inputLen + 3);
 
         ////////////////////////////////////////////////////////////////////
@@ -675,7 +675,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 };
 
 Wallet.ClaimTransaction = function ($claims, $publicKeyEncoded, $toAddress, $Amount) {
-var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
+    var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
     //console.log( signatureScript.toString('hex') );
 
     var myProgramHash = Wallet.getHash(signatureScript);
@@ -862,7 +862,7 @@ Wallet.signatureData = function ($data, $privateKey) {
 };
 
 Wallet.GetAccountsFromPublicKeyEncoded = function ($publicKeyEncoded) {
-if ( !Wallet.VerifyPublicKeyEncoded( $publicKeyEncoded ) ) {
+    if ( !Wallet.VerifyPublicKeyEncoded( $publicKeyEncoded ) ) {
         // verify failed.
         return -1
     }
