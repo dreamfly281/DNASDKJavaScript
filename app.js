@@ -7,7 +7,7 @@ app.config( ['$compileProvider', function( $compileProvider ) {
 app.config(['$translateProvider',function($translateProvider) {
     //var lang = window.localStorage.lang||'zh-hans';
     $translateProvider.useStaticFilesLoader({
-        prefix: 'i18n/',
+        prefix: 'static/i18n/',
         suffix: '.json'
     });
 
@@ -421,39 +421,49 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
     $scope.hostSelectIndex = 0;
     $scope.hostInfo = [
+        // {
+        //     hostName: "STATE TEST",
+        //     hostProvider: "Onchain.com",
+        //     restapi_host: "http://139.196.115.69",
+        //     restapi_port: "10334",
+        //     webapi_host: "http://54.222.240.78",
+        //     webapi_port: "7071",
+        // },
+        // {
+        //     hostName: "DNA TEST NET",
+        //     hostProvider: "Onchain.com",
+        //     restapi_host: "http://42.159.233.49",
+        //     restapi_port: "50334",
+        //     webapi_host: "http://54.222.240.78",
+        //     webapi_port: "7071",
+        // },
         {
-            hostName: "STATE TEST",
+            hostName: "DNA-NEO-Test",
             hostProvider: "Onchain.com",
-            restapi_host: "http://139.196.115.69",
+            restapi_host: "http://139.219.108.92",
+            restapi_port: "40334",
+            webapi_host: "http://139.219.108.92",
+            webapi_port: "40336",
+            node_type: "NEO" //判断资产格式
+        },
+        {
+            hostName: "DNA-Test",
+            hostProvider: "Onchain.com",
+            restapi_host: "http://139.219.108.92",
             restapi_port: "10334",
-            webapi_host: "http://54.222.240.78",
-            webapi_port: "7071",
-        },
-        {
-            hostName: "GuiYang Rural Commercial Bank",
-            hostProvider: "gynsh.com",
-            restapi_host: "http://52.80.21.194",
-            restapi_port: "20334",
-            webapi_host: "http://54.222.240.78",
-            webapi_port: "7070",
-        },
-        {
-            hostName: "DNA TESTNET",
-            hostProvider: "Onchain.com",
-            restapi_host: "http://42.159.233.49",
-            restapi_port: "50334",
-            webapi_host: "http://54.222.240.78",
-            webapi_port: "7071",
-        },
+            webapi_host: "http://139.219.108.92",
+            webapi_port: "10336",
+            node_type: "DNA" //判断资产格式
+        }
     ];
 
     $scope.langSelectIndex = 0;
     $scope.langs = [
         {name: "Simplified Chinese - 中文（简体）", lang: "zh-hans"},
-        {name: "English - English", lang: "en"},
+        {name: "English - English", lang: "en"}
     ];
 
-    $scope.txType = "144";
+    $scope.txType = "128"; //默认下拉选项
     $scope.txTypes = [];
 
     $scope.showOpenWallet = true;
@@ -477,22 +487,22 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     $scope.stateUpdate = {
         namespace: "",
         key: "",
-        value: "",
+        value: ""
     };
 
     $scope.issueAsset = {
         issueAssetID: "",
-        issueAmount: "",
+        issueAmount: ""
     };
 
     $scope.registerAsset = {
         assetName: "",
-        assetAmount: "",
+        assetAmount: ""
     };
 
     $scope.Transaction = {
         ToAddress: "",
-        Amount: "",
+        Amount: ""
     };
     $scope.coins = [];
     $scope.coinSelectIndex = 0;
@@ -514,17 +524,17 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         $scope.txTypes = [
             {name: 'Transfer Asset', id: '128'},
             {name: 'Issue Asset', id: '1'},
-            {name: 'Register Asset', id: '64'},
-            {name: 'State Update', id: '144'},
+            {name: 'Register Asset', id: '64'}
+            // {name: 'State Update', id: '144'} //状态更新交易，DNA项目不会用到
         ];
 
     };
 
     // modal
     $scope.openModal = function () {
-
         var txData;
         var tx;
+
         if ($scope.txType == '128') {
             if ($scope.walletType == 'externalsignature') {
                 //console.log( "externalsignature" );
@@ -777,7 +787,8 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
                     $scope.coins[i] = results[i];
                     $scope.coins[i].balance = 0;
                     for (j = 0; j < results[i].Utxo.length; j++) {
-                        results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
+                        // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
+                        results[i].Utxo[j].Value = results[i].Utxo[j].Value;
                         $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
                     }
                     //console.log("balance:",$scope.coins[i].balance);
@@ -802,7 +813,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         }).then(function (res) {
             if (res.status == 200) {
                 if (res.data.Result > 0) {
-                    console.log("Node Height:", res.data.Result);
+                    // console.log("Node Height:", res.data.Result);
                     $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.Result + "</b>.");
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
@@ -918,7 +929,16 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         }
 
         var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-        var txData = Wallet.makeRegisterTransaction($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+
+        /**
+         * 注册资产请求数据构造,lyx
+         */
+        var txData;
+        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'DNA') {
+            txData = Wallet.makeRegisterTransaction_DNA($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+        } else {
+            txData = Wallet.makeRegisterTransaction_NEO($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+        }
 
         $scope.txUnsignedData = txData;
     };
@@ -935,7 +955,16 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         }
 
         var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-        var txData = Wallet.makeRegisterTransaction($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+
+        /**
+         * 注册资产请求数据构造,lyx
+         */
+        var txData;
+        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'DNA') {
+            txData = Wallet.makeRegisterTransaction_DNA($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+        } else {
+            txData = Wallet.makeRegisterTransaction_NEO($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].programHash);
+        }
 
         var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
         var sign = Wallet.signatureData(txData, privateKey);

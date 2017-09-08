@@ -2,7 +2,11 @@
 
 > Onchain DNA项目的JS-SDK。
   
-  
+## Demo:
+index.html  
+app.js
+
+
 
 ## 功能列表：
 - 生成钱包
@@ -72,7 +76,7 @@
  * 
  * @returns {string} : txUnsignedData
  */
-Wallet.makeRegisterTransaction = function ($assetName, $assetAmount, $publicKeyEncoded) {
+Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $publicKeyEncoded) {
 	return data;
 };
 ```
