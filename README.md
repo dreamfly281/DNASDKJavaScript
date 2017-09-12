@@ -68,16 +68,34 @@ app.js
 ```angular2html
 /**
  * Make register transaction and get transaction unsigned data.
- * 发起一个注册资产交易和获取交易数据（十六进制）。
- * 
+ * 发起一个DNA注册资产交易和获取交易数据（十六进制）。
+ * 不兼容小蚁股（NEO）
+ *
  * @param $assetName
  * @param $assetAmount
  * @param $publicKeyEncoded
- * 
+ *
  * @returns {string} : txUnsignedData
  */
 Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $publicKeyEncoded) {
 	return data;
+};
+
+
+/**
+ * Make register transaction and get transaction unsigned data.
+ * 发起一个NEO注册资产交易和获取交易数据（十六进制）。
+ * 兼容小蚁股（NEO）
+ *
+ * @param $assetName
+ * @param $assetAmount
+ * @param $publicKeyEncoded
+ * @param $programHash
+ *
+ * @returns {string} : txUnsignedData
+ */
+Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $publicKeyEncoded, $programHash) {
+    return data;
 };
 ```
 
@@ -218,4 +236,3 @@ Wallet.AddressToProgramHash = function ( $toAddress ) {
     return ab2hexstring(ProgramHash);
 };
 ```
-  

@@ -62,16 +62,15 @@ span {
 .footer {
 	width:100%;
 	background-color: #3E3F3A;
-	padding-top:3em;
-	padding-bottom: 3em;
-
-	height: 200px;
-	/*margin-top: -200px;*/
+	padding-top:1.4em;
+	padding-bottom: 0.8em;
 }
 
 .footer a,
 .footer p {
 	color: #fff;
+	text-align: center;
+	font-size: 16px;
 }
 
 #mainTab {

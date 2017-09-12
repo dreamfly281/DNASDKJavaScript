@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="x-ua-compatible" content="ie=edge">
-	<title>DNA Wallet</title>
+	<title>Wallet</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -53,7 +53,7 @@
 	</script>
 </head>
 
-<body ng-controller="DNAWalletCtrl" ng-init="init()">
+<body ng-controller="WalletCtrl" ng-init="init()">
     <!--[if lt IE 8]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -63,7 +63,7 @@
         <div class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <a href="#" class="navbar-brand">DNA Wallet</a>
+                    <a href="#" class="navbar-brand">Wallet</a>
                     <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -111,7 +111,7 @@
                 <li role="presentation"><a href="#signatureData" data-toggle="tab" translate="SIGNATURE_DATA">Signature Data</a></li>
                 <!--<li role="presentation"><a href="#verifySignatureData" data-toggle="tab">Verify Signature Data</a></li>-->
                 <!--<li role="presentation"><a href="#hashCalc" data-toggle="tab">Hash Calc</a></li>-->
-                <li role="presentation"><a href="#tools" data-toggle="tab" translate="TOOLS">Tools</a></li>
+                <!--<li role="presentation"><a href="#tools" data-toggle="tab" translate="TOOLS">Tools</a></li>-->
             </ul>
         </div>
 
@@ -350,7 +350,7 @@
 
                 <div class="row" ng-show="showTransaction">
                     <!-- base info -->
-                    <div class="col-lg-4 col-md-4">
+                    <div class="col-lg-6 col-md-6">
                         <div>
                             <h3 translate="MT_STANDARD_ACCOUNTS">Standard Accounts</h3> <br />
                             <div class="form-group">
@@ -407,7 +407,7 @@
                     </div>
 
                     <!-- transaction -->
-                    <div class="col-lg-8 col-md-8 col-sm-12">
+                    <div class="col-lg-6 col-md-6 col-sm-12">
                         <h3 translate="MT_SEND_TRANSACTION">Send Transaction</h3> <br />
 
                         <div class="form-group">
@@ -715,7 +715,7 @@
             </div>
 
             <!-- #tools tab-->
-            <div class="tab-pane fade" id="tools" ng-controller="ToolsCtrl">
+            <div class="tab-pane fade" id="tools" ng-controller="ToolsCtrl"">
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <H3 translate="TOOLS">Tools</H3>
@@ -874,26 +874,9 @@
     <footer class="footer" role="footer" aria-label="footer" >
         <div class="container">
             <div class="row">
-                <div class="col-lg-4 col-md-4 col-sm-12">
-                    <p><b>{{ 'ABOUT' | translate }}</b></p>
-                    <p>{{ 'ABOUT_INFO' | translate }}</p>
-                    <br />
+                <div class="col-lg-12 col-md-12 col-sm-12 center-block">
+                    <p><a target="_blank" href="https://forum.dnaproject.org/"><i class="fa fa-globe" aria-hidden="true"></i> {{ 'CONTACT_US' | translate }}</a></p>
                 </div>
-
-                <div class="col-lg-4 col-md-4 col-sm-12">
-                    <p><b>{{ 'LINKS' | translate }}</b></p>
-                    <p><a target="_blank" href="http://www.DNAProject.org"><i class="fa fa-globe" aria-hidden="true"></i> DNAProject.org</a></p>
-                    <p><a target="_blank" href="http://browser.DNAProject.org"><i class="fa fa-th-large" aria-hidden="true"></i> Blockchain Browser</a></p>
-                    <p><a target="_blank" href="https://github.com/DNAProject/DNA"><i class="fa fa-github" aria-hidden="true"></i> DNA - Github</a></p>
-                </div>
-
-                <div class="col-lg-4 col-md-4 col-sm-12">
-                    <p>DNA Wallet <i class="fa fa-copyright" aria-hidden="true"></i> 2017.</p>
-                    <p><a target="_blank" href="http://dnawallet.org"><i class="fa fa-home" aria-hidden="true"></i> {{ 'HOME' | translate }}</a></p>
-                    <p><a target="_blank" href="mailto:zhengq1#hotmail.com"><i class="fa fa-envelope" aria-hidden="true"></i> {{ 'CONTACT_US' | translate }}</a></p>
-                    <p><a target="_blank" href="https://github.com/DNAProject/DNASDKJavaScript"><i class="fa fa-github" aria-hidden="true"></i> DNAWallet - Github</a></p>
-                </div>
-
             </div>
         </div>
     </footer>

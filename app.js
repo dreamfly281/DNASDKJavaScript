@@ -408,7 +408,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
 
 });
 
-app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal) {
+app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal) {
     $scope.wallet = null;
     $scope.walletType = "fileupload";
     $scope.filePassword = "";
@@ -420,47 +420,12 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     $scope.txSignatureData = "";
 
     $scope.hostSelectIndex = 0;
-    $scope.hostInfo = [
-        // {
-        //     hostName: "STATE TEST",
-        //     hostProvider: "Onchain.com",
-        //     restapi_host: "http://139.196.115.69",
-        //     restapi_port: "10334",
-        //     webapi_host: "http://54.222.240.78",
-        //     webapi_port: "7071",
-        // },
-        // {
-        //     hostName: "DNA TEST NET",
-        //     hostProvider: "Onchain.com",
-        //     restapi_host: "http://42.159.233.49",
-        //     restapi_port: "50334",
-        //     webapi_host: "http://54.222.240.78",
-        //     webapi_port: "7071",
-        // },
-        {
-            hostName: "DNA-NEO-Test",
-            hostProvider: "Onchain.com",
-            restapi_host: "http://139.219.108.92",
-            restapi_port: "40334",
-            webapi_host: "http://139.219.108.92",
-            webapi_port: "40336",
-            node_type: "NEO" //判断资产格式
-        },
-        {
-            hostName: "DNA-Test",
-            hostProvider: "Onchain.com",
-            restapi_host: "http://139.219.108.92",
-            restapi_port: "10334",
-            webapi_host: "http://139.219.108.92",
-            webapi_port: "10336",
-            node_type: "DNA" //判断资产格式
-        }
-    ];
+    $scope.hostInfo = [];
 
     $scope.langSelectIndex = 0;
     $scope.langs = [
-        {name: "Simplified Chinese - 中文（简体）", lang: "zh-hans"},
-        {name: "English - English", lang: "en"}
+        {name: "中文（简体）", lang: "zh-hans"},
+        {name: "English", lang: "en"}
     ];
 
     $scope.txType = "128"; //默认下拉选项
@@ -519,15 +484,15 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     }, 30000);
 
     $scope.init = function () {
-        $scope.connectNode();
+        /**
+         * 加载node配置:
+         */
+        $http.get('wallet-conf.json').then(function (data) {
+            $scope.hostInfo = data.data.host_info;
+            $scope.txTypes = data.data.tx_types;
 
-        $scope.txTypes = [
-            {name: 'Transfer Asset', id: '128'},
-            {name: 'Issue Asset', id: '1'},
-            {name: 'Register Asset', id: '64'}
-            // {name: 'State Update', id: '144'} //状态更新交易，DNA项目不会用到
-        ];
-
+            $scope.connectNode();
+        });
     };
 
     // modal
@@ -537,10 +502,8 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
         if ($scope.txType == '128') {
             if ($scope.walletType == 'externalsignature') {
-                //console.log( "externalsignature" );
                 txData = $scope.txUnsignedData;
             } else {
-                //console.log( "normal" );
                 txData = $scope.transferTransactionUnsigned();
             }
             if (txData == false) return;
@@ -590,10 +553,8 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
             //console.log('modal is opened');
         });
         modalInstance.result.then(function (result) {
-            //console.log(result);
         }, function (reason) {
             //console.log(reason);// 点击空白区域，总会输出backdrop
-            //console.log('Modal dismissed at: ' + new Date());  
         });
     };
 
@@ -638,8 +599,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         $scope.requirePass = true;
 
         $scope.notifier.info($translate.instant('NOTIFIER_FILE_SELECTED') + document.getElementById('fselector').files[0].name);
-
-        //console.log( $wallet );
     };
 
     $scope.onFilePassChange = function () {
@@ -761,10 +720,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
             url: host.webapi_host + ':' + host.webapi_port + '/api/v1/address/get_claims/' + $address,
         }).then(function (res) {
             if (res.status == 200) {
-
                 $scope.claims = res.data;
-
-                console.log($scope.claims);
             }
         }).catch(function (err) {
             console.log(err)
@@ -813,7 +769,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         }).then(function (res) {
             if (res.status == 200) {
                 if (res.data.Result > 0) {
-                    // console.log("Node Height:", res.data.Result);
                     $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.Result + "</b>.");
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
@@ -827,7 +782,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     };
 
     $scope.sendTransactionData = function ($txData) {
-        console.log($txData);
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
         $http({
@@ -837,8 +791,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
             headers: {"Content-Type": "application/json"}
         }).then(function (res) {
             if (res.status == 200) {
-                console.log(res.data);
-
                 var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
 
                 if (res.data.Error == 0) {
@@ -1055,7 +1007,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         var sign = Wallet.signatureData(txData, privateKey);
         var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
 
-        //console.log( txRawData );
         $scope.sendTransactionData(txRawData);
 
         $scope.claims = {};
@@ -1094,8 +1045,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         len = ba[k];
         for (i = 0; i < len; i++) {
             tx.inputs.push({txid: ba.slice(k + 1, k + 33), index: ba.slice(k + 33, k + 35)});
-            //console.log( "txid:", tx.inputs[i].txid );
-            //console.log( "index:", tx.inputs[i].index );
             k = k + 34;
         }
 
@@ -1108,9 +1057,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
                 value: ba.slice(k + 33, k + 41),
                 scripthash: ba.slice(k + 41, k + 61)
             });
-            //console.log( "outputs.assetid:", tx.outputs[i].assetid );
-            //console.log( "outputs.value:", tx.outputs[i].value );
-            //console.log( "outputs.scripthash:", tx.outputs[i].scripthash );
             k = k + 60;
         }
 

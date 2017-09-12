@@ -312,7 +312,7 @@ Wallet.GetInputData = function ($coin, $amount) {
 
 /**
  * Make state update transaction and get transaction unsigned data.
- * 发起一个状态更新交易，DNA项目不会用到。
+ * 发起一个状态更新交易。
  *
  * @param $namespace
  * @param $key
@@ -521,6 +521,7 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
  * @param $assetName
  * @param $assetAmount
  * @param $publicKeyEncoded
+ * @param $programHash
  *
  * @returns {string} : txUnsignedData
  */
