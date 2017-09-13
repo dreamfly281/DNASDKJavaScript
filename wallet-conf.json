@@ -1,27 +1,74 @@
 {
   "host_info": [
-    {
-      "hostName": "Test-Node",
-      "hostProvider": "Test-Node",
-      "restapi_host": "http://139.219.108.92",
-      "restapi_port": "40334",
-      "webapi_host": "http://139.219.108.92",
-      "webapi_port": "40336",
-      "node_type": "NEO"
-    }
+    [
+      {
+        "hostName": "测试节点 - 1",
+        "hostProvider": "测试节点",
+        "restapi_host": "http://139.219.109.74",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "测试节点 - 2",
+        "hostProvider": "测试节点",
+        "restapi_host": "http://139.219.103.181",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      }
+    ],
+    [
+      {
+        "hostName": "Test - Node - 1",
+        "hostProvider": "Test - Node",
+        "restapi_host": "http://139.219.109.74",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "Test - Node - 2",
+        "hostProvider": "Test - Node",
+        "restapi_host": "http://139.219.103.181",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      }
+    ]
   ],
   "tx_types": [
-    {
-      "name": "Transfer Asset",
-      "id": "128"
-    },
-    {
-      "name": "Issue Asset",
-      "id": "1"
-    },
-    {
-      "name": "Register Asset",
-      "id": "64"
-    }
+    [
+      {
+        "name": "资产转账",
+        "id": "128"
+      },
+      {
+        "name": "发行资产",
+        "id": "1"
+      },
+      {
+        "name": "注册资产",
+        "id": "64"
+      }
+    ],
+    [
+      {
+        "name": "Transfer Asset",
+        "id": "128"
+      },
+      {
+        "name": "Issue Asset",
+        "id": "1"
+      },
+      {
+        "name": "Register Asset",
+        "id": "64"
+      }
+    ]
   ]
 }

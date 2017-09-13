@@ -1,4 +1,5 @@
 {
+  "SITE_TITLE" : "Wallet",
   "GENERATE_WALLET": "Generate Wallet",
   "SEND_TRANSACTION": "Send Transaction",
   "SIGNATURE_DATA": "Signature Data",
@@ -77,6 +78,7 @@
   "BTN_GET_TRANSFER_TRANSACTION": "Get Transfer Transaction",
   "MT_ASSET_NAME": "Asset Name",
   "MT_ASSET_AMOUNT": "Asset Amount",
+  "MT_ASSET_ID": "Asset ID (TXID), Please keep it safe.",
   "BTN_REGISTER_TRANSACTION": "Register Transaction",
   "BTN_GET_REGISTER_TRANSACTION": "Get Register Transaction",
   "TX_CL_CLAIM_AMOUNT": "Claim Amount(ANC)",
@@ -115,7 +117,7 @@
   "PUBLIC_KEY_ENCODED": "Public Key Encoded",
   "SCRIPT": "Script",
   "SCRIPTHASH": "Script Hash",
-  "ADDRESS": "Address",
+  "ADDRESS": "Address: ",
   "SIGNATURE": "Signature",
   "DOWNLOAD": "Download",
   "HELLO": "hello"

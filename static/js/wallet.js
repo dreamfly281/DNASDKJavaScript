@@ -427,8 +427,6 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
  * @returns {string} : txUnsignedData
  */
 Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $publicKeyEncoded) {
-    console.log("publicKeyEncoded:", $publicKeyEncoded);
-
     var ecparams = ecurve.getCurveByName('secp256r1');
     var curvePt = ecurve.Point.decodeFrom(ecparams, new Buffer($publicKeyEncoded, "hex"));
     var curvePtX = curvePt.affineX.toBuffer(32);
@@ -436,10 +434,8 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
     var publicKey = Buffer.concat([new Buffer([0x04]), curvePtX, curvePtY]);
 
     var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
-    console.log(signatureScript.toString('hex'));
 
     var myProgramHash = Wallet.getHash(signatureScript);
-    console.log(myProgramHash.toString());
 
     // data
     var data = "40";
@@ -479,8 +475,6 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
     data = data + "20" + publicKeyXStr + "20" + publicKeyYStr;
     data = data + myProgramHash.toString();
     data = data + "000000";
-
-    console.log(data);
 
     return data;
 };
@@ -863,18 +857,15 @@ Wallet.toAddress = function ($ProgramHash) {
     var data = new Uint8Array(1 + $ProgramHash.length);
     data.set([23]);
     data.set($ProgramHash, 1);
-    //console.log(ab2hexstring(data));
 
     var ProgramHexString = CryptoJS.enc.Hex.parse(ab2hexstring(data));
     var ProgramSha256 = CryptoJS.SHA256(ProgramHexString);
     var ProgramSha256_2 = CryptoJS.SHA256(ProgramSha256);
     var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
-    //console.log(ab2hexstring(ProgramSha256Buffer));
 
     var datas = new Uint8Array(1 + $ProgramHash.length + 4);
     datas.set(data);
     datas.set(ProgramSha256Buffer.slice(0, 4), 21);
-    //console.log(ab2hexstring(datas));
 
     return base58.encode(datas);
 };
@@ -973,13 +964,8 @@ Wallet.getReverse = function ($data) {
 Wallet.signatureData = function ($data, $privateKey) {
     var msg = CryptoJS.enc.Hex.parse($data);
     var msgHash = CryptoJS.SHA256(msg);
-    //console.log( "msgHash:", msgHash.toString() );
-
     var pubKey = secp256r1.publicKeyCreate(new Buffer($privateKey, "HEX"));
-    //console.log( pubKey.toString('hex') );
-
     var signature = secp256r1.sign(new Buffer(msgHash.toString(), "HEX"), new Buffer($privateKey, "HEX"));
-    //console.log( signature.signature.toString('hex') );
 
     return signature.signature.toString('hex');
 };
@@ -994,18 +980,10 @@ Wallet.GetAccountsFromPublicKeyEncoded = function ($publicKeyEncoded) {
     }
 
     var accounts = [];
-
     var publicKeyHash = Wallet.getHash($publicKeyEncoded);
-    //console.log( publicKeyHash );
-
     var script = Wallet.createSignatureScript($publicKeyEncoded);
-    //console.log( script );
-
     var programHash = Wallet.getHash(script);
-    //console.log( programHash );
-
     var address = Wallet.toAddress(hexstring2ab(programHash.toString()));
-    //console.log( address );
 
     accounts[0] = {
         privatekey: '',
@@ -1028,19 +1006,10 @@ Wallet.GetAccountsFromPrivateKey = function ($privateKey) {
 
     var accounts = [];
     var publicKeyEncoded = Wallet.getPublicKey($privateKey, true);
-    // console.log( publicKeyEncoded );
-
     var publicKeyHash = Wallet.getHash(publicKeyEncoded.toString('hex'));
-    // console.log( publicKeyHash );
-
     var script = Wallet.createSignatureScript(publicKeyEncoded);
-    // console.log( script );
-
     var programHash = Wallet.getHash(script);
-    // console.log( programHash );
-
     var address = Wallet.toAddress(hexstring2ab(programHash.toString()));
-    // console.log( address );
 
     accounts[0] = {
         privatekey: $privateKey,
@@ -1084,19 +1053,11 @@ Wallet.decryptWallet = function (wallet, password) {
         return -1;
     }
 
-    console.log("password verify success.");
-
     // Decrypt MasterKey
     var data = CryptoJS.enc.Hex.parse(ab2hexstring(wallet.masterKey));
     var dataBase64 = CryptoJS.enc.Base64.stringify(data);
     var key = CryptoJS.enc.Hex.parse(passwordhash2.toString());
     var iv = CryptoJS.enc.Hex.parse(ab2hexstring(wallet.iv));
-    //console.log( "MasterKey:", ab2hexstring(wallet.masterKey) );
-    //console.log(data);
-    //console.log( "Password:", passwordhash2.toString() );
-    //console.log(key);
-    //console.log( "IV:",ab2hexstring(wallet.iv) );
-    //console.log(iv);
 
     var plainMasterKey = CryptoJS.AES.decrypt(dataBase64, key, {
         iv: iv,
@@ -1116,10 +1077,7 @@ Wallet.decryptWallet = function (wallet, password) {
             padding: CryptoJS.pad.NoPadding
         });
 
-        //console.log( "plainprivateKey:", plainprivateKey.toString() );
-
         var privateKeyHexString = plainprivateKey.toString().slice(128, 192);
-        //console.log( "privateKeyHexString:", privateKeyHexString);
 
         // Verify PublicKeyHash
         var ecparams = ecurve.getCurveByName('secp256r1');
@@ -1147,16 +1105,10 @@ Wallet.decryptWallet = function (wallet, password) {
         var ProgramHexString = CryptoJS.enc.Hex.parse("21" + publicKeyEncoded.toString('hex') + "ac");
         var ProgramSha256 = CryptoJS.SHA256(ProgramHexString);
         var ProgramHash = CryptoJS.RIPEMD160(ProgramSha256);
-        //console.log( "ProgramHexString:", ProgramHexString.toString() );
-        //console.log( "ProgramHash:", ProgramHash.toString() );
 
         // Get Address
         var address = Wallet.toAddress(hexstring2ab(ProgramHash.toString()));
-        console.log("address:", address);
 
-        //console.log( "k=", k );
-        //console.log( "publicKeyHash:", publicKeyHash.toString() );
-        //console.log( ab2hexstring(wallet.publicKeyHash[k]) );
         if (publicKeyHash.toString() != ab2hexstring(wallet.publicKeyHash[k])) {
             return -2;
         }

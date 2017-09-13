@@ -278,6 +278,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
     $scope.styleStringOfCreatePassword1 = $scope.styleStringOfCreatePassword2 = "";
     $scope.isDisplayPassword = false;
     $scope.isDisplayPrivateKey = false;
+    $scope.isDisplayAssetId = false;
     $scope.fileDownloaded = false;
 
     $scope.showCreateWallet = true;
@@ -489,6 +490,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.claims = {};
 
+    $scope.newAssetId = '';
+
     $interval(function () {
         var account = $scope.accounts[$scope.accountSelectIndex];
         if (account) {
@@ -503,8 +506,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          * 加载node配置:
          */
         $http.get('wallet-conf.json').then(function (data) {
-            $scope.hostInfo = data.data.host_info;
-            $scope.txTypes = data.data.tx_types;
+            $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
 
             $scope.connectNode();
         });
@@ -550,7 +553,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                             'tx': tx,
                             'toAddress': $scope.Transaction.ToAddress,
                             'amount': $scope.Transaction.Amount,
-                            'fromAddress': $scope.accounts[$scope.accountSelectIndex].programHash,
+                            'fromAddress': $scope.accounts[$scope.accountSelectIndex].programHash
                         }
                     } else if ($scope.txType == '2') {
                         // claim transaction
@@ -558,7 +561,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                             'txData': txData,
                             'tx': tx,
                             'amount': $scope.claims['amount'],
-                            'claimAddress': $scope.accounts[$scope.accountSelectIndex].programHash,
+                            'claimAddress': $scope.accounts[$scope.accountSelectIndex].programHash
                         }
                     }
                 }
@@ -577,6 +580,11 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.langSelectIndex = $index;
         $translate.use($scope.langs[$index].lang);
         window.localStorage.lang = $scope.langs[$index].lang;
+
+        $http.get('wallet-conf.json').then(function (data) {
+            $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
+        });
     };
 
     $scope.changehostSelectIndex = function ($index) {
@@ -750,22 +758,38 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             url: host.restapi_host + ':' + host.restapi_port + '/api/v1/asset/utxos/' + $address
         }).then(function (res) {
             if (res.status == 200) {
-                //console.log(res.data.Result);
                 results = res.data.Result;
 
                 $scope.coins = [];
+                var tmpIndexArr = [];
+                var newCoins = [];
                 for (i = 0; i < results.length; i++) {
                     $scope.coins[i] = results[i];
                     $scope.coins[i].balance = 0;
-                    for (j = 0; j < results[i].Utxo.length; j++) {
-                        // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
-                        results[i].Utxo[j].Value = results[i].Utxo[j].Value;
-                        $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                    if (results[i].Utxo != null) {
+                        for (j = 0; j < results[i].Utxo.length; j++) {
+                            // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
+                            results[i].Utxo[j].Value = results[i].Utxo[j].Value;
+                            $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                        }
                     }
-                    //console.log("balance:",$scope.coins[i].balance);
+
+                    tmpIndexArr.push(results[i].AssetName);
                 }
 
-                console.log($scope.coins);
+                /**
+                 * Sorting.
+                 * @type {Array.<*>}
+                 */
+                tmpIndexArr = tmpIndexArr.sort();
+                for (i = 0; i < results.length; i++) {
+                    for (j = 0; j < results.length; j++) {
+                        if (tmpIndexArr[i] == results[j].AssetName) {
+                            newCoins.push(results[j]);
+                        }
+                    }
+                }
+                $scope.coins = newCoins;
             }
         }).catch(function (err) {
             console.log(err)
@@ -809,10 +833,14 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
 
                 if (res.data.Error == 0) {
-                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash) + " , <a target='_blank' href='" + $scope.txBrowseURL + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>");
+                    // $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash) + " , <a target='_blank' href='" + $scope.txBrowseURL + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>");
+                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash));
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.Error)
                 }
+
+                $scope.isDisplayAssetId = true;
+                $scope.newAssetId = ab2hexstring(txhash);
             }
         }).catch(function (err) {
             console.log(err)
@@ -1163,28 +1191,28 @@ var Notifier = {
     },
 
     warning: function warning(msg) {
-        this.class = "alert-warning",
-            this.icon = "fa fa-question-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-warning";
+        this.icon = "fa fa-question-circle";
+        this.showAlert(this.class, msg);
     },
 
     info: function info(msg) {
-        this.class = "alert-info",
-            this.icon = "fa fa-info-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-info";
+        this.icon = "fa fa-info-circle";
+        this.showAlert(this.class, msg);
         this.setTimer();
     },
 
     danger: function danger(msg) {
-        this.class = "alert-danger",
-            this.icon = "fa fa-times-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-danger";
+        this.icon = "fa fa-times-circle";
+        this.showAlert(this.class, msg);
     },
 
     success: function success(msg) {
-        this.class = "alert-success",
-            this.icon = "fa fa-check-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-success";
+        this.icon = "fa fa-check-circle";
+        this.showAlert(this.class, msg);
     },
 
     showAlert: function showAlert(_class, msg) {
