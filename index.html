@@ -108,7 +108,7 @@
             <ul class="nav nav-tabs" id="mainTab">
                 <li role="presentation"><a href="#generateWallet" data-toggle="tab" translate="GENERATE_WALLET">Generate Wallet</a></li>
                 <li role="presentation" class="active"><a href="#sendTransaction" data-toggle="tab" translate="SEND_TRANSACTION">Send Transaction</a></li>
-                <li role="presentation"><a href="#signatureData" data-toggle="tab" translate="SIGNATURE_DATA">Signature Data</a></li>
+                <!--<li role="presentation"><a href="#signatureData" data-toggle="tab" translate="SIGNATURE_DATA">Signature Data</a></li>-->
                 <!--<li role="presentation"><a href="#verifySignatureData" data-toggle="tab">Verify Signature Data</a></li>-->
                 <!--<li role="presentation"><a href="#hashCalc" data-toggle="tab">Hash Calc</a></li>-->
                 <!--<li role="presentation"><a href="#tools" data-toggle="tab" translate="TOOLS">Tools</a></li>-->
@@ -162,8 +162,8 @@
                         <div class="form-group {{styleStringOfCreatePassword1}}">
                             <label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8 characters):</label><br />
                             <div class="input-group">
-                                <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" onfocus="this.type='password'" autocomplete="off" />
-                                <input ng-if="isDisplayPassword" type="text" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" />
+                                <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="password" onfocus="this.type='password'" autocomplete="off" />
+                                <input ng-if="isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" />
                                 <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword">
                                         <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp&nbsp<i class="fa fa-eye" aria-hidden="true"></i>&nbsp&nbsp</button>
                                     </span>
@@ -173,9 +173,10 @@
                             </div>
                         </div>
 
-                        <div class="form-group {{styleStringOfCreatePassword2}}" ng-if="!isDisplayPassword">
+                        <div class="form-group {{styleStringOfCreatePassword2}}">
                             <label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
-                            <input class="form-control" ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" onfocus="this.type='password'" autocomplete="off"/>
+                            <input ng-if="!isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="password" onfocus="this.type='password'" autocomplete="off"/>
+                            <input ng-if="isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" />
                         </div>
 
                         <!-- fromRandomPrivateKey -->

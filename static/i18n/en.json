@@ -9,7 +9,7 @@
   "FROM_WIF_KEY": "From WIF Key",
   "ENTER_PWD_1": "Enter a strong password (at least 8 characters):",
   "PASSWORD": "password",
-  "RE_ENTER_PASSWORD": "re-enter password",
+  "RE_ENTER_PASSWORD": "Please re-enter new password",
   "GW_PASTE_YOUR_PRIVATE_KEY": "Paste Your Private Key",
   "GW_PASTE_YOUR_WIF_KEY": "Paste Your WIF Key",
   "NOTIFIER_PRIVATEKEY_LENGTH_CHECK_FAILED": "PrivateKey length check failed.",

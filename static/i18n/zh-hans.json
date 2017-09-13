@@ -9,7 +9,7 @@
   "FROM_WIF_KEY": "从WIF导入",
   "ENTER_PWD_1": "请输入一个强健的密码 （至少八个字符）：",
   "PASSWORD": "密码",
-  "RE_ENTER_PASSWORD": "重新输入密码",
+  "RE_ENTER_PASSWORD": "请再次输入新的密码",
   "GW_PASTE_YOUR_PRIVATE_KEY": "请输入您的私钥",
   "GW_PASTE_YOUR_WIF_KEY": "请输入您的WIF",
   "NOTIFIER_PRIVATEKEY_LENGTH_CHECK_FAILED": "私钥长度检查失败。",

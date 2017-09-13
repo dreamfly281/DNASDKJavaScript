@@ -1,22 +1,13 @@
 {
   "host_info": [
     {
-      "hostName": "DNA-NEO-Test",
-      "hostProvider": "Onchain.com",
+      "hostName": "Test-Node",
+      "hostProvider": "Test-Node",
       "restapi_host": "http://139.219.108.92",
       "restapi_port": "40334",
       "webapi_host": "http://139.219.108.92",
       "webapi_port": "40336",
       "node_type": "NEO"
-    },
-    {
-      "hostName": "DNA-Test",
-      "hostProvider": "Onchain.com",
-      "restapi_host": "http://139.219.108.92",
-      "restapi_port": "10334",
-      "webapi_host": "http://139.219.108.92",
-      "webapi_port": "10336",
-      "node_type": "DNA"
     }
   ],
   "tx_types": [
