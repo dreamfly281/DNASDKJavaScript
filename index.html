@@ -228,8 +228,24 @@
 
                         <h4 translate="GW_YOUR_PRIVATE_KEY">2. Your Private Key, Please keep it safe.</h4>
                         <div class="form-group">
-                            <input class="form-control" type="text" ng-model="privateKey" id="privateKey" name="privateKey" readonly="readonly" aria-label="privateKey">
-                            <input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key">
+                            <div class="input-group">
+                                <input ng-if="!isDisplayPrivateKey" class="form-control" type="password" ng-model="privateKey" id="privateKey" name="privateKey" readonly="readonly" aria-label="privateKey">
+                                <input ng-if="isDisplayPrivateKey" class="form-control" type="text" ng-model="privateKey" id="" name="privateKey" readonly="readonly" aria-label="privateKey">
+                                <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPrivateKey">
+                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp&nbsp<i class="fa fa-eye" aria-hidden="true"></i>&nbsp&nbsp</button>
+                                </span>
+                                <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPrivateKey">
+                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp&nbsp<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp&nbsp</button>
+                                </span>
+                                <input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key">
+                            </div>
+                        </div>
+
+                        <br />
+
+                        <h4 translate="GW_YOUR_ADDRESS">3. Your address.</h4>
+                        <div class="form-group">
+                            <input class="form-control" type="text" ng-model="address" id="address" name="address" readonly="readonly">
                         </div>
 
                         <br />
@@ -373,7 +389,8 @@
                             <h3 translate="MT_ACCOUNT_INFO">Account Info</h3> <br />
                             <div class="form-group">
                                 <label class="control-label" translate="ADDRESS">Address: </label><br />
-                                <a target="_blank" href="{{addressBrowseURL}}{{accounts[accountSelectIndex].address}}">{{accounts[accountSelectIndex].address}}</a><br />
+                                <!--<a target="_blank" href="{{addressBrowseURL}}{{accounts[accountSelectIndex].address}}">{{accounts[accountSelectIndex].address}}</a><br />-->
+                                <span>{{accounts[accountSelectIndex].address}}</span><br />
 
                                 <label class="control-label" translate="SCRIPTHASH">ScriptHash: </label><br />
                                 <span>{{accounts[accountSelectIndex].programHash}}</span><br />

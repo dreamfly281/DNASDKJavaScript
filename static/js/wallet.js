@@ -1028,26 +1028,26 @@ Wallet.GetAccountsFromPrivateKey = function ($privateKey) {
 
     var accounts = [];
     var publicKeyEncoded = Wallet.getPublicKey($privateKey, true);
-    //console.log( publicKeyEncoded );
+    // console.log( publicKeyEncoded );
 
     var publicKeyHash = Wallet.getHash(publicKeyEncoded.toString('hex'));
-    //console.log( publicKeyHash );
+    // console.log( publicKeyHash );
 
     var script = Wallet.createSignatureScript(publicKeyEncoded);
-    //console.log( script );
+    // console.log( script );
 
     var programHash = Wallet.getHash(script);
-    //console.log( programHash );
+    // console.log( programHash );
 
     var address = Wallet.toAddress(hexstring2ab(programHash.toString()));
-    //console.log( address );
+    // console.log( address );
 
     accounts[0] = {
         privatekey: $privateKey,
         publickeyEncoded: publicKeyEncoded.toString('hex'),
         publickeyHash: publicKeyHash.toString(),
         programHash: programHash.toString(),
-        address: address,
+        address: address
     };
 
     return accounts;

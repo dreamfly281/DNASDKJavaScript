@@ -151,6 +151,7 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
 app.controller("SignatureDataCtrl", function($scope,$sce) {
     $scope.txRawData = "";
     $scope.privateKey = "";
+    $scope.address = "";
     $scope.signedData = "";
 
     $scope.notifier = Notifier;
@@ -269,13 +270,14 @@ app.controller("ToolsCtrl", function($scope,$sce) {
 });
 
 app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
-    $scope.privateKey = $scope.WIFKey = "";
+    $scope.privateKey = $scope.WIFKey = $scope.address = "";
     $scope.createPassword1 = $scope.createPassword2 = "";
     $scope.createType = "fromRandomPrivateKey";
     $scope.objectURL = $scope.objectName = "";
 
     $scope.styleStringOfCreatePassword1 = $scope.styleStringOfCreatePassword2 = "";
     $scope.isDisplayPassword = false;
+    $scope.isDisplayPrivateKey = false;
     $scope.fileDownloaded = false;
 
     $scope.showCreateWallet = true;
@@ -332,6 +334,10 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         }
     };
 
+    $scope.changeDisplayPrivateKey = function () {
+        $scope.isDisplayPrivateKey = !$scope.isDisplayPrivateKey;
+    };
+
     $scope.downloaded = function () {
         $scope.fileDownloaded = true;
     };
@@ -351,6 +357,15 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         $scope.showCreateWalletDownload = true;
 
         $scope.privateKey = ab2hexstring(Wallet.generatePrivateKey());
+
+        /**
+         * Get address
+         * @type {number}
+         */
+        var ret = Wallet.GetAccountsFromPrivateKey($scope.privateKey);
+        if (ret != -1) {
+            $scope.address = ret[0].address;
+        }
 
         var walletBlob = Wallet.createAccount($scope.privateKey, $scope.createPassword1);
         $scope.objectURL = window.URL.createObjectURL(new Blob([walletBlob], {type: 'application/octet-stream'}));
@@ -717,7 +732,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
         $http({
             method: 'GET',
-            url: host.webapi_host + ':' + host.webapi_port + '/api/v1/address/get_claims/' + $address,
+            url: host.webapi_host + ':' + host.webapi_port + '/api/v1/address/get_claims/' + $address
         }).then(function (res) {
             if (res.status == 200) {
                 $scope.claims = res.data;
@@ -732,7 +747,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
         $http({
             method: 'GET',
-            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/asset/utxos/' + $address,
+            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/asset/utxos/' + $address
         }).then(function (res) {
             if (res.status == 200) {
                 //console.log(res.data.Result);
@@ -765,7 +780,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
         $http({
             method: 'GET',
-            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight',
+            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
         }).then(function (res) {
             if (res.status == 200) {
                 if (res.data.Result > 0) {

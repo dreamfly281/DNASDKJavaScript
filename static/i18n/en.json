@@ -45,6 +45,7 @@
   "NOTIFIER_NODE_HEIGHT": "Node height:",
   "GW_SAVE_WALLET_FILE": "1.Save your Wallet File encrypted by your password.",
   "GW_YOUR_PRIVATE_KEY": "2.This is your Private Key, Please keep it safe.",
+  "GW_YOUR_ADDRESS": "3. Your address.",
   "GW_NEXT_STEP": "Next Step: Make Transaction",
   "TX_UNSIGNED_DATA": "Transaction Unsigned Data",
   "TX_SIGNATURE_DATA": "Signature Data",
