@@ -417,7 +417,8 @@
                         </div>
 
                         <div>
-                            <h3 translate="MT_ACCOUNT_BALANCE">Account Balance</h3><br />
+                            <h3 translate="MT_ACCOUNT_BALANCE">Account Balance</h3>
+                            <br />
                             <div class="form-group">
                                 <table class="table">
                                     <tbody>
@@ -435,6 +436,7 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <a ng-click="getUnspent(accounts[accountSelectIndex].address)" href="#" aria-expanded="false"><i class="fa fa-refresh" aria-hidden="true"></i>&nbsp&nbsp{{ 'REFRESH' | translate }}</a>
                         </div>
 
                         <div>
@@ -443,7 +445,9 @@
 
                         <div>
                             <h3 translate="NODE_INFO">Node Info</h3><br />
-                            <a align="center" href="#" role="button" aria-expanded="false">{{ 'NOTIFIER_NODE_HEIGHT' | translate }}{{ " " + nodeHeight + "   ( " + getNodeHeightLastTime + " )"}}</a><br /><br />
+                            <span>{{ 'NOTIFIER_NODE_HEIGHT' | translate }}{{ " " }}  <a href="#">{{nodeHeight}}</a> {{"   ( " + getNodeHeightLastTime + " )"}}</span>
+                            <!---->
+                            <br /><br />
                         </div>
                     </div>
 

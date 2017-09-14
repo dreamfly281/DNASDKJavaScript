@@ -121,5 +121,6 @@
   "ADDRESS": "地址： ",
   "SIGNATURE": "签名",
   "DOWNLOAD": "下载",
-  "HELLO": "你好"
+  "HELLO": "你好",
+  "REFRESH" : "刷新"
 }

@@ -121,5 +121,6 @@
   "ADDRESS": "Address: ",
   "SIGNATURE": "Signature",
   "DOWNLOAD": "Download",
-  "HELLO": "hello"
+  "HELLO": "hello",
+  "REFRESH" : "Refresh"
 }
