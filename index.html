@@ -418,17 +418,32 @@
 
                         <div>
                             <h3 translate="MT_ACCOUNT_BALANCE">Account Balance</h3><br />
-                            <a align="center" href="#" role="button" aria-expanded="false">{{ 'NOTIFIER_NODE_HEIGHT' | translate }}{{ " " + nodeHeight + "   ( " + getNodeHeightLastTime + " )"}}</a><br /><br />
                             <div class="form-group">
                                 <table class="table">
                                     <tbody>
+                                    <tr>
+                                        <td align="right" width="35%"><b>{{ 'ASSETNAME' | translate }}</b></td>
+                                        <td width="10%"></td>
+                                        <td align="left"><b>{{ 'BALANCE' | translate }}</b></td>
+                                    </tr>
                                     <tr ng-repeat="coin in coins">
                                         <td align="right" width="35%">{{coin.AssetName}}</td>
+                                        <td width="10%"></td>
                                         <td align="left">{{coin.balance}}</td>
                                     </tr>
+                                    <tr><td></td><td width="10%"></td><td></td></tr>
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+
+                        <div>
+                            <hr />
+                        </div>
+
+                        <div>
+                            <h3 translate="NODE_INFO">Node Info</h3><br />
+                            <a align="center" href="#" role="button" aria-expanded="false">{{ 'NOTIFIER_NODE_HEIGHT' | translate }}{{ " " + nodeHeight + "   ( " + getNodeHeightLastTime + " )"}}</a><br /><br />
                         </div>
                     </div>
 

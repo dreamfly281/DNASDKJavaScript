@@ -64,6 +64,7 @@
   "MT_STANDARD_ACCOUNTS": "Standard Accounts",
   "MT_ACCOUNT_INFO": "Account Info",
   "MT_ACCOUNT_BALANCE": "Account Balance",
+  "NODE_INFO": "Node Info",
   "MT_SEND_TRANSACTION": "Send Transaction",
   "TX_TYPE_TRANSFER_TRANSACTION": "Transfer Transaction",
   "TX_TYPE_CLAIM_TRANSACTION": "Claim Transaction",

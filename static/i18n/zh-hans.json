@@ -64,6 +64,7 @@
   "MT_STANDARD_ACCOUNTS": "标准账户",
   "MT_ACCOUNT_INFO": "账户信息",
   "MT_ACCOUNT_BALANCE": "账户余额",
+  "NODE_INFO": "节点信息",
   "MT_SEND_TRANSACTION": "发送交易",
   "TX_TYPE_TRANSFER_TRANSACTION": "转账交易",
   "TX_TYPE_CLAIM_TRANSACTION": "提取小蚁币交易",
