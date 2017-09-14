@@ -604,9 +604,6 @@ Wallet.VerifyPublicKeyEncoded = function ($publicKeyEncoded) {
     var curvePtX = curvePt.affineX.toBuffer(32);
     var curvePtY = curvePt.affineY.toBuffer(32);
 
-    // console.log( "publicKeyArray", publicKeyArray );
-    // console.log( "curvePtX", curvePtX );
-    // console.log( "curvePtY", curvePtY );
 
     if (publicKeyArray[0] == 0x02 && curvePtY[31] % 2 == 0) {
         return true;
@@ -683,10 +680,9 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 
         var outputAsset_1 = outputAsset_0;
         var outputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
-        data += outputNum + outputAsset_1 + outputValue_1 + myProgramHash.toString();
+        data += outputAsset_1 + outputValue_1 + myProgramHash.toString();
     }
 
-    console.log(data);
     return data;
 };
 
@@ -943,8 +939,6 @@ Wallet.decryptWallet = function (wallet, password) {
         padding: CryptoJS.pad.NoPadding
     });
 
-    //console.log( "plainMasterKey:", plainMasterKey.toString());
-
     for (k = 0; k < wallet.privateKeyEncrypted.length; k++) {
         // Decrypt PrivateKey
         var privateKeyEncrypted = CryptoJS.enc.Hex.parse(ab2hexstring(wallet.privateKeyEncrypted[k]));
@@ -968,11 +962,9 @@ Wallet.decryptWallet = function (wallet, password) {
         //publicKey.set([0x04]);
         //publicKey.set(x,1);
         //publicKey.set(y,1+x.length);
-        //console.log(publicKey.toString('hex'));
 
         // Get PublicKeyEncoded
         var publicKeyEncoded = curvePt.getEncoded(true);
-        //console.log( "publicKeyEncoded:", publicKeyEncoded.toString('hex') );
 
         // Get PublicKeyHash
         var publicKeyEncodedHexString = CryptoJS.enc.Hex.parse(publicKeyEncoded.toString('hex'));

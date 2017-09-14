@@ -424,7 +424,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
 
 });
 
-app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal) {
+app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal,$filter) {
     $scope.wallet = null;
     $scope.walletType = "fileupload";
     $scope.filePassword = "";
@@ -437,6 +437,9 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.hostSelectIndex = 0;
     $scope.hostInfo = [];
+
+    $scope.nodeHeight = '0';
+    $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
 
     $scope.langSelectIndex = 0;
     $scope.langs = [
@@ -460,7 +463,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         publickeyEncoded: "",
         publickeyHash: "",
         programHash: "",
-        address: "",
+        address: ""
     };
     $scope.accounts = [];
     $scope.accountSelectIndex = 0;
@@ -568,11 +571,9 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             }
         });
         modalInstance.opened.then(function () {// 模态窗口打开之后执行的函数
-            //console.log('modal is opened');
         });
         modalInstance.result.then(function (result) {
         }, function (reason) {
-            //console.log(reason);// 点击空白区域，总会输出backdrop
         });
     };
 
@@ -790,6 +791,22 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                     }
                 }
                 $scope.coins = newCoins;
+
+                /**
+                 * 刷新当前节点高度
+                 */
+                $http({
+                    method: 'GET',
+                    url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
+                }).then(function (res) {
+                    if (res.status == 200) {
+                        if (res.data.Result > 0) {
+                            $scope.nodeHeight = res.data.Result;
+                            $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
+                        }
+                    }
+                }).catch(function () {
+                });
             }
         }).catch(function (err) {
             console.log(err)
@@ -808,6 +825,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }).then(function (res) {
             if (res.status == 200) {
                 if (res.data.Result > 0) {
+                    $scope.nodeHeight = res.data.Result;
+                    $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
                     $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.Result + "</b>.");
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
@@ -1100,7 +1119,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 value: ba.slice(k + 33, k + 41),
                 scripthash: ba.slice(k + 41, k + 61)
             });
-            k = k + 61;
+            k = k + 60;
         }
 
         return tx;
