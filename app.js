@@ -1068,6 +1068,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.getTransferTxData = function ($txData) {
         var ba = new Buffer($txData, "hex");
         var tx = new Transaction();
+        var k = 2;
 
         // Transfer Type
         if (ba[0] != 0x80) return;
@@ -1077,10 +1078,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         tx.version = ba[1];
 
         // Attributes
-        var k = 2;
-        var len = ba[k];
-        for (i = 0; i < len; i++) {
-            k = k + 1;
+        if (ba[k] !== 0) {
+            k = k + 2 + ba[k + 2];
         }
 
         // Inputs
@@ -1094,13 +1093,14 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         // Outputs
         k = k + 1;
         len = ba[k];
+
         for (i = 0; i < len; i++) {
             tx.outputs.push({
                 assetid: ba.slice(k + 1, k + 33),
                 value: ba.slice(k + 33, k + 41),
                 scripthash: ba.slice(k + 41, k + 61)
             });
-            k = k + 60;
+            k = k + 61;
         }
 
         return tx;
