@@ -12,20 +12,15 @@ app.js
 - 生成钱包
   - 新建钱包
   - 从私钥导入
-  - 从WIF导入
 - 发送交易
   - 选择钱包
   - 打开钱包
     - 通过密钥文件
     - 通过私钥
-    - 通过WIF
-    - 通过外部签名
   - 钱包信息
     - 账户信息
-      - 选择账户
       - 地址
-      - 脚本哈希
-      - 公钥（压缩）
+      - 当前区块节点高度
       - 账户余额
   - 发送交易
     - 交易类型
@@ -39,24 +34,6 @@ app.js
       - Register Asset
         - 资产名称
         - 资产总量
-      - State Update
-        - Namespace
-        - Key
-        - Value
-        - My ProgramHash
-- 数据签名
-  - 私钥
-  - 交易待签名数据
-  - 签名值
-  - 签名
-- 工具
-  - 数据反转
-  - 从WIF格式私钥生成私钥
-  - 从私钥生成公钥
-  - 从公钥生成公钥（压缩）
-  - 从公钥（压缩）生成脚本
-  - 从脚本生成脚本哈希
-  - 从脚本哈希生成地址
 - 切换中英文
 - 切换连接节点
 
@@ -134,23 +111,6 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 };
 ```
 
-- #### Make state update - 状态更新交易(DNA项目不会用到)
-```angular2html
-/**
- * Make state update transaction and get transaction unsigned data.
- * 发起一个状态更新交易，DNA项目不会用到。
- * @param $namespace
- * @param $key
- * @param $value
- * @param $publicKeyEncoded
- * 
- * @returns {string}
- */
-Wallet.makeStateUpdateTransaction = function ( $namespace, $key, $value, $publicKeyEncoded ) {
-    return data;
-};
-```
-
 - #### Create account - 新建账户
 ```angular2html
 /**
@@ -173,21 +133,6 @@ Wallet.createAccount = function ($privateKey, $password) {
 - #### Create account - 从私钥创建账户
 ```angular2html
 // 同上，自定义私钥。
-```
-
-- #### Create account - 从WIF Key创建账户
-```angular2html
-/**
- * Create account from WIF key.
- * 从WIF Key创建账户。
- * 
- * @param $wif
- * 
- * @return {*}
- */
-Wallet.getPrivateKeyFromWIF = function ($wif) {
-    return data.slice(1, 33).toString("hex");
-};
 ```
 
 - #### Signature transaction - 生成签名
