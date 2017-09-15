@@ -413,7 +413,7 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
     var assetDescLen = assetNameLen;
     var assetDesc = assetName;
 
-    var assetPrecision = "00";
+    var assetPrecision = "08"; //精度
     var assetType = "01";
     var assetRecordType = "00";
     var assetAmount = numStoreInMemory(($assetAmount * 100000000).toString(16), 16);
