@@ -1,4 +1,6 @@
 {
+  "Version": "1.0.0",
+  "Date": "2017-09-15 14:15",
   "host_info": [
     [
       {
@@ -14,6 +16,15 @@
         "hostName": "测试节点 - 2",
         "hostProvider": "测试节点",
         "restapi_host": "http://139.219.103.181",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "测试节点 - 3",
+        "hostProvider": "测试节点",
+        "restapi_host": "http://40.125.207.206",
         "restapi_port": "10334",
         "webapi_host": "http://139.219.108.92",
         "webapi_port": "10336",
@@ -34,6 +45,15 @@
         "hostName": "Test - Node - 2",
         "hostProvider": "Test - Node",
         "restapi_host": "http://139.219.103.181",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "Test - Node - 3",
+        "hostProvider": "Test - Node",
+        "restapi_host": "http://40.125.207.206",
         "restapi_port": "10334",
         "webapi_host": "http://139.219.108.92",
         "webapi_port": "10336",

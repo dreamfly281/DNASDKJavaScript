@@ -438,6 +438,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.hostSelectIndex = 0;
     $scope.hostInfo = [];
 
+    $scope.version = '';
+
     $scope.nodeHeight = '0';
     $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
 
@@ -511,6 +513,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $http.get('wallet-conf.json').then(function (data) {
             $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
             $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
+
+            $scope.version = data.data.Version;
 
             $scope.connectNode();
         });
