@@ -882,7 +882,6 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     };
 
     $scope.stateUpdateTransaction = function () {
-
         if ($scope.stateUpdate.namespace.length == 0 || $scope.stateUpdate.key.length == 0 || $scope.stateUpdate.value.length == 0) {
             $scope.notifier.warning("Please checked input.");
             return;
@@ -904,7 +903,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             return;
         }
 
-        if ($scope.issueAsset.issueAmount > 100000000) {
+        if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
             return;
         }
@@ -925,7 +924,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             return;
         }
 
-        if ($scope.issueAsset.issueAmount > 100000000) {
+        if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
             return;
         }
@@ -937,7 +936,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     };
 
     $scope.registerTransactionUnsigned = function () {
-        if ($scope.registerAsset.assetAmount > 100000000) {
+        if ($scope.registerAsset.assetAmount  > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
             return;
         }
@@ -962,8 +961,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     };
 
     $scope.registerTransaction = function () {
-
-        if ($scope.registerAsset.assetAmount > 100000000) {
+        if ($scope.registerAsset.assetAmount > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
             return;
         }
