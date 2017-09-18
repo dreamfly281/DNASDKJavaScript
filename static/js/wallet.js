@@ -316,22 +316,22 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
      */
     var type = "90";
     var version = "00";
-    var namespacelen = numStoreInMemory($namespace.length.toString(16), 0);
+    var namespaceLen = numStoreInMemory($namespace.length.toString(16), 0);
     var namespace = ab2hexstring(str2ab($namespace));
-    var keylen = numStoreInMemory($key.length.toString(16), 0);
+    var keyLen = numStoreInMemory($key.length.toString(16), 0);
     var key = ab2hexstring(str2ab($key));
-    var valuelen = numStoreInMemory($value.length.toString(16), 0);
+    var valueLen = numStoreInMemory($value.length.toString(16), 0);
     var value = ab2hexstring(str2ab($value));
     var publicKeyXStr = curvePtX.toString('hex');
     var publicKeyYStr = curvePtY.toString('hex');
-    var publickey = "20" + publicKeyXStr + "20" + publicKeyYStr;
+    var publicKey = "20" + publicKeyXStr + "20" + publicKeyYStr;
     var attribute = "00";
     var inputs = "00";
     var outputs = "00";
 
-    return type + version + namespacelen + namespace +
-        keylen + key + valuelen + value +
-        publickey + attribute + inputs + outputs;
+    return type + version + namespaceLen + namespace +
+        keyLen + key + valueLen + value +
+        publicKey + attribute + inputs + outputs;
 };
 
 /**
@@ -753,6 +753,11 @@ Wallet.generateRandomArray = function ($arrayLen) {
     return randomArray;
 };
 
+/**
+ * 生成随机私钥
+ *
+ * @return {Uint8Array}
+ */
 Wallet.generatePrivateKey = function () {
     var privateKey = new Uint8Array(32);
     for (i = 0; i < 32; i++) {

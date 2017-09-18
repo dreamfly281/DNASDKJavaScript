@@ -1,6 +1,7 @@
 {
-  "Version": "1.0.0",
-  "Date": "2017-09-15 14:15",
+  "version": "v1.0.1",
+  "date": "2017-09-18 11:27",
+  "bbs_url": "https://forum.dnaproject.org/",
   "host_info": [
     [
       {

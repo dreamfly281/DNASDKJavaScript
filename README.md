@@ -41,7 +41,35 @@ app.js
 
 ## API列表：
 
+- #### Create account - 新建账户
+```angular2html
+/**
+ * 生成随机私钥
+ * 
+ * @return {Uint8Array}
+ */
+Wallet.generatePrivateKey = function () {
+    return privateKey;
+};
+
+```
+```angular2html
+
+/**
+ * Create account use random private key.
+ * 新建一个账户。
+ *
+ * @param $privateKey
+ * @param $password
+ *
+ * @return $binaryArray : struct Account
+ */
+Wallet.createAccount = function ($privateKey, $password) {
+    return binaryArray;
+}
+```
 - #### Make register transaction - 注册资产交易
+
 ```angular2html
 /**
  * Make register transaction and get transaction unsigned data.
@@ -180,4 +208,38 @@ Wallet.toAddress = function ($ProgramHash) {
 Wallet.AddressToProgramHash = function ( $toAddress ) {
     return ab2hexstring(ProgramHash);
 };
+```
+
+- #### 调用API接口示例  
+
+##### 获取用户账户、交易等信息
+```angular2html
+/**
+* @param $address
+*/
+$http({
+    method: 'GET',
+    url: restapi_host + ':' + restapi_port + '/api/v1/asset/utxos/' + $address
+}).then(function (res) {});
+```
+
+##### 获取连接节点的区块高度
+```angular2html
+$http({
+    method: 'GET',
+    url: restapi_host + ':' + restapi_port + '/api/v1/block/height?auth_type=getblockheight'
+}).then(function (res) {});
+```
+
+##### 发起交易
+```angular2html
+/**
+* @param $txData
+*/
+$http({
+    method: 'POST',
+    url: restapi_host + ':' + restapi_port + '/api/v1/transaction',
+    data: '{"Action":"sendrawtransaction", "Version":"1.0.0", "Type":"","Data":"' + $txData + '"}',
+    headers: {"Content-Type": "application/json"}
+}).then(function (res) {});
 ```
