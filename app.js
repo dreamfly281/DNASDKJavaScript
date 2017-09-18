@@ -12,6 +12,7 @@ app.config(['$translateProvider',function($translateProvider) {
     });
 
     $translateProvider.preferredLanguage('zh-hans');
+    $translateProvider.useSanitizeValueStrategy('escapeParameters');
 }]);
 
 app.directive('onReadFile', function ($parse) {
