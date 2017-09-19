@@ -746,7 +746,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.claims = {};
         $scope.claims['amount'] = 0;
 
-        Wallet.GetClaims($address,host,(function (res) {
+        Wallet.GetClaims($http,$address,host,(function (res) {
             if (res.status == 200) {
                 $scope.claims = res.data;
             }
@@ -759,7 +759,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.getUnspent = function ($address) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
-        Wallet.GetUnspent($address, host, (function (res) {
+        Wallet.GetUnspent($http,$address, host, (function (res) {
             if (res.status == 200) {
                 if (results !== null) {
                     results = res.data.Result;
@@ -799,7 +799,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 /**
                  * 刷新当前节点高度
                  */
-                Wallet.GetNodeHeight(host, (function (res) {
+                Wallet.GetNodeHeight($http,host, (function (res) {
                     if (res.status == 200) {
                         if (res.data.Result > 0) {
                             $scope.nodeHeight = res.data.Result;
@@ -822,7 +822,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.addressBrowseURL = host.webapi_host + ':' + host.webapi_port;
         $scope.txBrowseURL = host.webapi_host + ':' + host.webapi_port;
 
-        Wallet.GetNodeHeight(host,(function (res) {
+        Wallet.GetNodeHeight($http,host,(function (res) {
             if (res.status == 200) {
                 if (res.data.Result > 0) {
                     $scope.nodeHeight = res.data.Result;
@@ -842,7 +842,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.sendTransactionData = function ($txData) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
-        Wallet.SendTransactionData($txData,host,(function (res) {
+        Wallet.SendTransactionData($http,$txData,host,(function (res) {
             if (res.status == 200) {
                 var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
 
