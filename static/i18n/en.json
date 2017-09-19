@@ -1,4 +1,5 @@
 {
+  "SITE_TITLE" : "Wallet",
   "GENERATE_WALLET": "Generate Wallet",
   "SEND_TRANSACTION": "Send Transaction",
   "SIGNATURE_DATA": "Signature Data",
@@ -9,7 +10,7 @@
   "FROM_WIF_KEY": "From WIF Key",
   "ENTER_PWD_1": "Enter a strong password (at least 8 characters):",
   "PASSWORD": "password",
-  "RE_ENTER_PASSWORD": "re-enter password",
+  "RE_ENTER_PASSWORD": "Please re-enter new password",
   "GW_PASTE_YOUR_PRIVATE_KEY": "Paste Your Private Key",
   "GW_PASTE_YOUR_WIF_KEY": "Paste Your WIF Key",
   "NOTIFIER_PRIVATEKEY_LENGTH_CHECK_FAILED": "PrivateKey length check failed.",
@@ -45,6 +46,7 @@
   "NOTIFIER_NODE_HEIGHT": "Node height:",
   "GW_SAVE_WALLET_FILE": "1.Save your Wallet File encrypted by your password.",
   "GW_YOUR_PRIVATE_KEY": "2.This is your Private Key, Please keep it safe.",
+  "GW_YOUR_ADDRESS": "3. Your address.",
   "GW_NEXT_STEP": "Next Step: Make Transaction",
   "TX_UNSIGNED_DATA": "Transaction Unsigned Data",
   "TX_SIGNATURE_DATA": "Signature Data",
@@ -62,6 +64,7 @@
   "MT_STANDARD_ACCOUNTS": "Standard Accounts",
   "MT_ACCOUNT_INFO": "Account Info",
   "MT_ACCOUNT_BALANCE": "Account Balance",
+  "NODE_INFO": "Node Info",
   "MT_SEND_TRANSACTION": "Send Transaction",
   "TX_TYPE_TRANSFER_TRANSACTION": "Transfer Transaction",
   "TX_TYPE_CLAIM_TRANSACTION": "Claim Transaction",
@@ -76,6 +79,7 @@
   "BTN_GET_TRANSFER_TRANSACTION": "Get Transfer Transaction",
   "MT_ASSET_NAME": "Asset Name",
   "MT_ASSET_AMOUNT": "Asset Amount",
+  "MT_ASSET_ID": "Asset ID (TXID), Please keep it safe.",
   "BTN_REGISTER_TRANSACTION": "Register Transaction",
   "BTN_GET_REGISTER_TRANSACTION": "Get Register Transaction",
   "TX_CL_CLAIM_AMOUNT": "Claim Amount(ANC)",
@@ -99,6 +103,7 @@
   "ABOUT_INFO": "DNAWallet is a free & open-source client of DNA Blockchain.",
   "LINKS": "Links",
   "CONTACT_US": "Contact US",
+  "FEEDBACK": "Feedback",
   "HOME": "Home",
   "WARNING": "WARNING",
   "BALANCE": "Balance",
@@ -113,8 +118,9 @@
   "PUBLIC_KEY_ENCODED": "Public Key Encoded",
   "SCRIPT": "Script",
   "SCRIPTHASH": "Script Hash",
-  "ADDRESS": "Address",
+  "ADDRESS": "Address: ",
   "SIGNATURE": "Signature",
   "DOWNLOAD": "Download",
-  "HELLO": "hello"
+  "HELLO": "hello",
+  "REFRESH" : "Click to refresh"
 }

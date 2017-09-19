@@ -109,33 +109,15 @@ var Wallet = function Wallet(passwordHash, iv, masterKey, publicKeyHash, private
  * @return $binaryArray : struct Account
  */
 Wallet.createAccount = function ($privateKey, $password) {
-    //console.log( "privateKey: ", $privateKey );
-    //console.log( "password: ", $password );
-
     var publicKey = Wallet.getPublicKey($privateKey, false);
-    //console.log( "publicKey: ", publicKey.toString('hex') );
-
     var publicKeyEncoded = Wallet.getPublicKey($privateKey, true);
-    //console.log( "publicKeyEncoded: ", publicKeyEncoded.toString('hex') );
-
     var scriptCode = Wallet.createSignatureScript(publicKeyEncoded);
-    //console.log( "scriptCode: ", scriptCode );
-
     var scriptHash = Wallet.getHash(scriptCode);
-    //console.log( "scriptHash: ", scriptHash.toString() );
-
     var publicKeyHash = Wallet.getHash(publicKeyEncoded.toString('hex'));
-    //console.log( "publicKeyHash: ", publicKeyHash.toString() );
-
     var passwordKey = CryptoJS.SHA256(CryptoJS.SHA256($password));
     var passwordHash = CryptoJS.SHA256(passwordKey);
-    //console.log( "passwordHash: ", passwordHash.toString() );
-
     var iv = Wallet.generateRandomArray(16);
-    //console.log( "iv: ", ab2hexstring(iv) );
-
     var masterKey = Wallet.generateRandomArray(32);
-    //console.log( "masterKey: ", ab2hexstring(masterKey) );
 
     // Encrypt MasterKey
     var masterKeyPlain = CryptoJS.enc.Hex.parse(ab2hexstring(masterKey));
@@ -146,11 +128,9 @@ Wallet.createAccount = function ($privateKey, $password) {
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.NoPadding
     });
-    //console.log( "masterKeyEncrypt: ", masterKeyEncrypt.ciphertext.toString() );
 
     // PrivateKey Data
     var privateKeyData = publicKey.slice(1, 65).toString('hex') + $privateKey;
-    //console.log( "privateKeyData: ", privateKeyData );
 
     // Encrypt PrivateKey Data
     var privateKeyDataPlain = CryptoJS.enc.Hex.parse(privateKeyData);
@@ -159,7 +139,6 @@ Wallet.createAccount = function ($privateKey, $password) {
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.NoPadding
     });
-    //console.log( "privateKeyDataEncrypted: ", privateKeyDataEncrypted.ciphertext.toString() );
 
     var db = new SQL.Database();
 
@@ -212,6 +191,12 @@ Wallet.createAccount = function ($privateKey, $password) {
     return binaryArray;
 };
 
+/**
+ *
+ * @param $data
+ * @return {string}
+ * @constructor
+ */
 Wallet.Sha256 = function ($data) {
     var DataHexString = CryptoJS.enc.Hex.parse($data);
     var DataSha256 = CryptoJS.SHA256(DataHexString);
@@ -230,6 +215,12 @@ Wallet.MD5 = function ($data) {
     return CryptoJS.MD5(DataHexString).toString();
 };
 
+/**
+ *
+ * @param $data
+ * @return {string}
+ * @constructor
+ */
 Wallet.GetTxHash = function ($data) {
     var DataHexString = CryptoJS.enc.Hex.parse($data);
     var DataSha256 = CryptoJS.SHA256(DataHexString);
@@ -250,8 +241,6 @@ Wallet.GetInputData = function ($coin, $amount) {
             }
         }
     }
-
-    //console.log( coin_ordered );
 
     // calc sum
     var sum = 0;
@@ -293,26 +282,21 @@ Wallet.GetInputData = function ($coin, $amount) {
         data.set(hexstring2ab(inputIndex), pos);
     }
 
-    /////////////////////////////////////////////////////////////////////////
-
     // calc coin_amount
     var coin_amount = 0;
     for (i = 0; i < k + 1; i++) {
         coin_amount = coin_amount + parseFloat(coin_ordered[i].Value);
     }
 
-    /////////////////////////////////////////////////////////////////////////
-
     return {
         amount: coin_amount,
         data: data
     }
-
 };
 
 /**
  * Make state update transaction and get transaction unsigned data.
- * 发起一个状态更新交易，DNA项目不会用到。
+ * 发起一个状态更新交易。
  *
  * @param $namespace
  * @param $key
@@ -327,43 +311,27 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
     var curvePtX = curvePt.affineX.toBuffer(32);
     var curvePtY = curvePt.affineY.toBuffer(32);
 
-    ////////////////////////////////////////////////////////////////////////
-    // data
-    var data = "90";
-
-    // version
-    data = data + "00";
-
-    ///////////////////////
-    // stateUpdate payload
-
-    // namespace
-    namespacelen = numStoreInMemory($namespace.length.toString(16), 0);
-    data = data + namespacelen + ab2hexstring(str2ab($namespace));
-
-    // key
-    keylen = numStoreInMemory($key.length.toString(16), 0);
-    data = data + keylen + ab2hexstring(str2ab($key));
-
-    // value
-    valuelen = numStoreInMemory($value.length.toString(16), 0);
-    data = data + valuelen + ab2hexstring(str2ab($value));
-
-    // publickey
+    /**
+     * data数据拼接：
+     */
+    var type = "90";
+    var version = "00";
+    var namespaceLen = numStoreInMemory($namespace.length.toString(16), 0);
+    var namespace = ab2hexstring(str2ab($namespace));
+    var keyLen = numStoreInMemory($key.length.toString(16), 0);
+    var key = ab2hexstring(str2ab($key));
+    var valueLen = numStoreInMemory($value.length.toString(16), 0);
+    var value = ab2hexstring(str2ab($value));
     var publicKeyXStr = curvePtX.toString('hex');
     var publicKeyYStr = curvePtY.toString('hex');
-    data = data + "20" + publicKeyXStr + "20" + publicKeyYStr;
+    var publicKey = "20" + publicKeyXStr + "20" + publicKeyYStr;
+    var attribute = "00";
+    var inputs = "00";
+    var outputs = "00";
 
-    // attribute
-    data = data + "00";
-
-    // Inputs
-    data = data + "00";
-
-    // Outputs
-    data = data + "00";
-
-    return data;
+    return type + version + namespaceLen + namespace +
+        keyLen + key + valueLen + value +
+        publicKey + attribute + inputs + outputs;
 };
 
 /**
@@ -378,10 +346,7 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
  */
 Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyEncoded) {
     var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
-    //console.log( signatureScript.toString('hex') );
-
     var myProgramHash = Wallet.getHash(signatureScript);
-    //console.log( myProgramHash.toString() );
 
     ////////////////////////////////////////////////////////////////////////
     // data
@@ -390,8 +355,15 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
     // version
     data = data + "00";
 
-    // attribute
-    data = data + "00";
+    /**
+     * 自定义属性,attribute
+     * @type {string}
+     */
+    var transactionAttrNum = "01";
+    var transactionAttrUsage = "00";
+    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
+    var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
+    data = data + transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData;
 
     // Inputs
     data = data + "00";
@@ -410,8 +382,6 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
     // Outputs[0] ProgramHash
     data = data + myProgramHash.toString();
 
-    //console.log(data);
-
     return data;
 };
 
@@ -427,62 +397,45 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
  * @returns {string} : txUnsignedData
  */
 Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $publicKeyEncoded) {
-    console.log("publicKeyEncoded:", $publicKeyEncoded);
+    var ecParams = ecurve.getCurveByName('secp256r1');
+    var curvePt = ecurve.Point.decodeFrom(ecParams, new Buffer($publicKeyEncoded, "hex"));
+    var publicKeyXStr = (curvePt.affineX.toBuffer(32)).toString('hex');
+    var publicKeyYStr = (curvePt.affineY.toBuffer(32)).toString('hex');
 
-    var ecparams = ecurve.getCurveByName('secp256r1');
-    var curvePt = ecurve.Point.decodeFrom(ecparams, new Buffer($publicKeyEncoded, "hex"));
-    var curvePtX = curvePt.affineX.toBuffer(32);
-    var curvePtY = curvePt.affineY.toBuffer(32);
-    var publicKey = Buffer.concat([new Buffer([0x04]), curvePtX, curvePtY]);
+    /**
+     * 数据拼接：
+     */
+    var type = "40";
+    var version = "00";
 
-    var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
-    console.log(signatureScript.toString('hex'));
-
-    var myProgramHash = Wallet.getHash(signatureScript);
-    console.log(myProgramHash.toString());
-
-    // data
-    var data = "40";
-
-    // version
-    data = data + "00";
-
-    // asset name
+    var assetNameLen = prefixInteger((Number($assetName.length).toString(16)), 2);
     var assetName = ab2hexstring(stringToBytes($assetName));
-    var assetNameLen = (assetName.length / 2).toString();
-    if (assetNameLen.length == 1) assetNameLen = "0" + assetNameLen;
-    data = data + assetNameLen + assetName;
-
-    // asset desc
-    var assetDesc = assetName;
     var assetDescLen = assetNameLen;
-    data = data + assetDescLen + assetDesc;
+    var assetDesc = assetName;
 
-    // asset precision
-    data = data + "00";
+    var assetPrecision = "08"; //精度
+    var assetType = "01";
+    var assetRecordType = "00";
+    var assetAmount = numStoreInMemory(($assetAmount * 100000000).toString(16), 16);
 
-    // asset type
-    data = data + "01";
+    var publicKey = "20" + publicKeyXStr + "20" + publicKeyYStr;
+    var programHash = Wallet.getHash(Wallet.createSignatureScript($publicKeyEncoded)).toString();
 
-    // asset recordtype
-    data = data + "00";
+    /**
+     * 自定义属性
+     * @type {string}
+     */
+    var transactionAttrNum = "01";
+    var transactionAttrUsage = "00";
+    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
+    var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
 
-    // asset amount
-    num1 = $assetAmount * 100000000;
-    num1str = numStoreInMemory(num1.toString(16), 16);
-    data = data + num1str;
-
-    // publickey
-    var publicKeyXStr = curvePtX.toString('hex');
-    var publicKeyYStr = curvePtY.toString('hex');
-
-    data = data + "20" + publicKeyXStr + "20" + publicKeyYStr;
-    data = data + myProgramHash.toString();
-    data = data + "000000";
-
-    console.log(data);
-
-    return data;
+    return type + version +
+        assetNameLen + assetName + assetDescLen + assetDesc +
+        assetPrecision + assetType + assetRecordType + assetAmount +
+        publicKey + programHash +
+        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +
+        "0000";
 };
 
 /**
@@ -521,6 +474,7 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
  * @param $assetName
  * @param $assetAmount
  * @param $publicKeyEncoded
+ * @param $programHash
  *
  * @returns {string} : txUnsignedData
  */
@@ -531,18 +485,15 @@ Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $public
     var curvePtY = curvePt.affineY.toBuffer(32);
     var publicKey = Buffer.concat([new Buffer([0x04]), curvePtX, curvePtY]);
 
-    var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
-    var myProgramHash = Wallet.getHash(signatureScript);
-
     /**
      * 数据拼接：
      */
     var type = "40";
     var version = "00";
     var assetType = "00";
-    var assetNameLen = prefixInteger((Number($assetName.length).toString( 16 )), 2);
+    var assetNameLen = prefixInteger((Number($assetName.length).toString(16)), 2);
     var assetName = ab2hexstring(stringToBytes($assetName));
-    var assetAmount = prefixInteger((Number($assetAmount) * 100000000).toString( 16 ), 16);
+    var assetAmount = prefixInteger((Number($assetAmount) * 100000000).toString(16), 16);
     var assetAccuracy = "08"; //资产精度
     var publicKey = $publicKeyEncoded;
     var programHash = $programHash;
@@ -653,9 +604,6 @@ Wallet.VerifyPublicKeyEncoded = function ($publicKeyEncoded) {
     var curvePtX = curvePt.affineX.toBuffer(32);
     var curvePtY = curvePt.affineY.toBuffer(32);
 
-    // console.log( "publicKeyArray", publicKeyArray );
-    // console.log( "curvePtX", curvePtX );
-    // console.log( "curvePtY", curvePtY );
 
     if (publicKeyArray[0] == 0x02 && curvePtY[31] % 2 == 0) {
         return true;
@@ -686,7 +634,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     var ProgramSha256_2 = CryptoJS.SHA256(ProgramSha256);
     var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
 
-    if (ab2hexstring(ProgramSha256Buffer.slice(0, 4)) != ab2hexstring(ProgramHash.slice(21, 25))) {
+    if (ab2hexstring(ProgramSha256Buffer.slice(0, 4)) !== ab2hexstring(ProgramHash.slice(21, 25))) {
         //address verify failed.
         return -1;
     }
@@ -698,99 +646,44 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 
     // INPUT CONSTRUCT
     var inputData = Wallet.GetInputData($coin, $Amount);
-    if (inputData == -1) return null;
-    //console.log( inputData );
-
-    var inputLen = inputData.data.length;
+    if (inputData === -1) return null;
     var inputAmount = inputData.amount;
 
-    // Set SignableData Len
-    var signableDataLen = 124 + inputLen;
-    if (inputAmount == $Amount) {
-        signableDataLen = 64 + inputLen;
-    }
+    /**
+     * data
+     * @type {string}
+     */
+    var type = "80";
+    var version = "00";
+    // 自定义属性,Attributes
+    var transactionAttrNum = "01";
+    var transactionAttrUsage = "00";
+    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
+    var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
 
-    // CONSTRUCT
-    var data = new Uint8Array(signableDataLen);
-
-    // type
-    data.set(hexstring2ab("80"), 0);
-
-    // version
-    data.set(hexstring2ab("00"), 1);
-
-    // Attributes
-    data.set(hexstring2ab("00"), 2);
-
-    // INPUT
-    data.set(inputData.data, 3);
+    var data = type + version +
+        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +
+        ab2hexstring(inputData.data);
 
     // OUTPUT
-    if (inputAmount == $Amount) {
-        // only one output
+    if (inputAmount === Number($Amount)) {
+        var outputNum = "01"; //无找零
+        var outputAsset = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
+        var outputValue = numStoreInMemory(($Amount * 100000000).toString(16), 16);
 
-        // output num
-        data.set(hexstring2ab("01"), inputLen + 3);
-
-        ////////////////////////////////////////////////////////////////////
-        // OUTPUT - 0
-
-        // output asset
-        data.set(reverseArray(hexstring2ab($coin['AssetId'])), inputLen + 4);
-        //data.set(hexstring2ab($coin['AssetId']), inputLen + 4);
-
-        // output value
-        num1 = $Amount * 100000000;
-        num1str = numStoreInMemory(num1.toString(16), 16);
-        data.set(hexstring2ab(num1str), inputLen + 36);
-
-        // output ProgramHash
-        data.set(ProgramHash, inputLen + 44);
-
-        ////////////////////////////////////////////////////////////////////
-
+        data += outputNum + outputAsset + outputValue + ab2hexstring(ProgramHash);
     } else {
-        // output num
-        data.set(hexstring2ab("02"), inputLen + 3);
+        var outputNum = "02"; //有找零
+        var outputAsset_0 = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
+        var outputValue_0 = numStoreInMemory(($Amount * 100000000).toString(16), 16);
+        data += outputNum + outputAsset_0 + outputValue_0 + ab2hexstring(ProgramHash);
 
-        ////////////////////////////////////////////////////////////////////
-        // OUTPUT - 0
-
-        // output asset
-        data.set(reverseArray(hexstring2ab($coin['AssetId'])), inputLen + 4);
-        //data.set(hexstring2ab($coin['AssetId']), inputLen + 4);
-
-        // output value
-        num1 = $Amount * 100000000;
-        //console.log("num1:", num1)
-        num1str = numStoreInMemory(num1.toString(16), 16);
-        data.set(hexstring2ab(num1str), inputLen + 36);
-
-        // output ProgramHash
-        data.set(ProgramHash, inputLen + 44);
-
-        ////////////////////////////////////////////////////////////////////
-        // OUTPUT - 1
-
-        // output asset
-        data.set(reverseArray(hexstring2ab($coin['AssetId'])), inputLen + 64);
-        //data.set(hexstring2ab($coin['AssetId']), inputLen + 64);
-
-        // output value
-        num2 = inputAmount * 100000000 - num1;
-        //console.log("num2:", num2)
-        num2str = numStoreInMemory(num2.toString(16), 16);
-        data.set(hexstring2ab(num2str), inputLen + 96);
-
-        // output ProgramHash
-        data.set(hexstring2ab(myProgramHash.toString()), inputLen + 104);
-
-        ////////////////////////////////////////////////////////////////////
-
-        //console.log( "Signature Data:", ab2hexstring(data) );
+        var outputAsset_1 = outputAsset_0;
+        var outputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
+        data += outputAsset_1 + outputValue_1 + myProgramHash.toString();
     }
 
-    return ab2hexstring(data);
+    return data;
 };
 
 /**
@@ -798,56 +691,32 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
  */
 Wallet.ClaimTransaction = function ($claims, $publicKeyEncoded, $toAddress, $Amount) {
     var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
-    //console.log( signatureScript.toString('hex') );
-
     var myProgramHash = Wallet.getHash(signatureScript);
-    //console.log( myProgramHash.toString() );
 
-    ////////////////////////////////////////////////////////////////////////
-    // data
-    var data = "02";
-
-    // version
-    data = data + "00";
-
-    // claim
-    // TODO: !!! var int
-    len = $claims['claims'].length;
-    lenstr = numStoreInMemory(len.toString(16), 2);
-    data = data + lenstr;
-
-    //console.log("len: ", len);
-    for (var k = 0; k < len; k++) {
-        txid = $claims['claims'][k]['txid'];
-        data = data + ab2hexstring(reverseArray(hexstring2ab(txid)));
-
-        vout = $claims['claims'][k]['vout'].toString(16);
-        data = data + numStoreInMemory(vout, 4);
+    /**
+     * data
+     * @type {string}
+     */
+    var type = "02";
+    var version = "00";
+    var claimLen = numStoreInMemory($claims['claims'].length.toString(16), 2);
+    var claim = '';
+    for (var k = 0; k < $claims['claims'].length; k++) {
+        claim += ab2hexstring(reverseArray(hexstring2ab($claims['claims'][k]['txid'])));
+        claim += numStoreInMemory($claims['claims'][k]['vout'].toString(16), 4);
     }
+    var attribute = "00";
+    var inputs = "00";
+    var outputs = "01";
+    var output_assetId = ab2hexstring(reverseArray(hexstring2ab($claims['assetid'])));
+    var output_amount = numStoreInMemory(parseInt($Amount).toString(16), 16);
 
-    // attribute
-    data = data + "00";
-
-    // Inputs
-    data = data + "00";
-
-    // Outputs len
-    data = data + "01";
-
-    // Outputs[0] AssetID
-    data = data + ab2hexstring(reverseArray(hexstring2ab($claims['assetid'])));
-
-    // Outputs[0] Amount
-    num1 = parseInt($Amount);
-    num1str = numStoreInMemory(num1.toString(16), 16);
-    data = data + num1str;
-
-    // Outputs[0] ProgramHash
-    data = data + myProgramHash.toString();
-
-    //console.log(data);
-
-    return data;
+    return type + version +
+        claimLen + claim +
+        attribute +
+        inputs +
+        outputs + output_assetId + output_amount +
+        myProgramHash.toString();
 };
 
 /**
@@ -862,18 +731,15 @@ Wallet.toAddress = function ($ProgramHash) {
     var data = new Uint8Array(1 + $ProgramHash.length);
     data.set([23]);
     data.set($ProgramHash, 1);
-    //console.log(ab2hexstring(data));
 
     var ProgramHexString = CryptoJS.enc.Hex.parse(ab2hexstring(data));
     var ProgramSha256 = CryptoJS.SHA256(ProgramHexString);
     var ProgramSha256_2 = CryptoJS.SHA256(ProgramSha256);
     var ProgramSha256Buffer = hexstring2ab(ProgramSha256_2.toString());
-    //console.log(ab2hexstring(ProgramSha256Buffer));
 
     var datas = new Uint8Array(1 + $ProgramHash.length + 4);
     datas.set(data);
     datas.set(ProgramSha256Buffer.slice(0, 4), 21);
-    //console.log(ab2hexstring(datas));
 
     return base58.encode(datas);
 };
@@ -887,6 +753,11 @@ Wallet.generateRandomArray = function ($arrayLen) {
     return randomArray;
 };
 
+/**
+ * 生成随机私钥
+ *
+ * @return {Uint8Array}
+ */
 Wallet.generatePrivateKey = function () {
     var privateKey = new Uint8Array(32);
     for (i = 0; i < 32; i++) {
@@ -972,13 +843,8 @@ Wallet.getReverse = function ($data) {
 Wallet.signatureData = function ($data, $privateKey) {
     var msg = CryptoJS.enc.Hex.parse($data);
     var msgHash = CryptoJS.SHA256(msg);
-    //console.log( "msgHash:", msgHash.toString() );
-
     var pubKey = secp256r1.publicKeyCreate(new Buffer($privateKey, "HEX"));
-    //console.log( pubKey.toString('hex') );
-
     var signature = secp256r1.sign(new Buffer(msgHash.toString(), "HEX"), new Buffer($privateKey, "HEX"));
-    //console.log( signature.signature.toString('hex') );
 
     return signature.signature.toString('hex');
 };
@@ -993,18 +859,10 @@ Wallet.GetAccountsFromPublicKeyEncoded = function ($publicKeyEncoded) {
     }
 
     var accounts = [];
-
     var publicKeyHash = Wallet.getHash($publicKeyEncoded);
-    //console.log( publicKeyHash );
-
     var script = Wallet.createSignatureScript($publicKeyEncoded);
-    //console.log( script );
-
     var programHash = Wallet.getHash(script);
-    //console.log( programHash );
-
     var address = Wallet.toAddress(hexstring2ab(programHash.toString()));
-    //console.log( address );
 
     accounts[0] = {
         privatekey: '',
@@ -1027,26 +885,17 @@ Wallet.GetAccountsFromPrivateKey = function ($privateKey) {
 
     var accounts = [];
     var publicKeyEncoded = Wallet.getPublicKey($privateKey, true);
-    //console.log( publicKeyEncoded );
-
     var publicKeyHash = Wallet.getHash(publicKeyEncoded.toString('hex'));
-    //console.log( publicKeyHash );
-
     var script = Wallet.createSignatureScript(publicKeyEncoded);
-    //console.log( script );
-
     var programHash = Wallet.getHash(script);
-    //console.log( programHash );
-
     var address = Wallet.toAddress(hexstring2ab(programHash.toString()));
-    //console.log( address );
 
     accounts[0] = {
         privatekey: $privateKey,
         publickeyEncoded: publicKeyEncoded.toString('hex'),
         publickeyHash: publicKeyHash.toString(),
         programHash: programHash.toString(),
-        address: address,
+        address: address
     };
 
     return accounts;
@@ -1083,27 +932,17 @@ Wallet.decryptWallet = function (wallet, password) {
         return -1;
     }
 
-    console.log("password verify success.");
-
     // Decrypt MasterKey
     var data = CryptoJS.enc.Hex.parse(ab2hexstring(wallet.masterKey));
     var dataBase64 = CryptoJS.enc.Base64.stringify(data);
     var key = CryptoJS.enc.Hex.parse(passwordhash2.toString());
     var iv = CryptoJS.enc.Hex.parse(ab2hexstring(wallet.iv));
-    //console.log( "MasterKey:", ab2hexstring(wallet.masterKey) );
-    //console.log(data);
-    //console.log( "Password:", passwordhash2.toString() );
-    //console.log(key);
-    //console.log( "IV:",ab2hexstring(wallet.iv) );
-    //console.log(iv);
 
     var plainMasterKey = CryptoJS.AES.decrypt(dataBase64, key, {
         iv: iv,
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.NoPadding
     });
-
-    //console.log( "plainMasterKey:", plainMasterKey.toString());
 
     for (k = 0; k < wallet.privateKeyEncrypted.length; k++) {
         // Decrypt PrivateKey
@@ -1115,10 +954,7 @@ Wallet.decryptWallet = function (wallet, password) {
             padding: CryptoJS.pad.NoPadding
         });
 
-        //console.log( "plainprivateKey:", plainprivateKey.toString() );
-
         var privateKeyHexString = plainprivateKey.toString().slice(128, 192);
-        //console.log( "privateKeyHexString:", privateKeyHexString);
 
         // Verify PublicKeyHash
         var ecparams = ecurve.getCurveByName('secp256r1');
@@ -1131,11 +967,9 @@ Wallet.decryptWallet = function (wallet, password) {
         //publicKey.set([0x04]);
         //publicKey.set(x,1);
         //publicKey.set(y,1+x.length);
-        //console.log(publicKey.toString('hex'));
 
         // Get PublicKeyEncoded
         var publicKeyEncoded = curvePt.getEncoded(true);
-        //console.log( "publicKeyEncoded:", publicKeyEncoded.toString('hex') );
 
         // Get PublicKeyHash
         var publicKeyEncodedHexString = CryptoJS.enc.Hex.parse(publicKeyEncoded.toString('hex'));
@@ -1146,16 +980,10 @@ Wallet.decryptWallet = function (wallet, password) {
         var ProgramHexString = CryptoJS.enc.Hex.parse("21" + publicKeyEncoded.toString('hex') + "ac");
         var ProgramSha256 = CryptoJS.SHA256(ProgramHexString);
         var ProgramHash = CryptoJS.RIPEMD160(ProgramSha256);
-        //console.log( "ProgramHexString:", ProgramHexString.toString() );
-        //console.log( "ProgramHash:", ProgramHash.toString() );
 
         // Get Address
         var address = Wallet.toAddress(hexstring2ab(ProgramHash.toString()));
-        console.log("address:", address);
 
-        //console.log( "k=", k );
-        //console.log( "publicKeyHash:", publicKeyHash.toString() );
-        //console.log( ab2hexstring(wallet.publicKeyHash[k]) );
         if (publicKeyHash.toString() != ab2hexstring(wallet.publicKeyHash[k])) {
             return -2;
         }
@@ -1168,6 +996,8 @@ Wallet.decryptWallet = function (wallet, password) {
             address: address
         };
     }
+
+    console.log("脚本哈希：" + ProgramHash.toString());
 
     return accounts
 };

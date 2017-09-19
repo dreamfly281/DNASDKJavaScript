@@ -12,6 +12,7 @@ app.config(['$translateProvider',function($translateProvider) {
     });
 
     $translateProvider.preferredLanguage('zh-hans');
+    $translateProvider.useSanitizeValueStrategy('escapeParameters');
 }]);
 
 app.directive('onReadFile', function ($parse) {
@@ -151,6 +152,7 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
 app.controller("SignatureDataCtrl", function($scope,$sce) {
     $scope.txRawData = "";
     $scope.privateKey = "";
+    $scope.address = "";
     $scope.signedData = "";
 
     $scope.notifier = Notifier;
@@ -269,13 +271,15 @@ app.controller("ToolsCtrl", function($scope,$sce) {
 });
 
 app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
-    $scope.privateKey = $scope.WIFKey = "";
+    $scope.privateKey = $scope.WIFKey = $scope.address = "";
     $scope.createPassword1 = $scope.createPassword2 = "";
     $scope.createType = "fromRandomPrivateKey";
     $scope.objectURL = $scope.objectName = "";
 
     $scope.styleStringOfCreatePassword1 = $scope.styleStringOfCreatePassword2 = "";
     $scope.isDisplayPassword = false;
+    $scope.isDisplayPrivateKey = false;
+    $scope.isDisplayAssetId = false;
     $scope.fileDownloaded = false;
 
     $scope.showCreateWallet = true;
@@ -332,6 +336,10 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         }
     };
 
+    $scope.changeDisplayPrivateKey = function () {
+        $scope.isDisplayPrivateKey = !$scope.isDisplayPrivateKey;
+    };
+
     $scope.downloaded = function () {
         $scope.fileDownloaded = true;
     };
@@ -351,6 +359,15 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         $scope.showCreateWalletDownload = true;
 
         $scope.privateKey = ab2hexstring(Wallet.generatePrivateKey());
+
+        /**
+         * Get address
+         * @type {number}
+         */
+        var ret = Wallet.GetAccountsFromPrivateKey($scope.privateKey);
+        if (ret != -1) {
+            $scope.address = ret[0].address;
+        }
 
         var walletBlob = Wallet.createAccount($scope.privateKey, $scope.createPassword1);
         $scope.objectURL = window.URL.createObjectURL(new Blob([walletBlob], {type: 'application/octet-stream'}));
@@ -408,7 +425,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
 
 });
 
-app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal) {
+app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal,$filter) {
     $scope.wallet = null;
     $scope.walletType = "fileupload";
     $scope.filePassword = "";
@@ -420,47 +437,18 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     $scope.txSignatureData = "";
 
     $scope.hostSelectIndex = 0;
-    $scope.hostInfo = [
-        // {
-        //     hostName: "STATE TEST",
-        //     hostProvider: "Onchain.com",
-        //     restapi_host: "http://139.196.115.69",
-        //     restapi_port: "10334",
-        //     webapi_host: "http://54.222.240.78",
-        //     webapi_port: "7071",
-        // },
-        // {
-        //     hostName: "DNA TEST NET",
-        //     hostProvider: "Onchain.com",
-        //     restapi_host: "http://42.159.233.49",
-        //     restapi_port: "50334",
-        //     webapi_host: "http://54.222.240.78",
-        //     webapi_port: "7071",
-        // },
-        {
-            hostName: "DNA-NEO-Test",
-            hostProvider: "Onchain.com",
-            restapi_host: "http://139.219.108.92",
-            restapi_port: "40334",
-            webapi_host: "http://139.219.108.92",
-            webapi_port: "40336",
-            node_type: "NEO" //判断资产格式
-        },
-        {
-            hostName: "DNA-Test",
-            hostProvider: "Onchain.com",
-            restapi_host: "http://139.219.108.92",
-            restapi_port: "10334",
-            webapi_host: "http://139.219.108.92",
-            webapi_port: "10336",
-            node_type: "DNA" //判断资产格式
-        }
-    ];
+    $scope.hostInfo = [];
+
+    $scope.version = '';
+    $scope.bbsUrl = '';
+
+    $scope.nodeHeight = '0';
+    $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
 
     $scope.langSelectIndex = 0;
     $scope.langs = [
-        {name: "Simplified Chinese - 中文（简体）", lang: "zh-hans"},
-        {name: "English - English", lang: "en"}
+        {name: "中文（简体）", lang: "zh-hans"},
+        {name: "English", lang: "en"}
     ];
 
     $scope.txType = "128"; //默认下拉选项
@@ -479,7 +467,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         publickeyEncoded: "",
         publickeyHash: "",
         programHash: "",
-        address: "",
+        address: ""
     };
     $scope.accounts = [];
     $scope.accountSelectIndex = 0;
@@ -509,6 +497,8 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
     $scope.claims = {};
 
+    $scope.newAssetId = '';
+
     $interval(function () {
         var account = $scope.accounts[$scope.accountSelectIndex];
         if (account) {
@@ -519,15 +509,18 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     }, 30000);
 
     $scope.init = function () {
-        $scope.connectNode();
+        /**
+         * 加载node配置:
+         */
+        $http.get('wallet-conf.json').then(function (data) {
+            $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
 
-        $scope.txTypes = [
-            {name: 'Transfer Asset', id: '128'},
-            {name: 'Issue Asset', id: '1'},
-            {name: 'Register Asset', id: '64'}
-            // {name: 'State Update', id: '144'} //状态更新交易，DNA项目不会用到
-        ];
+            $scope.version = data.data.version;
+            $scope.bbsUrl = data.data.bbs_url;
 
+            $scope.connectNode();
+        });
     };
 
     // modal
@@ -537,10 +530,8 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
         if ($scope.txType == '128') {
             if ($scope.walletType == 'externalsignature') {
-                //console.log( "externalsignature" );
                 txData = $scope.txUnsignedData;
             } else {
-                //console.log( "normal" );
                 txData = $scope.transferTransactionUnsigned();
             }
             if (txData == false) return;
@@ -572,7 +563,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
                             'tx': tx,
                             'toAddress': $scope.Transaction.ToAddress,
                             'amount': $scope.Transaction.Amount,
-                            'fromAddress': $scope.accounts[$scope.accountSelectIndex].programHash,
+                            'fromAddress': $scope.accounts[$scope.accountSelectIndex].programHash
                         }
                     } else if ($scope.txType == '2') {
                         // claim transaction
@@ -580,20 +571,16 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
                             'txData': txData,
                             'tx': tx,
                             'amount': $scope.claims['amount'],
-                            'claimAddress': $scope.accounts[$scope.accountSelectIndex].programHash,
+                            'claimAddress': $scope.accounts[$scope.accountSelectIndex].programHash
                         }
                     }
                 }
             }
         });
         modalInstance.opened.then(function () {// 模态窗口打开之后执行的函数
-            //console.log('modal is opened');
         });
         modalInstance.result.then(function (result) {
-            //console.log(result);
         }, function (reason) {
-            //console.log(reason);// 点击空白区域，总会输出backdrop
-            //console.log('Modal dismissed at: ' + new Date());  
         });
     };
 
@@ -601,6 +588,11 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         $scope.langSelectIndex = $index;
         $translate.use($scope.langs[$index].lang);
         window.localStorage.lang = $scope.langs[$index].lang;
+
+        $http.get('wallet-conf.json').then(function (data) {
+            $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
+        });
     };
 
     $scope.changehostSelectIndex = function ($index) {
@@ -638,8 +630,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         $scope.requirePass = true;
 
         $scope.notifier.info($translate.instant('NOTIFIER_FILE_SELECTED') + document.getElementById('fselector').files[0].name);
-
-        //console.log( $wallet );
     };
 
     $scope.onFilePassChange = function () {
@@ -758,13 +748,10 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
         $http({
             method: 'GET',
-            url: host.webapi_host + ':' + host.webapi_port + '/api/v1/address/get_claims/' + $address,
+            url: host.webapi_host + ':' + host.webapi_port + '/api/v1/address/get_claims/' + $address
         }).then(function (res) {
             if (res.status == 200) {
-
                 $scope.claims = res.data;
-
-                console.log($scope.claims);
             }
         }).catch(function (err) {
             console.log(err)
@@ -776,25 +763,57 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
         $http({
             method: 'GET',
-            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/asset/utxos/' + $address,
+            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/asset/utxos/' + $address
         }).then(function (res) {
             if (res.status == 200) {
-                //console.log(res.data.Result);
                 results = res.data.Result;
 
                 $scope.coins = [];
+                var tmpIndexArr = [];
+                var newCoins = [];
                 for (i = 0; i < results.length; i++) {
                     $scope.coins[i] = results[i];
                     $scope.coins[i].balance = 0;
-                    for (j = 0; j < results[i].Utxo.length; j++) {
-                        // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
-                        results[i].Utxo[j].Value = results[i].Utxo[j].Value;
-                        $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                    if (results[i].Utxo != null) {
+                        for (j = 0; j < results[i].Utxo.length; j++) {
+                            // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
+                            results[i].Utxo[j].Value = results[i].Utxo[j].Value;
+                            $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                        }
                     }
-                    //console.log("balance:",$scope.coins[i].balance);
+
+                    tmpIndexArr.push(results[i].AssetName);
                 }
 
-                console.log($scope.coins);
+                /**
+                 * Sorting.
+                 * @type {Array.<*>}
+                 */
+                tmpIndexArr = tmpIndexArr.sort();
+                for (i = 0; i < results.length; i++) {
+                    for (j = 0; j < results.length; j++) {
+                        if (tmpIndexArr[i] == results[j].AssetName) {
+                            newCoins.push(results[j]);
+                        }
+                    }
+                }
+                $scope.coins = newCoins;
+
+                /**
+                 * 刷新当前节点高度
+                 */
+                $http({
+                    method: 'GET',
+                    url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
+                }).then(function (res) {
+                    if (res.status == 200) {
+                        if (res.data.Result > 0) {
+                            $scope.nodeHeight = res.data.Result;
+                            $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
+                        }
+                    }
+                }).catch(function () {
+                });
             }
         }).catch(function (err) {
             console.log(err)
@@ -809,11 +828,12 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
 
         $http({
             method: 'GET',
-            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight',
+            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
         }).then(function (res) {
             if (res.status == 200) {
                 if (res.data.Result > 0) {
-                    // console.log("Node Height:", res.data.Result);
+                    $scope.nodeHeight = res.data.Result;
+                    $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
                     $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.Result + "</b>.");
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
@@ -827,7 +847,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     };
 
     $scope.sendTransactionData = function ($txData) {
-        console.log($txData);
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
         $http({
@@ -837,15 +856,17 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
             headers: {"Content-Type": "application/json"}
         }).then(function (res) {
             if (res.status == 200) {
-                console.log(res.data);
-
                 var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
 
                 if (res.data.Error == 0) {
-                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash) + " , <a target='_blank' href='" + $scope.txBrowseURL + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>");
+                    // $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash) + " , <a target='_blank' href='" + $scope.txBrowseURL + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>");
+                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash));
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.Error)
                 }
+
+                $scope.isDisplayAssetId = true;
+                $scope.newAssetId = ab2hexstring(txhash);
             }
         }).catch(function (err) {
             console.log(err)
@@ -864,7 +885,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     };
 
     $scope.stateUpdateTransaction = function () {
-
         if ($scope.stateUpdate.namespace.length == 0 || $scope.stateUpdate.key.length == 0 || $scope.stateUpdate.value.length == 0) {
             $scope.notifier.warning("Please checked input.");
             return;
@@ -886,7 +906,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
             return;
         }
 
-        if ($scope.issueAsset.issueAmount > 100000000) {
+        if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
             return;
         }
@@ -907,7 +927,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
             return;
         }
 
-        if ($scope.issueAsset.issueAmount > 100000000) {
+        if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
             return;
         }
@@ -919,7 +939,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     };
 
     $scope.registerTransactionUnsigned = function () {
-        if ($scope.registerAsset.assetAmount > 100000000) {
+        if ($scope.registerAsset.assetAmount  > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
             return;
         }
@@ -944,8 +964,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     };
 
     $scope.registerTransaction = function () {
-
-        if ($scope.registerAsset.assetAmount > 100000000) {
+        if ($scope.registerAsset.assetAmount > parseInt("fffffffff", 16)) {
             $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
             return;
         }
@@ -1055,7 +1074,6 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         var sign = Wallet.signatureData(txData, privateKey);
         var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
 
-        //console.log( txRawData );
         $scope.sendTransactionData(txRawData);
 
         $scope.claims = {};
@@ -1074,6 +1092,7 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
     $scope.getTransferTxData = function ($txData) {
         var ba = new Buffer($txData, "hex");
         var tx = new Transaction();
+        var k = 2;
 
         // Transfer Type
         if (ba[0] != 0x80) return;
@@ -1083,10 +1102,8 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         tx.version = ba[1];
 
         // Attributes
-        var k = 2;
-        var len = ba[k];
-        for (i = 0; i < len; i++) {
-            k = k + 1;
+        if (ba[k] !== 0) {
+            k = k + 2 + ba[k + 2];
         }
 
         // Inputs
@@ -1094,23 +1111,19 @@ app.controller("DNAWalletCtrl", function($scope,$translate,$http,$sce,$interval,
         len = ba[k];
         for (i = 0; i < len; i++) {
             tx.inputs.push({txid: ba.slice(k + 1, k + 33), index: ba.slice(k + 33, k + 35)});
-            //console.log( "txid:", tx.inputs[i].txid );
-            //console.log( "index:", tx.inputs[i].index );
             k = k + 34;
         }
 
         // Outputs
         k = k + 1;
         len = ba[k];
+
         for (i = 0; i < len; i++) {
             tx.outputs.push({
                 assetid: ba.slice(k + 1, k + 33),
                 value: ba.slice(k + 33, k + 41),
                 scripthash: ba.slice(k + 41, k + 61)
             });
-            //console.log( "outputs.assetid:", tx.outputs[i].assetid );
-            //console.log( "outputs.value:", tx.outputs[i].value );
-            //console.log( "outputs.scripthash:", tx.outputs[i].scripthash );
             k = k + 60;
         }
 
@@ -1202,28 +1215,28 @@ var Notifier = {
     },
 
     warning: function warning(msg) {
-        this.class = "alert-warning",
-            this.icon = "fa fa-question-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-warning";
+        this.icon = "fa fa-question-circle";
+        this.showAlert(this.class, msg);
     },
 
     info: function info(msg) {
-        this.class = "alert-info",
-            this.icon = "fa fa-info-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-info";
+        this.icon = "fa fa-info-circle";
+        this.showAlert(this.class, msg);
         this.setTimer();
     },
 
     danger: function danger(msg) {
-        this.class = "alert-danger",
-            this.icon = "fa fa-times-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-danger";
+        this.icon = "fa fa-times-circle";
+        this.showAlert(this.class, msg);
     },
 
     success: function success(msg) {
-        this.class = "alert-success",
-            this.icon = "fa fa-check-circle",
-            this.showAlert(this.class, msg);
+        this.class = "alert-success";
+        this.icon = "fa fa-check-circle";
+        this.showAlert(this.class, msg);
     },
 
     showAlert: function showAlert(_class, msg) {

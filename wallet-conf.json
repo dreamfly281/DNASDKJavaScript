@@ -1,0 +1,149 @@
+{
+  "version": "v1.0.2",
+  "date": "2017-09-18 18:14",
+  "bbs_url": "https://forum.dnaproject.org/",
+  "host_info": [
+    [
+      {
+        "hostName": "DNA-1",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.108.92",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-2",
+        "hostProvider": "DNA",
+        "restapi_host": "http://40.125.205.244",
+        "restapi_port": "10334",
+        "webapi_host": "http://40.125.205.244",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-3",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.105.20",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.105.20",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-4",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.102.76",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.102.76",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-5",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.99.237",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.99.237",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-6",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.99.101",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.99.101",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      }
+    ],
+    [
+      {
+        "hostName": "DNA-1",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.108.92",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.108.92",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-2",
+        "hostProvider": "DNA",
+        "restapi_host": "http://40.125.205.244",
+        "restapi_port": "10334",
+        "webapi_host": "http://40.125.205.244",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-3",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.105.20",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.105.20",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-4",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.102.76",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.102.76",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-5",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.99.237",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.99.237",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      },
+      {
+        "hostName": "DNA-6",
+        "hostProvider": "DNA",
+        "restapi_host": "http://139.219.99.101",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.99.101",
+        "webapi_port": "10336",
+        "node_type": "DNA"
+      }
+    ]
+  ],
+  "tx_types": [
+    [
+      {
+        "name": "资产转账",
+        "id": "128"
+      },
+      {
+        "name": "发行资产",
+        "id": "1"
+      },
+      {
+        "name": "注册资产",
+        "id": "64"
+      }
+    ],
+    [
+      {
+        "name": "Transfer Asset",
+        "id": "128"
+      },
+      {
+        "name": "Issue Asset",
+        "id": "1"
+      },
+      {
+        "name": "Register Asset",
+        "id": "64"
+      }
+    ]
+  ]
+}
