@@ -767,37 +767,38 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }).then(function (res) {
             if (res.status == 200) {
                 results = res.data.Result;
-
-                $scope.coins = [];
-                var tmpIndexArr = [];
-                var newCoins = [];
-                for (i = 0; i < results.length; i++) {
-                    $scope.coins[i] = results[i];
-                    $scope.coins[i].balance = 0;
-                    if (results[i].Utxo != null) {
-                        for (j = 0; j < results[i].Utxo.length; j++) {
-                            // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
-                            results[i].Utxo[j].Value = results[i].Utxo[j].Value;
-                            $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                if (results !== null) {
+                    $scope.coins = [];
+                    var tmpIndexArr = [];
+                    var newCoins = [];
+                    for (i = 0; i < results.length; i++) {
+                        $scope.coins[i] = results[i];
+                        $scope.coins[i].balance = 0;
+                        if (results[i].Utxo != null) {
+                            for (j = 0; j < results[i].Utxo.length; j++) {
+                                // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
+                                results[i].Utxo[j].Value = results[i].Utxo[j].Value;
+                                $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                            }
                         }
+
+                        tmpIndexArr.push(results[i].AssetName);
                     }
 
-                    tmpIndexArr.push(results[i].AssetName);
-                }
-
-                /**
-                 * Sorting.
-                 * @type {Array.<*>}
-                 */
-                tmpIndexArr = tmpIndexArr.sort();
-                for (i = 0; i < results.length; i++) {
-                    for (j = 0; j < results.length; j++) {
-                        if (tmpIndexArr[i] == results[j].AssetName) {
-                            newCoins.push(results[j]);
+                    /**
+                     * Sorting.
+                     * @type {Array.<*>}
+                     */
+                    tmpIndexArr = tmpIndexArr.sort();
+                    for (i = 0; i < results.length; i++) {
+                        for (j = 0; j < results.length; j++) {
+                            if (tmpIndexArr[i] == results[j].AssetName) {
+                                newCoins.push(results[j]);
+                            }
                         }
                     }
+                    $scope.coins = newCoins;
                 }
-                $scope.coins = newCoins;
 
                 /**
                  * 刷新当前节点高度
