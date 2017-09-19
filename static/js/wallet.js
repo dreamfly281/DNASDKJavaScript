@@ -997,7 +997,65 @@ Wallet.decryptWallet = function (wallet, password) {
         };
     }
 
-    // console.log("脚本哈希：" + ProgramHash.toString());
+    console.log("脚本哈希：" + ProgramHash.toString());
 
     return accounts
+};
+
+/**
+ *
+ *
+ * @param $address,$host,$callback,$callback_dev
+ * @return {*}
+ * @constructor
+ */
+Wallet.GetClaims = function ($address,$host,$callback,$callback_dev) {
+    $http({
+        method: 'GET',
+        url: $host.webapi_host + ':' + $host.webapi_port + '/api/v1/address/get_claims/' + $address
+    }).then($callback).catch($callback_dev);
+};
+
+/**
+ * Get information about user accounts, transactions, etc.
+ * 获取用户账户、交易等信息
+ * @param $address,$host,$callback,$callback_dev
+ * @return {*}
+ * @constructor
+ */
+Wallet.GetUnspent = function ($address,$host,$callback,$callback_dev) {
+    $http({
+        method: 'GET',
+        url: host.restapi_host + ':' + host.restapi_port + '/api/v1/asset/utxos/' + $address
+    }).then($callback).catch($callback_dev);
+};
+
+/**
+ * Refresh the height of node
+ * 刷新节点高度
+ * @param $host,$callback,$callback_dev
+ * @return {*}
+ * @constructor
+ */
+Wallet.GetNodeHeight = function ($host,$callback,$callback_dev) {
+    $http({
+        method: 'GET',
+        url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
+    }).then($callback).catch($callback_dev);
+};
+
+/**
+ * Initiate a transaction
+ * 发起交易
+ * @param $host,$callback,$callback_dev
+ * @return {*}
+ * @constructor
+ */
+Wallet.GetNodeHeight = function ($txData,$host,$callback,$callback_dev) {
+    $http({
+        method: 'POST',
+        url: host.restapi_host + ':' + host.restapi_port + '/api/v1/transaction',
+        data: '{"Action":"sendrawtransaction", "Version":"1.0.0", "Type":"","Data":"' + $txData + '"}',
+        headers: {"Content-Type": "application/json"}
+    }).then($callback).catch($callback_dev);
 };
