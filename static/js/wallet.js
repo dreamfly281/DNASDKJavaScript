@@ -997,7 +997,7 @@ Wallet.decryptWallet = function (wallet, password) {
         };
     }
 
-    console.log("脚本哈希：" + ProgramHash.toString());
+    // console.log("脚本哈希：" + ProgramHash.toString());
 
     return accounts
 };
