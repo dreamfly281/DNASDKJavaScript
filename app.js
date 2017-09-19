@@ -746,28 +746,24 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.claims = {};
         $scope.claims['amount'] = 0;
 
-        $http({
-            method: 'GET',
-            url: host.webapi_host + ':' + host.webapi_port + '/api/v1/address/get_claims/' + $address
-        }).then(function (res) {
+        Wallet.GetClaims($address,host,(function (res) {
             if (res.status == 200) {
                 $scope.claims = res.data;
             }
-        }).catch(function (err) {
+        }),(function (err) {
             console.log(err)
-        })
+        }));
+
     };
 
     $scope.getUnspent = function ($address) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
-        $http({
-            method: 'GET',
-            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/asset/utxos/' + $address
-        }).then(function (res) {
+        Wallet.GetUnspent($address, host, (function (res) {
             if (res.status == 200) {
-                results = res.data.Result;
                 if (results !== null) {
+                    results = res.data.Result;
+
                     $scope.coins = [];
                     var tmpIndexArr = [];
                     var newCoins = [];
@@ -803,22 +799,21 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 /**
                  * 刷新当前节点高度
                  */
-                $http({
-                    method: 'GET',
-                    url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
-                }).then(function (res) {
+                Wallet.GetNodeHeight(host, (function (res) {
                     if (res.status == 200) {
                         if (res.data.Result > 0) {
                             $scope.nodeHeight = res.data.Result;
                             $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
                         }
                     }
-                }).catch(function () {
-                });
+                }), (function () {
+                }));
             }
-        }).catch(function (err) {
+        }), (function (err) {
             console.log(err)
-        })
+        }));
+
+
     };
 
     $scope.connectNode = function () {
@@ -827,10 +822,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.addressBrowseURL = host.webapi_host + ':' + host.webapi_port;
         $scope.txBrowseURL = host.webapi_host + ':' + host.webapi_port;
 
-        $http({
-            method: 'GET',
-            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
-        }).then(function (res) {
+        Wallet.GetNodeHeight(host,(function (res) {
             if (res.status == 200) {
                 if (res.data.Result > 0) {
                     $scope.nodeHeight = res.data.Result;
@@ -842,20 +834,15 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             } else {
                 $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
             }
-        }).catch(function (res) {
+        }),(function (res) {
             $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
-        });
+        }));
     };
 
     $scope.sendTransactionData = function ($txData) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
-        $http({
-            method: 'POST',
-            url: host.restapi_host + ':' + host.restapi_port + '/api/v1/transaction',
-            data: '{"Action":"sendrawtransaction", "Version":"1.0.0", "Type":"","Data":"' + $txData + '"}',
-            headers: {"Content-Type": "application/json"}
-        }).then(function (res) {
+        Wallet.SendTransactionData($txData,host,(function (res) {
             if (res.status == 200) {
                 var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
 
@@ -869,9 +856,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 $scope.isDisplayAssetId = true;
                 $scope.newAssetId = ab2hexstring(txhash);
             }
-        }).catch(function (err) {
+        }),(function (err) {
             console.log(err)
-        })
+        }));
+
     };
 
     $scope.MakeTxAndSend = function ($txUnsignedData) {
@@ -1180,20 +1168,20 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 });
 
 var Transaction = function Transaction() {
-	this.type = 0;
-	this.version = 0;
-	this.attributes = "";
-	this.inputs = [];
-	this.outputs = [];
+    this.type = 0;
+    this.version = 0;
+    this.attributes = "";
+    this.inputs = [];
+    this.outputs = [];
 };
 
 var ClaimTransaction = function ClaimTransaction() {
-	this.type = 0;
-	this.version = 0;
-	this.claims = [];
-	this.attributes = "";
-	this.inputs = [];
-	this.outputs = [];
+    this.type = 0;
+    this.version = 0;
+    this.claims = [];
+    this.attributes = "";
+    this.inputs = [];
+    this.outputs = [];
 };
 
 var Notifier = {
