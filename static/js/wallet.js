@@ -1005,7 +1005,7 @@ Wallet.decryptWallet = function (wallet, password) {
 /**
  *
  *
- * @param $address,$host,$callback,$callback_dev
+ * @param $http,$address,$host,$callback,$callback_dev
  * @return {*}
  * @constructor
  */
@@ -1019,7 +1019,7 @@ Wallet.GetClaims = function ($http,$address,$host,$callback,$callback_dev) {
 /**
  * Get information about user accounts, transactions, etc.
  * 获取用户账户、交易等信息
- * @param $address,$host,$callback,$callback_dev
+ * @param $http,$address,$host,$callback,$callback_dev
  * @return {*}
  * @constructor
  */
@@ -1033,7 +1033,7 @@ Wallet.GetUnspent = function ($http,$address,$host,$callback,$callback_dev) {
 /**
  * Refresh the height of node
  * 刷新节点高度
- * @param $host,$callback,$callback_dev
+ * @param $http,$host,$callback,$callback_dev
  * @return {*}
  * @constructor
  */
@@ -1047,7 +1047,7 @@ Wallet.GetNodeHeight = function ($http,$host,$callback,$callback_dev) {
 /**
  * Initiate a transaction
  * 发起交易
- * @param $host,$callback,$callback_dev
+ * @param $http,$txData,$host,$callback,$callback_dev
  * @return {*}
  * @constructor
  */

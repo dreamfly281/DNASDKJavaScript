@@ -215,10 +215,10 @@ Wallet.AddressToProgramHash = function ( $toAddress ) {
 /**
  * Get information about user accounts, transactions.
  * 获取用户账户、交易等信息
- * @param $address,$host,$callback,$callback_dev
+ * @param $http,$address,$host,$callback,$callback_dev
  * @constructor
  */
-Wallet.GetUnspent = function ($address,$host,$callback,$callback_dev) {};
+Wallet.GetUnspent = function($http,$address,$host,$callback,$callback_dev) {}；
 ```
 
 ##### Refresh the height of node-获取连接节点的区块高度
@@ -226,10 +226,10 @@ Wallet.GetUnspent = function ($address,$host,$callback,$callback_dev) {};
 /**
  * Refresh the height of node
  * 获取节点高度
- * @param $host,$callback,$callback_dev
+ * @param $http,$host,$callback,$callback_dev
  * @constructor
  */
-Wallet.GetNodeHeight = function ($host,$callback,$callback_dev) {};
+Wallet.GetNodeHeight = function($http,$host,$callback,$callback_dev) {};
 ```
 
 ##### Initiate a transaction-发起交易
@@ -237,8 +237,8 @@ Wallet.GetNodeHeight = function ($host,$callback,$callback_dev) {};
 /**
  * Initiate a transaction
  * 发起交易
- * @param $host,$callback,$callback_dev
+ * @param $http,$txData,$host,$callback,$callback_dev
  * @constructor
  */
-Wallet.GetNodeHeight = function ($txData,$host,$callback,$callback_dev) {};
+Wallet.SendTransactionData = function ($http,$txData,$host,$callback,$callback_dev) {};
 ```
