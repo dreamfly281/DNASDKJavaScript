@@ -761,9 +761,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
         Wallet.GetUnspent($http,$address, host, (function (res) {
             if (res.status == 200) {
+                results = res.data.Result;
                 if (results !== null) {
-                    results = res.data.Result;
-
                     $scope.coins = [];
                     var tmpIndexArr = [];
                     var newCoins = [];
