@@ -364,6 +364,27 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
  * Make issue transaction and get transaction unsigned data.
  * 发起一个发行资产交易和获取交易数据（十六进制）。
  *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 01
+ * 1              version  ： 00
+ * 1              交易属性个数：01
+ * 1              交易属性中的用法
+ * 8              交易属性中的数据长度
+ * 数据实际长度     交易属性中的数据
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数
+ * 32             资产ID
+ * 8              资产数量
+ * 20             资产ProgramHash
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
+ *
  * @param $issueAssetID
  * @param $issueAmount
  * @param $publicKeyEncoded
@@ -376,10 +397,10 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
 
     ////////////////////////////////////////////////////////////////////////
     // data
-    var data = "01";
+    var type = "01";
 
     // version
-    data = data + "00";
+    var version = "00";
 
     /**
      * 自定义属性,attribute
@@ -389,25 +410,23 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
     var transactionAttrUsage = "00";
     var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
     var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
-    data = data + transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData;
 
     // Inputs
-    data = data + "00";
+    var transactionInputNum = "00";
 
     // Outputs len
-    data = data + "01";
-
+    var transactionOutputNum = "01";
     // Outputs[0] AssetID
-    data = data + ab2hexstring(reverseArray(hexstring2ab($issueAssetID)));
-
+    var transactionOutputAssetID = ab2hexstring(reverseArray(hexstring2ab($issueAssetID)));
     // Outputs[0] Amount
     num1 = $issueAmount * 100000000;
-    num1str = numStoreInMemory(num1.toString(16), 16);
-    data = data + num1str;
-
+    var transactionOutputAmount = numStoreInMemory(num1.toString(16), 16);
     // Outputs[0] ProgramHash
-    data = data + myProgramHash.toString();
-    return data;
+    var transactionOutputProgramHash = myProgramHash.toString();
+
+    return type + version +
+        transactionAttrNum + transactionAttrUsage + transactionAttrData + transactionAttrDataLen +
+        transactionInputNum + transactionOutputNum + transactionOutputAssetID + transactionOutputAmount + transactionOutputProgramHash;
 };
 
 /**
