@@ -298,6 +298,33 @@ Wallet.GetInputData = function ($coin, $amount) {
  * Make state update transaction and get transaction unsigned data.
  * 发起一个状态更新交易。
  *
+ *  * 数据格式：
+ * 字节            内容
+ * 1              type ： 90
+ * 1              version  ： 00
+ * 1              名字长度
+ * 名字实际长度     名字
+ * 8              资产数量（小端序）：乘以1亿
+ * 1              资产精度 ： 08
+ * 33             压缩的公钥
+ * 20             资产控制人
+ * 1              交易属性个数：Web端存0
+ * 1              交易属性中的用法：个数为0时，则无
+ * 8              交易属性中的数据长度：个数为0时，则无
+ * 数据实际长度     交易属性中的数据：个数为0时，则无
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数：Web端存0
+ * 32             资产ID：个数为0时，则无
+ * 8              资产数量：个数为0时，则无
+ * 20             资产ProgramHash：个数为0时，则无
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
+ *
  * @param $namespace
  * @param $key
  * @param $value
@@ -381,7 +408,6 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
 
     // Outputs[0] ProgramHash
     data = data + myProgramHash.toString();
-
     return data;
 };
 
@@ -389,6 +415,37 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
  * Make register transaction and get transaction unsigned data.
  * 发起一个DNA注册资产交易和获取交易数据（十六进制）。
  * 不兼容小蚁股（NEO）
+ *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 40
+ * 1              version  ： 00
+ * 1              资产名字长度
+ * 名字实际长度   资产名字
+ * 1              资产描述长度
+ * 描述实际长度   资产描述
+ * 1              资产精度 ： 08
+ * 1              资产类型  ： 01
+ * 1              资产模型类型 ：00
+ * 8              资产数量（小端序）：乘以1亿
+ * 33             压缩的公钥
+ * 20             资产控制人
+ * 1              交易属性个数：01
+ * 1              交易属性中的用法
+ * 8              交易属性中的数据长度
+ * 数据实际长度     交易属性中的数据
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数：Web端存0
+ * 32             资产ID：个数为0时，则无
+ * 8              资产数量：个数为0时，则无
+ * 20             资产ProgramHash：个数为0时，则无
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
  *
  * @param $assetName
  * @param $assetAmount
@@ -427,15 +484,19 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
      */
     var transactionAttrNum = "01";
     var transactionAttrUsage = "00";
-    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
     var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
+    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
+
+    var transactionInputNum = "00";
+    //TODO:后续还需要加一些参数
+    var transactionOutputNum = "00";
+    //TODO:后续还需要加一些参数
 
     return type + version +
         assetNameLen + assetName + assetDescLen + assetDesc +
         assetPrecision + assetType + assetRecordType + assetAmount +
         publicKey + programHash +
-        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +
-        "0000";
+        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +transactionInputNum + transactionOutputNum;
 };
 
 /**

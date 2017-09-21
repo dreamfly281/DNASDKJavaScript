@@ -409,7 +409,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         if ($scope.WIFKey.length != 52) {
             $scope.notifier.warning($translate.instant('NOTIFIER_WIF_LENGTH_CHECK_FAILED'));
             return;
-        }
+    }
 
         $scope.showCreateWallet = false;
         $scope.showCreateWalletDownload = true;
