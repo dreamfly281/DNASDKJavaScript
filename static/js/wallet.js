@@ -304,14 +304,11 @@ Wallet.GetInputData = function ($coin, $amount) {
  * 1              version  ： 00
  * 1              名字长度
  * 名字实际长度     名字
- * 8              资产数量（小端序）：乘以1亿
- * 1              资产精度 ： 08
+ * 1              密钥长度
+ * 密钥长度       密钥
+ * 1              值长度
+ * 值得长度       值
  * 33             压缩的公钥
- * 20             资产控制人
- * 1              交易属性个数：Web端存0
- * 1              交易属性中的用法：个数为0时，则无
- * 8              交易属性中的数据长度：个数为0时，则无
- * 数据实际长度     交易属性中的数据：个数为0时，则无
  * 1              交易输入个数：Web端存0
  * 32             引用交易hash：个数为0时，则无
  * 2              引用输出索引：个数为0时，则无
@@ -343,22 +340,24 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
      */
     var type = "90";
     var version = "00";
-    var namespaceLen = numStoreInMemory($namespace.length.toString(16), 0);
-    var namespace = ab2hexstring(str2ab($namespace));
+    var assetNameLen = numStoreInMemory($namespace.length.toString(16), 0);
+    var assetName = ab2hexstring(str2ab($namespace));
     var keyLen = numStoreInMemory($key.length.toString(16), 0);
     var key = ab2hexstring(str2ab($key));
     var valueLen = numStoreInMemory($value.length.toString(16), 0);
     var value = ab2hexstring(str2ab($value));
+
     var publicKeyXStr = curvePtX.toString('hex');
     var publicKeyYStr = curvePtY.toString('hex');
     var publicKey = "20" + publicKeyXStr + "20" + publicKeyYStr;
-    var attribute = "00";
-    var inputs = "00";
-    var outputs = "00";
 
-    return type + version + namespaceLen + namespace +
+    var transactionAttrNum = "00";
+    var transactionInputNum = "00";
+    var transactionOutputNum = "00";
+
+    return type + version + assetNameLen + assetName +
         keyLen + key + valueLen + value +
-        publicKey + attribute + inputs + outputs;
+        publicKey + transactionAttrNum + transactionInputNum + transactionOutputNum;
 };
 
 /**
