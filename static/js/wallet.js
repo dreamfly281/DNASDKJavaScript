@@ -375,7 +375,7 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
  * 1              交易输入个数：Web端存0
  * 32             引用交易hash：个数为0时，则无
  * 2              引用输出索引：个数为0时，则无
- * 1              交易输出个数
+ * 1              交易输出个数: 01
  * 32             资产ID
  * 8              资产数量
  * 20             资产ProgramHash
@@ -699,6 +699,27 @@ Wallet.VerifyPublicKeyEncoded = function ($publicKeyEncoded) {
  * Make transfer transaction and get transaction unsigned data.
  * 发起一个转账交易和获取交易数据（十六进制）。
  *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 80
+ * 1              version  ： 00
+ * 1              交易属性个数：01
+ * 1              交易属性中的用法
+ * 8              交易属性中的数据长度
+ * 数据实际长度     交易属性中的数据
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数 : 01或02
+ * 32             资产ID
+ * 8              资产数量
+ * 20             资产ProgramHash
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
+ *
  * @param $coin
  * @param $publicKeyEncoded
  * @param $toAddress
@@ -746,20 +767,23 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 
     // OUTPUT
     if (inputAmount === Number($Amount)) {
-        var outputNum = "01"; //无找零
-        var outputAsset = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
-        var outputValue = numStoreInMemory(($Amount * 100000000).toString(16), 16);
+        var transactionOutputNum = "01"; //无找零
+        var transactionOutputAssetID = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
+        var transactionOutputValue = numStoreInMemory(($Amount * 100000000).toString(16), 16);
+        var transactionOutputProgramHash = ab2hexstring(ProgramHash);
 
-        data += outputNum + outputAsset + outputValue + ab2hexstring(ProgramHash);
+        data += transactionOutputNum + transactionOutputAssetID + transactionOutputValue + transactionOutputProgramHash;
     } else {
-        var outputNum = "02"; //有找零
-        var outputAsset_0 = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
-        var outputValue_0 = numStoreInMemory(($Amount * 100000000).toString(16), 16);
-        data += outputNum + outputAsset_0 + outputValue_0 + ab2hexstring(ProgramHash);
+        var transactionOutputNum = "02"; //有找零
+        var transactionOutputAssetID_0 = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
+        var transactionOutputValue_0 = numStoreInMemory(($Amount * 100000000).toString(16), 16);
+        var transactionOutputProgramHash_0 = ab2hexstring(ProgramHash);
+        data += transactionOutputNum + transactionOutputAssetID_0 + transactionOutputValue_0 + transactionOutputProgramHash_0;
 
-        var outputAsset_1 = outputAsset_0;
-        var outputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
-        data += outputAsset_1 + outputValue_1 + myProgramHash.toString();
+        var transactionOutputAssetID_1 = outputAssetID_0;
+        var transactionOutputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
+        var transactionOutputProgramHash_1 = myProgramHash.toString()
+        data += transactionOutputAssetID_1 + transactionOutputValue_1 + transactionOutputProgramHash_1;
     }
 
     return data;
