@@ -802,6 +802,31 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 
 /**
  *
+ *  *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 02
+ * 1              version  ： 00
+ * 1              声明长度
+ * 声明长度       声明
+ * 1              交易属性个数：00
+ * 1              交易属性中的用法：个数为0时，则无
+ * 8              交易属性中的数据长度：个数为0时，则无
+ * 数据实际长度     交易属性中的数据：个数为0时，则无
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数 : 01
+ * 32             资产ID
+ * 8              资产数量
+ * 20             资产ProgramHash
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
+ *
+ *
  * @return {string}
  */
 Wallet.ClaimTransaction = function ($claims, $publicKeyEncoded, $toAddress, $Amount) {
