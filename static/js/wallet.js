@@ -596,6 +596,16 @@ Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $public
 
 /**
  *
+ *  * 数据格式：
+ * 字节            内容
+ * 文本数据长度    文本数据
+ * 1              标识 ： 01
+ * 1              结构长度  ： 41
+ * 1              数据长度  ：40
+ * 40             数据内容
+ * 1              协议数据长度
+ * 脚本数据长度   签名脚本数据
+ *
  * @param $txData
  * @param $sign
  * @param $publicKeyEncoded
@@ -603,22 +613,22 @@ Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $public
  * @constructor
  */
 Wallet.AddContract = function ($txData, $sign, $publicKeyEncoded) {
-    var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
+
 
     // sign num
-    var data = $txData + "01";
+    var Num = "01";
     // sign struct len
-    data = data + "41";
+    var structLen = "41";
     // sign data len
-    data = data + "40";
+    var dataLen = "40";
     // sign data
-    data = data + $sign;
+    var data = $sign;
     // Contract data len
-    data = data + "23";
+    var contractDataLen = "23";
     // script data
-    data = data + signatureScript;
+    var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
 
-    return data;
+    return $txData + Num + structLen + dataLen + data + contractDataLen + signatureScript;
 };
 
 /**
@@ -790,6 +800,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 };
 
 /**
+ *
  * @return {string}
  */
 Wallet.ClaimTransaction = function ($claims, $publicKeyEncoded, $toAddress, $Amount) {
