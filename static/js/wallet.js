@@ -425,7 +425,7 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
     var transactionOutputProgramHash = myProgramHash.toString();
 
     return type + version +
-        transactionAttrNum + transactionAttrUsage + transactionAttrData + transactionAttrDataLen +
+        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +
         transactionInputNum + transactionOutputNum + transactionOutputAssetID + transactionOutputAmount + transactionOutputProgramHash;
 };
 
@@ -502,8 +502,9 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
      */
     var transactionAttrNum = "01";
     var transactionAttrUsage = "00";
-    var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
     var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
+    var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
+
 
     var transactionInputNum = "00";
     //TODO:后续还需要加一些参数
@@ -790,7 +791,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
         var transactionOutputProgramHash_0 = ab2hexstring(ProgramHash);
         data += transactionOutputNum + transactionOutputAssetID_0 + transactionOutputValue_0 + transactionOutputProgramHash_0;
 
-        var transactionOutputAssetID_1 = outputAssetID_0;
+        var transactionOutputAssetID_1 = transactionOutputAssetID_0;
         var transactionOutputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
         var transactionOutputProgramHash_1 = myProgramHash.toString()
         data += transactionOutputAssetID_1 + transactionOutputValue_1 + transactionOutputProgramHash_1;
@@ -1110,8 +1111,6 @@ Wallet.decryptWallet = function (wallet, password) {
             address: address
         };
     }
-
-    console.log("脚本哈希：" + ProgramHash.toString());
 
     return accounts
 };
