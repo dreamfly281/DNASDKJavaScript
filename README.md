@@ -210,36 +210,35 @@ Wallet.AddressToProgramHash = function ( $toAddress ) {
 };
 ```
 
-- #### 调用API接口示例  
-
-##### 获取用户账户、交易等信息
+##### Get information about user accounts, transactions-获取用户账户、交易等信息
 ```angular2html
 /**
-* @param $address
-*/
-$http({
-    method: 'GET',
-    url: restapi_host + ':' + restapi_port + '/api/v1/asset/utxos/' + $address
-}).then(function (res) {});
+ * Get information about user accounts, transactions.
+ * 获取用户账户、交易等信息
+ * @param $http,$address,$host,$callback,$callback_dev
+ * @constructor
+ */
+Wallet.GetUnspent = function($http,$address,$host,$callback,$callback_dev) {}；
 ```
 
-##### 获取连接节点的区块高度
-```angular2html
-$http({
-    method: 'GET',
-    url: restapi_host + ':' + restapi_port + '/api/v1/block/height?auth_type=getblockheight'
-}).then(function (res) {});
-```
-
-##### 发起交易
+##### Refresh the height of node-获取连接节点的区块高度
 ```angular2html
 /**
-* @param $txData
-*/
-$http({
-    method: 'POST',
-    url: restapi_host + ':' + restapi_port + '/api/v1/transaction',
-    data: '{"Action":"sendrawtransaction", "Version":"1.0.0", "Type":"","Data":"' + $txData + '"}',
-    headers: {"Content-Type": "application/json"}
-}).then(function (res) {});
+ * Refresh the height of node
+ * 获取节点高度
+ * @param $http,$host,$callback,$callback_dev
+ * @constructor
+ */
+Wallet.GetNodeHeight = function($http,$host,$callback,$callback_dev) {};
+```
+
+##### Initiate a transaction-发起交易
+```angular2html
+/**
+ * Initiate a transaction
+ * 发起交易
+ * @param $http,$txData,$host,$callback,$callback_dev
+ * @constructor
+ */
+Wallet.SendTransactionData = function ($http,$txData,$host,$callback,$callback_dev) {};
 ```
