@@ -1,60 +1,35 @@
 {
-  "version": "v1.0.2",
-  "date": "2017-09-18 18:14",
+  "project_name": "dna",
+  "version": "v1.0.3",
+  "date": "2017-09-22 11:26",
+  "domain": "wallet.iptchain.net",
   "bbs_url": "https://forum.dnaproject.org/",
   "host_info": [
     [
       {
         "hostName": "DNA-1",
         "hostProvider": "DNA",
-        "restapi_host": "http://139.219.108.92",
+        "restapi_host": "http://139.219.65.178",
         "restapi_port": "10334",
-        "webapi_host": "http://139.219.108.92",
+        "webapi_host": "http://139.219.65.178",
         "webapi_port": "10336",
         "node_type": "DNA"
       },
       {
         "hostName": "DNA-2",
         "hostProvider": "DNA",
-        "restapi_host": "http://40.125.205.244",
+        "restapi_host": "http://139.219.99.201",
         "restapi_port": "10334",
-        "webapi_host": "http://40.125.205.244",
+        "webapi_host": "http://139.219.99.201",
         "webapi_port": "10336",
         "node_type": "DNA"
       },
       {
         "hostName": "DNA-3",
         "hostProvider": "DNA",
-        "restapi_host": "http://139.219.105.20",
+        "restapi_host": "http://139.219.96.154",
         "restapi_port": "10334",
-        "webapi_host": "http://139.219.105.20",
-        "webapi_port": "10336",
-        "node_type": "DNA"
-      },
-      {
-        "hostName": "DNA-4",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.102.76",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.102.76",
-        "webapi_port": "10336",
-        "node_type": "DNA"
-      },
-      {
-        "hostName": "DNA-5",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.99.237",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.99.237",
-        "webapi_port": "10336",
-        "node_type": "DNA"
-      },
-      {
-        "hostName": "DNA-6",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.99.101",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.99.101",
+        "webapi_host": "http://139.219.96.154",
         "webapi_port": "10336",
         "node_type": "DNA"
       }
@@ -63,54 +38,27 @@
       {
         "hostName": "DNA-1",
         "hostProvider": "DNA",
-        "restapi_host": "http://139.219.108.92",
+        "restapi_host": "http://139.219.65.178",
         "restapi_port": "10334",
-        "webapi_host": "http://139.219.108.92",
+        "webapi_host": "http://139.219.65.178",
         "webapi_port": "10336",
         "node_type": "DNA"
       },
       {
         "hostName": "DNA-2",
         "hostProvider": "DNA",
-        "restapi_host": "http://40.125.205.244",
+        "restapi_host": "http://139.219.99.201",
         "restapi_port": "10334",
-        "webapi_host": "http://40.125.205.244",
+        "webapi_host": "http://139.219.99.201",
         "webapi_port": "10336",
         "node_type": "DNA"
       },
       {
         "hostName": "DNA-3",
         "hostProvider": "DNA",
-        "restapi_host": "http://139.219.105.20",
+        "restapi_host": "http://139.219.96.154",
         "restapi_port": "10334",
-        "webapi_host": "http://139.219.105.20",
-        "webapi_port": "10336",
-        "node_type": "DNA"
-      },
-      {
-        "hostName": "DNA-4",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.102.76",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.102.76",
-        "webapi_port": "10336",
-        "node_type": "DNA"
-      },
-      {
-        "hostName": "DNA-5",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.99.237",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.99.237",
-        "webapi_port": "10336",
-        "node_type": "DNA"
-      },
-      {
-        "hostName": "DNA-6",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.99.101",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.99.101",
+        "webapi_host": "http://139.219.96.154",
         "webapi_port": "10336",
         "node_type": "DNA"
       }

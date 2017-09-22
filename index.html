@@ -96,6 +96,14 @@
                             <a target="_blank" href="{{bbsUrl}}"><i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'FEEDBACK' | translate }}</a>
                         </li>
                     </ul>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'DOWNLOADS' | translate }} <span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li ng-repeat="dl in downloads"><a href="#" ng-click="changeDownloadSelectIndex(dl)">{{dl.name}}</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>

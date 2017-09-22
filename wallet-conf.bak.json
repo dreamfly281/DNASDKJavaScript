@@ -1,0 +1,81 @@
+{
+  "project_name": "ipt-chain",
+  "version": "v1.0.3",
+  "date": "2017-09-22 11:26",
+  "domain": "wallet.iptchain.net",
+  "bbs_url": "https://forum.iptchain.net/",
+  "host_info": [
+    [
+      {
+        "hostName": "IPTChain-1",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://139.219.109.74",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.109.74",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "IPTChain-2",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://139.219.103.181",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.103.181",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "IPTChain-3",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://40.125.207.206",
+        "restapi_port": "10334",
+        "webapi_host": "http://40.125.207.206",
+        "webapi_port": "10336",
+        "node_type": "D"
+      }
+    ],
+    [
+      {
+        "hostName": "IPTChain-1",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://139.219.109.74",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.109.74",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "IPTChain-2",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://139.219.103.181",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.103.181",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
+      {
+        "hostName": "IPTChain-3",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://40.125.207.206",
+        "restapi_port": "10334",
+        "webapi_host": "http://40.125.207.206",
+        "webapi_port": "10336",
+        "node_type": "D"
+      }
+    ]
+  ],
+  "tx_types": [
+    [
+      {
+        "name": "资产转账",
+        "id": "128"
+      }
+    ],
+    [
+      {
+        "name": "Transfer Asset",
+        "id": "128"
+      }
+    ]
+  ]
+}
