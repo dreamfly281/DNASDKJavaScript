@@ -1,6 +1,8 @@
 {
-  "version": "v1.0.2",
-  "date": "2017-09-18 18:14",
+  "project_name": "dna",
+  "version": "v1.0.3",
+  "date": "2017-09-22 11:26",
+  "domain": "wallet.iptchain.net",
   "bbs_url": "https://forum.dnaproject.org/",
   "host_info": [
     [
