@@ -5,7 +5,6 @@ app.config( ['$compileProvider', function( $compileProvider ) {
 }]);
 
 app.config(['$translateProvider',function($translateProvider) {
-    //var lang = window.localStorage.lang||'zh-hans';
     $translateProvider.useStaticFilesLoader({
         prefix: 'static/i18n/',
         suffix: '.json'
@@ -451,6 +450,13 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         {name: "English", lang: "en"}
     ];
 
+    $scope.downloadSelectIndex = 0;
+    $scope.downloads = [
+        {name: "Mac"},
+        {name: "Windows"},
+        {name: "Linux"}
+    ];
+
     $scope.txType = "128"; //默认下拉选项
     $scope.txTypes = [];
 
@@ -516,7 +522,9 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
             $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
 
+            $scope.projectName = data.data.project_name;
             $scope.version = data.data.version;
+            $scope.domain = data.data.domain;
             $scope.bbsUrl = data.data.bbs_url;
 
             $scope.connectNode();
@@ -593,6 +601,19 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
             $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
         });
+    };
+
+    /**
+     * Download desktop wallet file.
+     * Download URL example: http://[domain]/downloads/[folderName]/wallet-v1.0.0-[folderName].zip
+     *
+     * @param $downloadObj
+     */
+    $scope.changeDownloadSelectIndex = function ($downloadObj) {
+        var folderName = $downloadObj.name.toLowerCase();
+        window.location.href = "http://" + $scope.domain +
+            "/downloads/" + folderName + "/" +
+            "wallet-" + $scope.version + "-" + folderName + ".zip";
     };
 
     $scope.changehostSelectIndex = function ($index) {

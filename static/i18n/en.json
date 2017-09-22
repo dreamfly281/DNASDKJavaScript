@@ -122,5 +122,6 @@
   "SIGNATURE": "Signature",
   "DOWNLOAD": "Download",
   "HELLO": "hello",
-  "REFRESH" : "Click to refresh"
+  "REFRESH" : "Click to refresh",
+  "DOWNLOADS" : "Desktop"
 }
