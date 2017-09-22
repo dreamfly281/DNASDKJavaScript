@@ -409,7 +409,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         if ($scope.WIFKey.length != 52) {
             $scope.notifier.warning($translate.instant('NOTIFIER_WIF_LENGTH_CHECK_FAILED'));
             return;
-        }
+    }
 
         $scope.showCreateWallet = false;
         $scope.showCreateWalletDownload = true;
@@ -741,6 +741,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }
     };
 
+    $scope.catchProblem = function($err){
+        console.log(err);
+    };
+
     $scope.getClaims = function ($address) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
         $scope.claims = {};
@@ -751,7 +755,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 $scope.claims = res.data;
             }
         }),(function (err) {
-            console.log(err)
+            $scope.catchProblem(err);
         }));
 
     };
@@ -809,7 +813,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 }));
             }
         }), (function (err) {
-            console.log(err)
+            $scope.catchProblem(err);
         }));
 
 
@@ -856,7 +860,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 $scope.newAssetId = ab2hexstring(txhash);
             }
         }),(function (err) {
-            console.log(err)
+            $scope.catchProblem(err);
         }));
 
     };

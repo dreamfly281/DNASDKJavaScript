@@ -298,6 +298,30 @@ Wallet.GetInputData = function ($coin, $amount) {
  * Make state update transaction and get transaction unsigned data.
  * 发起一个状态更新交易。
  *
+ *  * 数据格式：
+ * 字节            内容
+ * 1              type ： 90
+ * 1              version  ： 00
+ * 1              名字长度
+ * 名字实际长度     名字
+ * 1              密钥长度
+ * 密钥长度       密钥
+ * 1              值长度
+ * 值得长度       值
+ * 33             压缩的公钥
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数：Web端存0
+ * 32             资产ID：个数为0时，则无
+ * 8              资产数量：个数为0时，则无
+ * 20             资产ProgramHash：个数为0时，则无
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
+ *
  * @param $namespace
  * @param $key
  * @param $value
@@ -316,27 +340,50 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
      */
     var type = "90";
     var version = "00";
-    var namespaceLen = numStoreInMemory($namespace.length.toString(16), 0);
-    var namespace = ab2hexstring(str2ab($namespace));
+    var assetNameLen = numStoreInMemory($namespace.length.toString(16), 0);
+    var assetName = ab2hexstring(str2ab($namespace));
     var keyLen = numStoreInMemory($key.length.toString(16), 0);
     var key = ab2hexstring(str2ab($key));
     var valueLen = numStoreInMemory($value.length.toString(16), 0);
     var value = ab2hexstring(str2ab($value));
+
     var publicKeyXStr = curvePtX.toString('hex');
     var publicKeyYStr = curvePtY.toString('hex');
     var publicKey = "20" + publicKeyXStr + "20" + publicKeyYStr;
-    var attribute = "00";
-    var inputs = "00";
-    var outputs = "00";
 
-    return type + version + namespaceLen + namespace +
+    var transactionAttrNum = "00";
+    var transactionInputNum = "00";
+    var transactionOutputNum = "00";
+
+    return type + version + assetNameLen + assetName +
         keyLen + key + valueLen + value +
-        publicKey + attribute + inputs + outputs;
+        publicKey + transactionAttrNum + transactionInputNum + transactionOutputNum;
 };
 
 /**
  * Make issue transaction and get transaction unsigned data.
  * 发起一个发行资产交易和获取交易数据（十六进制）。
+ *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 01
+ * 1              version  ： 00
+ * 1              交易属性个数：01
+ * 1              交易属性中的用法
+ * 8              交易属性中的数据长度
+ * 数据实际长度     交易属性中的数据
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数: 01
+ * 32             资产ID
+ * 8              资产数量
+ * 20             资产ProgramHash
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
  *
  * @param $issueAssetID
  * @param $issueAmount
@@ -350,10 +397,10 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
 
     ////////////////////////////////////////////////////////////////////////
     // data
-    var data = "01";
+    var type = "01";
 
     // version
-    data = data + "00";
+    var version = "00";
 
     /**
      * 自定义属性,attribute
@@ -363,32 +410,60 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
     var transactionAttrUsage = "00";
     var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
     var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
-    data = data + transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData;
 
     // Inputs
-    data = data + "00";
+    var transactionInputNum = "00";
 
     // Outputs len
-    data = data + "01";
-
+    var transactionOutputNum = "01";
     // Outputs[0] AssetID
-    data = data + ab2hexstring(reverseArray(hexstring2ab($issueAssetID)));
-
+    var transactionOutputAssetID = ab2hexstring(reverseArray(hexstring2ab($issueAssetID)));
     // Outputs[0] Amount
     num1 = $issueAmount * 100000000;
-    num1str = numStoreInMemory(num1.toString(16), 16);
-    data = data + num1str;
-
+    var transactionOutputAmount = numStoreInMemory(num1.toString(16), 16);
     // Outputs[0] ProgramHash
-    data = data + myProgramHash.toString();
+    var transactionOutputProgramHash = myProgramHash.toString();
 
-    return data;
+    return type + version +
+        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +
+        transactionInputNum + transactionOutputNum + transactionOutputAssetID + transactionOutputAmount + transactionOutputProgramHash;
 };
 
 /**
  * Make register transaction and get transaction unsigned data.
  * 发起一个DNA注册资产交易和获取交易数据（十六进制）。
  * 不兼容小蚁股（NEO）
+ *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 40
+ * 1              version  ： 00
+ * 1              资产名字长度
+ * 名字实际长度   资产名字
+ * 1              资产描述长度
+ * 描述实际长度   资产描述
+ * 1              资产精度 ： 08
+ * 1              资产类型  ： 01
+ * 1              资产模型类型 ：00
+ * 8              资产数量（小端序）：乘以1亿
+ * 33             压缩的公钥
+ * 20             资产控制人
+ * 1              交易属性个数：01
+ * 1              交易属性中的用法
+ * 8              交易属性中的数据长度
+ * 数据实际长度     交易属性中的数据
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数：Web端存0
+ * 32             资产ID：个数为0时，则无
+ * 8              资产数量：个数为0时，则无
+ * 20             资产ProgramHash：个数为0时，则无
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
  *
  * @param $assetName
  * @param $assetAmount
@@ -430,12 +505,17 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
     var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
     var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
 
+
+    var transactionInputNum = "00";
+    //TODO:后续还需要加一些参数
+    var transactionOutputNum = "00";
+    //TODO:后续还需要加一些参数
+
     return type + version +
         assetNameLen + assetName + assetDescLen + assetDesc +
         assetPrecision + assetType + assetRecordType + assetAmount +
         publicKey + programHash +
-        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +
-        "0000";
+        transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +transactionInputNum + transactionOutputNum;
 };
 
 /**
@@ -517,6 +597,16 @@ Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $public
 
 /**
  *
+ *  * 数据格式：
+ * 字节            内容
+ * 文本数据长度    文本数据
+ * 1              标识 ： 01
+ * 1              结构长度  ： 41
+ * 1              数据长度  ：40
+ * 40             数据内容
+ * 1              协议数据长度
+ * 脚本数据长度   签名脚本数据
+ *
  * @param $txData
  * @param $sign
  * @param $publicKeyEncoded
@@ -524,22 +614,22 @@ Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $public
  * @constructor
  */
 Wallet.AddContract = function ($txData, $sign, $publicKeyEncoded) {
-    var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
+
 
     // sign num
-    var data = $txData + "01";
+    var Num = "01";
     // sign struct len
-    data = data + "41";
+    var structLen = "41";
     // sign data len
-    data = data + "40";
+    var dataLen = "40";
     // sign data
-    data = data + $sign;
+    var data = $sign;
     // Contract data len
-    data = data + "23";
+    var contractDataLen = "23";
     // script data
-    data = data + signatureScript;
+    var signatureScript = Wallet.createSignatureScript($publicKeyEncoded);
 
-    return data;
+    return $txData + Num + structLen + dataLen + data + contractDataLen + signatureScript;
 };
 
 /**
@@ -620,6 +710,27 @@ Wallet.VerifyPublicKeyEncoded = function ($publicKeyEncoded) {
  * Make transfer transaction and get transaction unsigned data.
  * 发起一个转账交易和获取交易数据（十六进制）。
  *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 80
+ * 1              version  ： 00
+ * 1              交易属性个数：01
+ * 1              交易属性中的用法
+ * 8              交易属性中的数据长度
+ * 数据实际长度     交易属性中的数据
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数 : 01或02
+ * 32             资产ID
+ * 8              资产数量
+ * 20             资产ProgramHash
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
+ *
  * @param $coin
  * @param $publicKeyEncoded
  * @param $toAddress
@@ -667,26 +778,55 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 
     // OUTPUT
     if (inputAmount === Number($Amount)) {
-        var outputNum = "01"; //无找零
-        var outputAsset = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
-        var outputValue = numStoreInMemory(($Amount * 100000000).toString(16), 16);
+        var transactionOutputNum = "01"; //无找零
+        var transactionOutputAssetID = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
+        var transactionOutputValue = numStoreInMemory(($Amount * 100000000).toString(16), 16);
+        var transactionOutputProgramHash = ab2hexstring(ProgramHash);
 
-        data += outputNum + outputAsset + outputValue + ab2hexstring(ProgramHash);
+        data += transactionOutputNum + transactionOutputAssetID + transactionOutputValue + transactionOutputProgramHash;
     } else {
-        var outputNum = "02"; //有找零
-        var outputAsset_0 = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
-        var outputValue_0 = numStoreInMemory(($Amount * 100000000).toString(16), 16);
-        data += outputNum + outputAsset_0 + outputValue_0 + ab2hexstring(ProgramHash);
+        var transactionOutputNum = "02"; //有找零
+        var transactionOutputAssetID_0 = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
+        var transactionOutputValue_0 = numStoreInMemory(($Amount * 100000000).toString(16), 16);
+        var transactionOutputProgramHash_0 = ab2hexstring(ProgramHash);
+        data += transactionOutputNum + transactionOutputAssetID_0 + transactionOutputValue_0 + transactionOutputProgramHash_0;
 
-        var outputAsset_1 = outputAsset_0;
-        var outputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
-        data += outputAsset_1 + outputValue_1 + myProgramHash.toString();
+        var transactionOutputAssetID_1 = transactionOutputAssetID_0;
+        var transactionOutputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
+        var transactionOutputProgramHash_1 = myProgramHash.toString()
+        data += transactionOutputAssetID_1 + transactionOutputValue_1 + transactionOutputProgramHash_1;
     }
 
     return data;
 };
 
 /**
+ *
+ *  *
+ * 数据格式：
+ * 字节            内容
+ * 1              type ： 02
+ * 1              version  ： 00
+ * 1              声明长度
+ * 声明长度       声明
+ * 1              交易属性个数：00
+ * 1              交易属性中的用法：个数为0时，则无
+ * 8              交易属性中的数据长度：个数为0时，则无
+ * 数据实际长度     交易属性中的数据：个数为0时，则无
+ * 1              交易输入个数：Web端存0
+ * 32             引用交易hash：个数为0时，则无
+ * 2              引用输出索引：个数为0时，则无
+ * 1              交易输出个数 : 01
+ * 32             资产ID
+ * 8              资产数量
+ * 20             资产ProgramHash
+ * 1              Program长度：0x01
+ * 1              参数长度 parameter
+ * 参数实际长度 	  参数：签名
+ * 1			  代码长度 code
+ * 代码实际长度     代码：公钥
+ *
+ *
  * @return {string}
  */
 Wallet.ClaimTransaction = function ($claims, $publicKeyEncoded, $toAddress, $Amount) {
@@ -996,8 +1136,6 @@ Wallet.decryptWallet = function (wallet, password) {
             address: address
         };
     }
-
-    console.log("脚本哈希：" + ProgramHash.toString());
 
     return accounts
 };
