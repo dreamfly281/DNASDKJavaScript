@@ -29,6 +29,7 @@
 	<script src="https://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
+    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js"></script>
 
 	<script src="static/js/vendor/CryptoJS/sha256.js"></script>
 	<script src="static/js/vendor/CryptoJS/ripemd160.js"></script>
@@ -309,7 +310,7 @@
                                 <label class="control-label" translate="ADDRESS">Address: </label>
                                 <span id="walletAddress">{{accounts[accountSelectIndex].address}}</span><br />
                                 <div class="form-group">
-                                    <button class="btn copy btn-primary btn-xs" data-clipboard-action="copy" data-clipboard-target="#walletAddress" translate="MT_COPY_ADDRESS">Copy Address</button>
+                                    <button class="btn copy-btn btn-primary btn-xs" data-clipboard-action="copy" data-clipboard-target="#walletAddress" translate="MT_COPY_ADDRESS">Copy Address</button>
                                 </div>
                             </div>
                         </div>
@@ -485,18 +486,6 @@
             <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="!txModify">{{ 'BTN_YES_SURE' | translate }}</button>
         </div>
 
-    </script>
-
-    //复制地址
-    <script>
-        var clipboard = new Clipboard('.copy');
-        clipboard.on('success', function(e) {
-            console.log(e);
-        });
-
-        clipboard.on('error', function(e) {
-            console.log(e);
-        });
     </script>
 
     <!-- alert -->
