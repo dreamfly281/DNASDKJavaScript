@@ -52,6 +52,7 @@
 
         window.onload = setTabFromURL;
 	</script>
+    <script src="static/js/vendor/clipboard.js"></script>
 </head>
 
 <body ng-controller="WalletCtrl" ng-init="init()">
@@ -308,7 +309,7 @@
                                 <label class="control-label" translate="ADDRESS">Address: </label>
                                 <span id="walletAddress">{{accounts[accountSelectIndex].address}}</span><br />
                                 <div class="form-group">
-                                    <button class="btn copy btn-primary btn-block" data-clipboard-action="copy" data-clipboard-target="#walletAddress" >Cope Address</button>
+                                    <button class="btn copy btn-primary btn-block" data-clipboard-action="copy" data-clipboard-target="#walletAddress" translate="MT_COPY_ADDRESS">Copy Address</button>
                                 </div>
                             </div>
                         </div>
@@ -318,8 +319,7 @@
                         </div>
 
                         <div>
-                            <h3 translate="MT_ACCOUNT_BALANCE">Account Balance</h3>
-                            <br />
+                            <h3 translate="MT_ACCOUNT_BALANCE">Account Balance</h3><br />
                             <div class="form-group">
                                 <table class="table">
                                     <tbody>
@@ -485,6 +485,18 @@
             <button type="button" class="btn btn-primary" data-dismiss="modal" ng-click="ok()" ng-if="!txModify">{{ 'BTN_YES_SURE' | translate }}</button>
         </div>
 
+    </script>
+
+    //复制地址
+    <script>
+        var clipboard = new Clipboard('.copy');
+        clipboard.on('success', function(e) {
+            console.log(e);
+        });
+
+        clipboard.on('error', function(e) {
+            console.log(e);
+        });
     </script>
 
     <!-- alert -->
