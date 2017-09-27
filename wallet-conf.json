@@ -1,11 +1,20 @@
 {
   "project_name": "dna",
-  "version": "v1.0.4",
-  "date": "2017-09-26 16:54",
+  "version": "v1.0.5",
+  "date": "2017-09-26 18:35",
   "domain": "wallet.iptchain.net",
   "bbs_url": "https://forum.dnaproject.org/",
   "host_info": [
     [
+      {
+        "hostName": "IPTChain-1",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://139.219.109.74",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.109.74",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
       {
         "hostName": "DNA-1",
         "hostProvider": "DNA",
@@ -35,6 +44,15 @@
       }
     ],
     [
+      {
+        "hostName": "IPTChain-1",
+        "hostProvider": "IPTChain",
+        "restapi_host": "http://139.219.109.74",
+        "restapi_port": "10334",
+        "webapi_host": "http://139.219.109.74",
+        "webapi_port": "10336",
+        "node_type": "D"
+      },
       {
         "hostName": "DNA-1",
         "hostProvider": "DNA",
