@@ -91,6 +91,101 @@ function prefixInteger(num, length) {
     return (new Array(length).join('0') + num).slice(-length);
 }
 
+var accTools = function () {}
+
+/**
+ * 浮点数精准加法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {number} arg1加上arg2的精确结果
+ */
+accTools.add = function (arg1, arg2) {
+    var r1, r2, m;
+    try {
+        r1 = arg1.toString().split(".")[1].length
+    } catch (e) {
+        r1 = 0
+    }
+    try {
+        r2 = arg2.toString().split(".")[1].length
+    } catch (e) {
+        r2 = 0
+    }
+    m = Math.pow(10, Math.max(r1, r2))
+    return (arg1 * m + arg2 * m) / m
+}
+
+/**
+ * 浮点数精准减法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {string} arg1减去arg2的精确结果
+ */
+accTools.sub = function (arg1,arg2) {
+    var r1, r2, m, n;
+    try {
+        r1 = arg1.toString().split(".")[1].length
+    } catch (e) {
+        r1 = 0
+    }
+    try {
+        r2 = arg2.toString().split(".")[1].length
+    } catch (e) {
+        r2 = 0
+    }
+    m = Math.pow(10, Math.max(r1, r2));
+    //last modify by deeka
+    //动态控制精度长度
+    n = (r1 >= r2) ? r1 : r2;
+    return ((arg1 * m - arg2 * m) / m).toFixed(n);
+}
+
+/**
+ * 浮点数精准乘法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {number} arg1乘以arg2的精确结果
+ */
+accTools.mul = function (arg1,arg2) {
+    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+    try {
+        m += s1.split(".")[1].length
+    } catch (e) {
+    }
+    try {
+        m += s2.split(".")[1].length
+    } catch (e) {
+    }
+    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
+}
+
+/**
+ * 浮点数精准除法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {number} arg1除以arg2的精确结果
+ */
+accTools.div=function(arg1,arg2) {
+    var t1 = 0, t2 = 0, r1, r2;
+    try {
+        t1 = arg1.toString().split(".")[1].length
+    } catch (e) {
+    }
+    try {
+        t2 = arg2.toString().split(".")[1].length
+    } catch (e) {
+    }
+    with (Math) {
+        r1 = Number(arg1.toString().replace(".", ""))
+        r2 = Number(arg2.toString().replace(".", ""))
+        return (r1 / r2) * pow(10, t2 - t1);
+    }
+}
+
 var Wallet = function Wallet(passwordHash, iv, masterKey, publicKeyHash, privateKeyEncrypted) {
     this.passwordHash = passwordHash;
     this.iv = iv;
@@ -431,8 +526,8 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
 
 /**
  * Make register transaction and get transaction unsigned data.
- * 发起一个DNA注册资产交易和获取交易数据（十六进制）。
- * 不兼容小蚁股（NEO）
+ * 发起一个D注册资产交易和获取交易数据（十六进制）。
+ * 不兼容N
  *
  * 数据格式：
  * 字节            内容
@@ -471,7 +566,7 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
  *
  * @returns {string} : txUnsignedData
  */
-Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $publicKeyEncoded) {
+Wallet.makeRegisterTransaction_D = function ($assetName, $assetAmount, $publicKeyEncoded) {
     var ecParams = ecurve.getCurveByName('secp256r1');
     var curvePt = ecurve.Point.decodeFrom(ecParams, new Buffer($publicKeyEncoded, "hex"));
     var publicKeyXStr = (curvePt.affineX.toBuffer(32)).toString('hex');
@@ -520,8 +615,7 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
 
 /**
  * Make register transaction and get transaction unsigned data.
- * 发起一个NEO注册资产交易和获取交易数据（十六进制）。
- * 兼容小蚁股（NEO）
+ * 发起一个N注册资产交易和获取交易数据（十六进制）
  *
  * 数据格式：
  * 字节            内容
@@ -558,7 +652,7 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
  *
  * @returns {string} : txUnsignedData
  */
-Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $publicKeyEncoded, $programHash) {
+Wallet.makeRegisterTransaction_N = function ($assetName, $assetAmount, $publicKeyEncoded, $programHash) {
     var ecparams = ecurve.getCurveByName('secp256r1');
     var curvePt = ecurve.Point.decodeFrom(ecparams, new Buffer($publicKeyEncoded, "hex"));
     var curvePtX = curvePt.affineX.toBuffer(32);
@@ -718,13 +812,16 @@ Wallet.VerifyPublicKeyEncoded = function ($publicKeyEncoded) {
  * 1              交易属性中的用法
  * 8              交易属性中的数据长度
  * 数据实际长度     交易属性中的数据
- * 1              交易输入个数：Web端存0
- * 32             引用交易hash：个数为0时，则无
- * 2              引用输出索引：个数为0时，则无
- * 1              交易输出个数 : 01或02
- * 32             资产ID
- * 8              资产数量
- * 20             资产ProgramHash
+ * 1              引用交易的输入个数：个数为0时，则无
+ * 32             引用交易的hash：个数为0时，则无
+ * 2              引用交易输出的索引：个数为0时，则无
+ * 1              交易输出类型: 01为全部转账；02位有找零
+ * 32             转账资产ID
+ * 8              转账资产数量
+ * 20             转账资产ProgramHash
+ * 32             找零转账资产ID，仅在交易输出类型为02时有
+ * 8              找零转账资产数量，仅在交易输出类型为02时有
+ * 20             找零转账资产ProgramHash，仅在交易输出类型为02时有
  * 1              Program长度：0x01
  * 1              参数长度 parameter
  * 参数实际长度 	  参数：签名
@@ -760,6 +857,11 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     if (inputData === -1) return null;
     var inputAmount = inputData.amount;
 
+    // Adjust the accuracy. （调整精度之后的数据）
+    var accuracyVal = 100000000;
+    var newOutputAmount = accTools.mul($Amount, accuracyVal);
+    var newInputAmount = parseInt(accTools.sub(accTools.mul(inputAmount, accuracyVal), newOutputAmount));
+
     /**
      * data
      * @type {string}
@@ -769,32 +871,32 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     // 自定义属性,Attributes
     var transactionAttrNum = "01";
     var transactionAttrUsage = "00";
-    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(99999999 * Math.random())));
+    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(accTools.mul(99999999, Math.random()))));
     var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
+    var referenceTransactionData = ab2hexstring(inputData.data);
 
     var data = type + version +
         transactionAttrNum + transactionAttrUsage + transactionAttrDataLen + transactionAttrData +
-        ab2hexstring(inputData.data);
+        referenceTransactionData;
 
     // OUTPUT
-    if (inputAmount === Number($Amount)) {
-        var transactionOutputNum = "01"; //无找零
-        var transactionOutputAssetID = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
-        var transactionOutputValue = numStoreInMemory(($Amount * 100000000).toString(16), 16);
-        var transactionOutputProgramHash = ab2hexstring(ProgramHash);
+    var transactionOutputNum = "01"; //无找零
+    var transactionOutputAssetID = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
+    var transactionOutputValue = numStoreInMemory(newOutputAmount.toString(16), 16);
+    var transactionOutputProgramHash = ab2hexstring(ProgramHash);
 
+    if (inputAmount === Number($Amount)) {
         data += transactionOutputNum + transactionOutputAssetID + transactionOutputValue + transactionOutputProgramHash;
     } else {
-        var transactionOutputNum = "02"; //有找零
-        var transactionOutputAssetID_0 = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
-        var transactionOutputValue_0 = numStoreInMemory(($Amount * 100000000).toString(16), 16);
-        var transactionOutputProgramHash_0 = ab2hexstring(ProgramHash);
-        data += transactionOutputNum + transactionOutputAssetID_0 + transactionOutputValue_0 + transactionOutputProgramHash_0;
+        transactionOutputNum = "02"; //有找零
 
-        var transactionOutputAssetID_1 = transactionOutputAssetID_0;
-        var transactionOutputValue_1 = numStoreInMemory((inputAmount * 100000000 - ($Amount * 100000000)).toString(16), 16);
-        var transactionOutputProgramHash_1 = myProgramHash.toString()
-        data += transactionOutputAssetID_1 + transactionOutputValue_1 + transactionOutputProgramHash_1;
+        // Transfer to someone. 发给他人
+        data += transactionOutputNum + transactionOutputAssetID + transactionOutputValue + transactionOutputProgramHash;
+
+        // Change to yourself. 找零给自己
+        var transactionOutputValue_me = numStoreInMemory(newInputAmount.toString(16), 16);
+        var transactionOutputProgramHash_me = myProgramHash.toString();
+        data += transactionOutputAssetID + transactionOutputValue_me + transactionOutputProgramHash_me;
     }
 
     return data;
@@ -1137,14 +1239,16 @@ Wallet.decryptWallet = function (wallet, password) {
         };
     }
 
-    return accounts
+    return accounts;
 };
 
 /**
  *
- *
- * @param $http,$address,$host,$callback,$callback_dev
- * @return {*}
+ * @param $http
+ * @param $address
+ * @param $host
+ * @param $callback
+ * @param $callback_dev
  * @constructor
  */
 Wallet.GetClaims = function ($http,$address,$host,$callback,$callback_dev) {
@@ -1157,8 +1261,12 @@ Wallet.GetClaims = function ($http,$address,$host,$callback,$callback_dev) {
 /**
  * Get information about user accounts, transactions, etc.
  * 获取用户账户、交易等信息
- * @param $http,$address,$host,$callback,$callback_dev
- * @return {*}
+ *
+ * @param $http
+ * @param $address
+ * @param $host
+ * @param $callback
+ * @param $callback_dev
  * @constructor
  */
 Wallet.GetUnspent = function ($http,$address,$host,$callback,$callback_dev) {
@@ -1171,8 +1279,11 @@ Wallet.GetUnspent = function ($http,$address,$host,$callback,$callback_dev) {
 /**
  * Refresh the height of node
  * 刷新节点高度
- * @param $http,$host,$callback,$callback_dev
- * @return {*}
+ *
+ * @param $http
+ * @param $host
+ * @param $callback
+ * @param $callback_dev
  * @constructor
  */
 Wallet.GetNodeHeight = function ($http,$host,$callback,$callback_dev) {
@@ -1185,8 +1296,12 @@ Wallet.GetNodeHeight = function ($http,$host,$callback,$callback_dev) {
 /**
  * Initiate a transaction
  * 发起交易
- * @param $http,$txData,$host,$callback,$callback_dev
- * @return {*}
+ *
+ * @param $http
+ * @param $txData
+ * @param $host
+ * @param $callback
+ * @param $callback_dev
  * @constructor
  */
 Wallet.SendTransactionData = function ($http,$txData,$host,$callback,$callback_dev) {

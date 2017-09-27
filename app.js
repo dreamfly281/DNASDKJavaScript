@@ -81,10 +81,11 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
 
         var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
         $scope.Value = parseInt(valueStr, 16) / 100000000;
-        $scope.AssetID = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
+        $scope.AssetIDRev = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
+        $scope.AssetID = ab2hexstring(items.tx.outputs[0].assetid);
         $scope.AssetName = "NULL";
         for (i = 0; i < $scope.coins.length; i++) {
-            if ($scope.coins[i].AssetId == $scope.AssetID) {
+            if ($scope.coins[i].AssetId == $scope.AssetIDRev) {
                 $scope.AssetName = $scope.coins[i].AssetName;
             }
         }
@@ -270,6 +271,8 @@ app.controller("ToolsCtrl", function($scope,$sce) {
 });
 
 app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
+    new Clipboard('.copy-btn')
+
     $scope.privateKey = $scope.WIFKey = $scope.address = "";
     $scope.createPassword1 = $scope.createPassword2 = "";
     $scope.createType = "fromRandomPrivateKey";
@@ -446,8 +449,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.langSelectIndex = 0;
     $scope.langs = [
-        {name: "中文（简体）", lang: "zh-hans"},
-        {name: "English", lang: "en"}
+        {name: "English", lang: "zh-hans"},
+        {name: "中文（简体）", lang: "en"}
     ];
 
     $scope.downloadSelectIndex = 0;
@@ -520,6 +523,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          */
         $http.get('wallet-conf.json').then(function (data) {
             $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.hostSelectIndex = Math.floor(Math.random()*($scope.hostInfo.length))
+
             $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
 
             $scope.projectName = data.data.project_name;
@@ -592,10 +597,16 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         });
     };
 
-    $scope.changeLangSelectIndex = function ($index) {
-        $scope.langSelectIndex = $index;
-        $translate.use($scope.langs[$index].lang);
-        window.localStorage.lang = $scope.langs[$index].lang;
+    $scope.changeLangSelectIndex = function () {
+        // $scope.langSelectIndex = $index;
+        if ($scope.langSelectIndex === 0) {
+            $scope.langSelectIndex = 1;
+        } else {
+            $scope.langSelectIndex = 0;
+        }
+
+        $translate.use($scope.langs[$scope.langSelectIndex].lang);
+        window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
 
         $http.get('wallet-conf.json').then(function (data) {
             $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
@@ -796,9 +807,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                         $scope.coins[i].balance = 0;
                         if (results[i].Utxo != null) {
                             for (j = 0; j < results[i].Utxo.length; j++) {
-                                // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
-                                results[i].Utxo[j].Value = results[i].Utxo[j].Value;
-                                $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                                var tmpBalance = new Decimal($scope.coins[i].balance)
+                                var tmpUtxoVal = new Decimal(results[i].Utxo[j].Value)
+
+                                $scope.coins[i].balance = tmpBalance.plus(tmpUtxoVal)
                             }
                         }
 
@@ -872,7 +884,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                 if (res.data.Error == 0) {
                     // $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash) + " , <a target='_blank' href='" + $scope.txBrowseURL + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>");
-                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash));
+                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(reverseArray(txhash)));
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.Error)
                 }
@@ -967,10 +979,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          * 注册资产请求数据构造,lyx
          */
         var txData;
-        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'DNA') {
-            txData = Wallet.makeRegisterTransaction_DNA($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
+            txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
         } else {
-            txData = Wallet.makeRegisterTransaction_NEO($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+            txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
         }
 
         $scope.txUnsignedData = txData;
@@ -992,10 +1004,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          * 注册资产请求数据构造,lyx
          */
         var txData;
-        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'DNA') {
-            txData = Wallet.makeRegisterTransaction_DNA($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
+            txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
         } else {
-            txData = Wallet.makeRegisterTransaction_NEO($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].programHash);
+            txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].programHash);
         }
 
         var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
