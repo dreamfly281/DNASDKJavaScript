@@ -1,7 +1,7 @@
 {
   "project_name": "dna",
-  "version": "v1.0.3",
-  "date": "2017-09-22 11:26",
+  "version": "v1.0.4",
+  "date": "2017-09-26 16:54",
   "domain": "wallet.iptchain.net",
   "bbs_url": "https://forum.dnaproject.org/",
   "host_info": [
@@ -13,7 +13,7 @@
         "restapi_port": "10334",
         "webapi_host": "http://139.219.65.178",
         "webapi_port": "10336",
-        "node_type": "DNA"
+        "node_type": "D"
       },
       {
         "hostName": "DNA-2",
@@ -22,7 +22,7 @@
         "restapi_port": "10334",
         "webapi_host": "http://139.219.99.201",
         "webapi_port": "10336",
-        "node_type": "DNA"
+        "node_type": "D"
       },
       {
         "hostName": "DNA-3",
@@ -31,7 +31,7 @@
         "restapi_port": "10334",
         "webapi_host": "http://139.219.96.154",
         "webapi_port": "10336",
-        "node_type": "DNA"
+        "node_type": "D"
       }
     ],
     [
@@ -42,7 +42,7 @@
         "restapi_port": "10334",
         "webapi_host": "http://139.219.65.178",
         "webapi_port": "10336",
-        "node_type": "DNA"
+        "node_type": "D"
       },
       {
         "hostName": "DNA-2",
@@ -51,7 +51,7 @@
         "restapi_port": "10334",
         "webapi_host": "http://139.219.99.201",
         "webapi_port": "10336",
-        "node_type": "DNA"
+        "node_type": "D"
       },
       {
         "hostName": "DNA-3",
@@ -60,7 +60,7 @@
         "restapi_port": "10334",
         "webapi_host": "http://139.219.96.154",
         "webapi_port": "10336",
-        "node_type": "DNA"
+        "node_type": "D"
       }
     ]
   ],

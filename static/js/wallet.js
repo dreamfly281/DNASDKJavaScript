@@ -526,8 +526,8 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
 
 /**
  * Make register transaction and get transaction unsigned data.
- * 发起一个DNA注册资产交易和获取交易数据（十六进制）。
- * 不兼容小蚁股（NEO）
+ * 发起一个D注册资产交易和获取交易数据（十六进制）。
+ * 不兼容N
  *
  * 数据格式：
  * 字节            内容
@@ -566,7 +566,7 @@ Wallet.makeIssueTransaction = function ($issueAssetID, $issueAmount, $publicKeyE
  *
  * @returns {string} : txUnsignedData
  */
-Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $publicKeyEncoded) {
+Wallet.makeRegisterTransaction_D = function ($assetName, $assetAmount, $publicKeyEncoded) {
     var ecParams = ecurve.getCurveByName('secp256r1');
     var curvePt = ecurve.Point.decodeFrom(ecParams, new Buffer($publicKeyEncoded, "hex"));
     var publicKeyXStr = (curvePt.affineX.toBuffer(32)).toString('hex');
@@ -615,8 +615,7 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
 
 /**
  * Make register transaction and get transaction unsigned data.
- * 发起一个NEO注册资产交易和获取交易数据（十六进制）。
- * 兼容小蚁股（NEO）
+ * 发起一个N注册资产交易和获取交易数据（十六进制）
  *
  * 数据格式：
  * 字节            内容
@@ -653,7 +652,7 @@ Wallet.makeRegisterTransaction_DNA = function ($assetName, $assetAmount, $public
  *
  * @returns {string} : txUnsignedData
  */
-Wallet.makeRegisterTransaction_NEO = function ($assetName, $assetAmount, $publicKeyEncoded, $programHash) {
+Wallet.makeRegisterTransaction_N = function ($assetName, $assetAmount, $publicKeyEncoded, $programHash) {
     var ecparams = ecurve.getCurveByName('secp256r1');
     var curvePt = ecurve.Point.decodeFrom(ecparams, new Buffer($publicKeyEncoded, "hex"));
     var curvePtX = curvePt.affineX.toBuffer(32);

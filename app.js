@@ -968,10 +968,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          * 注册资产请求数据构造,lyx
          */
         var txData;
-        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'DNA') {
-            txData = Wallet.makeRegisterTransaction_DNA($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
+            txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
         } else {
-            txData = Wallet.makeRegisterTransaction_NEO($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+            txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
         }
 
         $scope.txUnsignedData = txData;
@@ -993,10 +993,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          * 注册资产请求数据构造,lyx
          */
         var txData;
-        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'DNA') {
-            txData = Wallet.makeRegisterTransaction_DNA($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+        if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
+            txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
         } else {
-            txData = Wallet.makeRegisterTransaction_NEO($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].programHash);
+            txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].programHash);
         }
 
         var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
