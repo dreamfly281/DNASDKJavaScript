@@ -36,6 +36,8 @@
 	<script src="static/js/vendor/CryptoJS/aes.js"></script>
 	<script src="static/js/vendor/CryptoJS/pad-nopadding.js"></script>
 
+    <script src="static/js/vendor/decimal-7.3.0.min.js"></script>
+
 	<!--<script src="static/js/vendor/sm.js"></script>-->
 	<script src="static/js/vendor/ecdsa_bundle.js"></script>
 	<script src="static/js/vendor/secp256k1_bundle.js"></script>
@@ -81,14 +83,16 @@
                             <ul class="dropdown-menu" role="menu">
                                 <li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)" value="{{host.hostName}}">{{host.hostName}}</a></li>
                             </ul>
-                            </li>
+                        </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp;{{langs[langSelectIndex].name}} <span class="caret"></span></a>
-                            <ul class="dropdown-menu" role="menu">
-                                <li ng-repeat="lang in langs"><a href="#" ng-click="changeLangSelectIndex($index)">{{lang.name}}</a></li>
-                            </ul>
+                        <!--<li class="dropdown">-->
+                        <li>
+                            <!--<a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp;{{langs[langSelectIndex].name}} <span class="caret"></span></a>-->
+                            <!--<ul class="dropdown-menu" role="menu">-->
+                                <!--<li ng-repeat="lang in langs"><a href="#" ng-click="changeLangSelectIndex($index)">{{lang.name}}</a></li>-->
+                            <!--</ul>-->
+                            <a href="#" ng-click="changeLangSelectIndex()"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp; {{langs[langSelectIndex].name}}</a>
                         </li>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">

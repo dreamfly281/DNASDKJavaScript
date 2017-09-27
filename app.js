@@ -449,8 +449,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.langSelectIndex = 0;
     $scope.langs = [
-        {name: "中文（简体）", lang: "zh-hans"},
-        {name: "English", lang: "en"}
+        {name: "English", lang: "zh-hans"},
+        {name: "中文（简体）", lang: "en"}
     ];
 
     $scope.downloadSelectIndex = 0;
@@ -523,6 +523,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          */
         $http.get('wallet-conf.json').then(function (data) {
             $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.hostSelectIndex = Math.floor(Math.random()*($scope.hostInfo.length))
+
             $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
 
             $scope.projectName = data.data.project_name;
@@ -595,10 +597,16 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         });
     };
 
-    $scope.changeLangSelectIndex = function ($index) {
-        $scope.langSelectIndex = $index;
-        $translate.use($scope.langs[$index].lang);
-        window.localStorage.lang = $scope.langs[$index].lang;
+    $scope.changeLangSelectIndex = function () {
+        // $scope.langSelectIndex = $index;
+        if ($scope.langSelectIndex === 0) {
+            $scope.langSelectIndex = 1;
+        } else {
+            $scope.langSelectIndex = 0;
+        }
+
+        $translate.use($scope.langs[$scope.langSelectIndex].lang);
+        window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
 
         $http.get('wallet-conf.json').then(function (data) {
             $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
@@ -799,7 +807,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                         $scope.coins[i].balance = 0;
                         if (results[i].Utxo != null) {
                             for (j = 0; j < results[i].Utxo.length; j++) {
-                                $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
+                                var tmpBalance = new Decimal($scope.coins[i].balance)
+                                var tmpUtxoVal = new Decimal(results[i].Utxo[j].Value)
+
+                                $scope.coins[i].balance = tmpBalance.plus(tmpUtxoVal)
                             }
                         }
 
