@@ -270,6 +270,8 @@ app.controller("ToolsCtrl", function($scope,$sce) {
 });
 
 app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
+    new Clipboard('.copy-btn')
+
     $scope.privateKey = $scope.WIFKey = $scope.address = "";
     $scope.createPassword1 = $scope.createPassword2 = "";
     $scope.createType = "fromRandomPrivateKey";
@@ -761,7 +763,6 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             //$scope.notifier.danger("");
         }
     };
-
 
     $scope.catchProblem = function($err){
         console.log(err);

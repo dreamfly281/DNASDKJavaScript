@@ -29,7 +29,7 @@
 	<script src="https://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
 	<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 	<script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
-    <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/master/dist/clipboard.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
 
 	<script src="static/js/vendor/CryptoJS/sha256.js"></script>
 	<script src="static/js/vendor/CryptoJS/ripemd160.js"></script>
@@ -274,6 +274,8 @@
                             <div ng-if="requirePass" class="form-group has-success">
                                 <label class="control-label" translate="MT_YOUR_WALLET_IS_ENCRYPTED">Your wallet is encrypted. Please enter the password:</label>
                                 <input class="form-control show-password" ng-change="onFilePassChange()" ng-model="$parent.$parent.filePassword" placeholder="{{ 'PASSWORD' | translate }}" type="text" onfocus="this.type='password'" autocomplete="off"/>
+
+                                <button class="btn copy-btn btn-primary btn-xs" data-clipboard-text="Tandee@20080717">Copy Password</button>
                             </div>
 
                             <div ng-if="showBtnUnlock">
@@ -306,10 +308,10 @@
                             <h3 translate="MT_ACCOUNT_INFO">Account Info</h3> <br />
                             <div class="form-group">
                                 <label class="control-label" translate="ADDRESS">Address: </label>
-                                <span id="walletAddress">{{accounts[accountSelectIndex].address}}</span><br />
-                                <div class="form-group">
-                                    <button class="btn copy-btn btn-primary btn-xs" data-clipboard-action="copy" data-clipboard-target="#walletAddress" translate="MT_COPY_ADDRESS">Copy Address</button>
-                                </div>
+                                <span id="walletAddress">{{accounts[accountSelectIndex].address}}</span>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn copy-btn btn-primary btn-xs" data-clipboard-text={{accounts[accountSelectIndex].address}} translate="MT_COPY_ADDRESS">Copy Address</button>
                             </div>
                         </div>
 
@@ -345,7 +347,6 @@
                         <div>
                             <h3 translate="NODE_INFO">Node Info</h3><br />
                             <span>{{ 'NOTIFIER_NODE_HEIGHT' | translate }}{{ " " }}  <a title="{{ 'REFRESH' | translate }}" ng-click="getUnspent(accounts[accountSelectIndex].address)" href="#">{{nodeHeight}}</a> {{"   ( " + getNodeHeightLastTime + " )"}}</span>
-                            <!---->
                             <br /><br />
                         </div>
                     </div>
