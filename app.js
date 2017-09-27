@@ -81,10 +81,11 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
 
         var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
         $scope.Value = parseInt(valueStr, 16) / 100000000;
-        $scope.AssetID = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
+        $scope.AssetIDRev = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
+        $scope.AssetID = ab2hexstring(items.tx.outputs[0].assetid);
         $scope.AssetName = "NULL";
         for (i = 0; i < $scope.coins.length; i++) {
-            if ($scope.coins[i].AssetId == $scope.AssetID) {
+            if ($scope.coins[i].AssetId == $scope.AssetIDRev) {
                 $scope.AssetName = $scope.coins[i].AssetName;
             }
         }
@@ -874,7 +875,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                 if (res.data.Error == 0) {
                     // $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash) + " , <a target='_blank' href='" + $scope.txBrowseURL + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>");
-                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash));
+                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(reverseArray(txhash)));
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.Error)
                 }
