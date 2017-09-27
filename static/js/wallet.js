@@ -81,38 +81,6 @@ function stringToBytes(str) {
 }
 
 /**
- * 浮点数精准减法
- *
- * @param arg1
- * @param arg2
- * @return {string} arg1减去arg2的精确结果
- */
-function accSub(arg1,arg2){
-    var r1,r2,m,n;
-    try{r1=arg1.toString().split(".")[1].length}catch(e){r1=0}
-    try{r2=arg2.toString().split(".")[1].length}catch(e){r2=0}
-    m=Math.pow(10,Math.max(r1,r2));
-    //last modify by deeka
-    //动态控制精度长度
-    n=(r1>=r2)?r1:r2;
-    return ((arg1*m-arg2*m)/m).toFixed(n);
-}
-
-/**
- * 浮点数精准乘法
- *
- * @param arg1
- * @param arg2
- * @return {number}
- */
-function accMul(arg1,arg2) {
-    var m=0,s1=arg1.toString(),s2=arg2.toString();
-    try{m+=s1.split(".")[1].length}catch(e){}
-    try{m+=s2.split(".")[1].length}catch(e){}
-    return  Number(s1.replace(".",""))*Number(s2.replace(".",""))/Math.pow(10,m)
-}
-
-/**
  * 补全数字串前的0
  *
  * @param num 数字串
@@ -121,6 +89,101 @@ function accMul(arg1,arg2) {
  */
 function prefixInteger(num, length) {
     return (new Array(length).join('0') + num).slice(-length);
+}
+
+var accTools = function () {}
+
+/**
+ * 浮点数精准加法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {number} arg1加上arg2的精确结果
+ */
+accTools.add = function (arg1, arg2) {
+    var r1, r2, m;
+    try {
+        r1 = arg1.toString().split(".")[1].length
+    } catch (e) {
+        r1 = 0
+    }
+    try {
+        r2 = arg2.toString().split(".")[1].length
+    } catch (e) {
+        r2 = 0
+    }
+    m = Math.pow(10, Math.max(r1, r2))
+    return (arg1 * m + arg2 * m) / m
+}
+
+/**
+ * 浮点数精准减法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {string} arg1减去arg2的精确结果
+ */
+accTools.sub = function (arg1,arg2) {
+    var r1, r2, m, n;
+    try {
+        r1 = arg1.toString().split(".")[1].length
+    } catch (e) {
+        r1 = 0
+    }
+    try {
+        r2 = arg2.toString().split(".")[1].length
+    } catch (e) {
+        r2 = 0
+    }
+    m = Math.pow(10, Math.max(r1, r2));
+    //last modify by deeka
+    //动态控制精度长度
+    n = (r1 >= r2) ? r1 : r2;
+    return ((arg1 * m - arg2 * m) / m).toFixed(n);
+}
+
+/**
+ * 浮点数精准乘法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {number} arg1乘以arg2的精确结果
+ */
+accTools.mul = function (arg1,arg2) {
+    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+    try {
+        m += s1.split(".")[1].length
+    } catch (e) {
+    }
+    try {
+        m += s2.split(".")[1].length
+    } catch (e) {
+    }
+    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
+}
+
+/**
+ * 浮点数精准除法
+ *
+ * @param arg1
+ * @param arg2
+ * @return {number} arg1除以arg2的精确结果
+ */
+accTools.div=function(arg1,arg2) {
+    var t1 = 0, t2 = 0, r1, r2;
+    try {
+        t1 = arg1.toString().split(".")[1].length
+    } catch (e) {
+    }
+    try {
+        t2 = arg2.toString().split(".")[1].length
+    } catch (e) {
+    }
+    with (Math) {
+        r1 = Number(arg1.toString().replace(".", ""))
+        r2 = Number(arg2.toString().replace(".", ""))
+        return (r1 / r2) * pow(10, t2 - t1);
+    }
 }
 
 var Wallet = function Wallet(passwordHash, iv, masterKey, publicKeyHash, privateKeyEncrypted) {
@@ -797,8 +860,8 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 
     // Adjust the accuracy. （调整精度之后的数据）
     var accuracyVal = 100000000;
-    var newOutputAmount = accMul($Amount, accuracyVal);
-    var newInputAmount = parseInt(accSub(accMul(inputAmount, accuracyVal), newOutputAmount));
+    var newOutputAmount = accTools.mul($Amount, accuracyVal);
+    var newInputAmount = parseInt(accTools.sub(accTools.mul(inputAmount, accuracyVal), newOutputAmount));
 
     /**
      * data
@@ -809,7 +872,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     // 自定义属性,Attributes
     var transactionAttrNum = "01";
     var transactionAttrUsage = "00";
-    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(accMul(99999999, Math.random()))));
+    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(accTools.mul(99999999, Math.random()))));
     var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
     var referenceTransactionData = ab2hexstring(inputData.data);
 
