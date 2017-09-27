@@ -762,6 +762,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }
     };
 
+
     $scope.catchProblem = function($err){
         console.log(err);
     };
@@ -1268,3 +1269,5 @@ var Notifier = {
         }, 5000);
     }
 };
+
+
