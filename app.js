@@ -799,9 +799,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                         $scope.coins[i].balance = 0;
                         if (results[i].Utxo != null) {
                             for (j = 0; j < results[i].Utxo.length; j++) {
-                                // results[i].Utxo[j].Value = results[i].Utxo[j].Value / 100000000;
-                                results[i].Utxo[j].Value = results[i].Utxo[j].Value;
-                                $scope.coins[i].balance = accTools.add($scope.coins[i].balance, results[i].Utxo[j].Value);
+                                $scope.coins[i].balance = $scope.coins[i].balance + results[i].Utxo[j].Value;
                             }
                         }
 
