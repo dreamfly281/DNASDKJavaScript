@@ -1,9 +1,11 @@
 {
   "project_name": "ipt-chain",
-  "version": "v1.0.5",
-  "date": "2017-09-26 18:35",
+  "version": "v1.0.6",
+  "date": "2017-09-27 15:42",
   "domain": "wallet.iptchain.net",
   "bbs_url": "https://forum.iptchain.net/",
+  "explorer_url": "http://116.62.221.166:8084/",
+  "explorer_search_path": "tx/",
   "host_info": [
     [
       {
