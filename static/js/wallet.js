@@ -91,101 +91,43 @@ function prefixInteger(num, length) {
     return (new Array(length).join('0') + num).slice(-length);
 }
 
-var accTools = function () {}
-
-/**
- * 浮点数精准加法
+/**************************************************************
+ * Accurate addition, subtraction, multiplication and division.
+ * 精确的加减乘除。
  *
- * @param arg1
- * @param arg2
- * @return {number} arg1加上arg2的精确结果
+ * @constructor
  */
-accTools.add = function (arg1, arg2) {
-    var r1, r2, m;
-    try {
-        r1 = arg1.toString().split(".")[1].length
-    } catch (e) {
-        r1 = 0
-    }
-    try {
-        r2 = arg2.toString().split(".")[1].length
-    } catch (e) {
-        r2 = 0
-    }
-    m = Math.pow(10, Math.max(r1, r2))
-    return (arg1 * m + arg2 * m) / m
-}
+var WalletMath = function () {};
+WalletMath.add = function (arg1, arg2) {
+    return Decimal.add(arg1, arg2).toNumber();
+};
+WalletMath.sub = function (arg1, arg2) {
+    return Decimal.sub(arg1, arg2).toNumber();
+};
+WalletMath.mul = function (arg1, arg2) {
+    return Decimal.mul(arg1, arg2).toNumber();
+};
+WalletMath.div = function (arg1, arg2) {
+    return Decimal.div(arg1, arg2).toNumber();
+};
+WalletMath.fixView = function (arg) {
+    return arg.toFixed(new Decimal(arg).dp());
+};
 
-/**
- * 浮点数精准减法
+
+
+/**************************************************************
+ * Wallet Class.
+ * Wallet api.
+ * 钱包API。
  *
- * @param arg1
- * @param arg2
- * @return {string} arg1减去arg2的精确结果
+ * @param passwordHash
+ * @param iv
+ * @param masterKey
+ * @param publicKeyHash
+ * @param privateKeyEncrypted
+ * @constructor
  */
-accTools.sub = function (arg1,arg2) {
-    var r1, r2, m, n;
-    try {
-        r1 = arg1.toString().split(".")[1].length
-    } catch (e) {
-        r1 = 0
-    }
-    try {
-        r2 = arg2.toString().split(".")[1].length
-    } catch (e) {
-        r2 = 0
-    }
-    m = Math.pow(10, Math.max(r1, r2));
-    //last modify by deeka
-    //动态控制精度长度
-    n = (r1 >= r2) ? r1 : r2;
-    return ((arg1 * m - arg2 * m) / m).toFixed(n);
-}
-
-/**
- * 浮点数精准乘法
- *
- * @param arg1
- * @param arg2
- * @return {number} arg1乘以arg2的精确结果
- */
-accTools.mul = function (arg1,arg2) {
-    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
-    try {
-        m += s1.split(".")[1].length
-    } catch (e) {
-    }
-    try {
-        m += s2.split(".")[1].length
-    } catch (e) {
-    }
-    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
-}
-
-/**
- * 浮点数精准除法
- *
- * @param arg1
- * @param arg2
- * @return {number} arg1除以arg2的精确结果
- */
-accTools.div=function(arg1,arg2) {
-    var t1 = 0, t2 = 0, r1, r2;
-    try {
-        t1 = arg1.toString().split(".")[1].length
-    } catch (e) {
-    }
-    try {
-        t2 = arg2.toString().split(".")[1].length
-    } catch (e) {
-    }
-    with (Math) {
-        r1 = Number(arg1.toString().replace(".", ""))
-        r2 = Number(arg2.toString().replace(".", ""))
-        return (r1 / r2) * pow(10, t2 - t1);
-    }
-}
-
 var Wallet = function Wallet(passwordHash, iv, masterKey, publicKeyHash, privateKeyEncrypted) {
     this.passwordHash = passwordHash;
     this.iv = iv;
@@ -350,7 +292,7 @@ Wallet.GetInputData = function ($coin, $amount) {
     // find input coins
     var k = 0;
     while (parseFloat(coin_ordered[k].Value) <= amount) {
-        amount = amount - parseFloat(coin_ordered[k].Value);
+        amount = WalletMath.sub(amount, parseFloat(coin_ordered[k].Value));
         if (amount == 0) break;
         k = k + 1;
     }
@@ -859,8 +801,8 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 
     // Adjust the accuracy. （调整精度之后的数据）
     var accuracyVal = 100000000;
-    var newOutputAmount = accTools.mul($Amount, accuracyVal);
-    var newInputAmount = parseInt(accTools.sub(accTools.mul(inputAmount, accuracyVal), newOutputAmount));
+    var newOutputAmount = WalletMath.mul($Amount, accuracyVal);
+    var newInputAmount = parseInt(WalletMath.sub(WalletMath.mul(inputAmount, accuracyVal), newOutputAmount));
 
     /**
      * data
@@ -871,7 +813,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     // 自定义属性,Attributes
     var transactionAttrNum = "01";
     var transactionAttrUsage = "00";
-    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(accTools.mul(99999999, Math.random()))));
+    var transactionAttrData = ab2hexstring(stringToBytes(parseInt(WalletMath.mul(99999999, Math.random()))));
     var transactionAttrDataLen = prefixInteger(Number(transactionAttrData.length / 2).toString(16), 2);
     var referenceTransactionData = ab2hexstring(inputData.data);
 

@@ -76,14 +76,16 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
 
     if ($scope.txType == '128') {
         $scope.FromAddress = Wallet.toAddress(hexstring2ab(items.fromAddress));
-
         $scope.ToAddress = Wallet.toAddress(items.tx.outputs[0].scripthash);
 
         var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
-        $scope.Value = parseInt(valueStr, 16) / 100000000;
+
+        $scope.Value = WalletMath.div(parseInt(valueStr, 16), 100000000);
+        $scope.ValueView = WalletMath.fixView($scope.Value);
         $scope.AssetIDRev = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
         $scope.AssetID = ab2hexstring(items.tx.outputs[0].assetid);
         $scope.AssetName = "NULL";
+
         for (i = 0; i < $scope.coins.length; i++) {
             if ($scope.coins[i].AssetId == $scope.AssetIDRev) {
                 $scope.AssetName = $scope.coins[i].AssetName;
@@ -807,10 +809,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                         $scope.coins[i].balance = 0;
                         if (results[i].Utxo != null) {
                             for (j = 0; j < results[i].Utxo.length; j++) {
-                                var tmpBalance = new Decimal($scope.coins[i].balance)
-                                var tmpUtxoVal = new Decimal(results[i].Utxo[j].Value)
-
-                                $scope.coins[i].balance = tmpBalance.plus(tmpUtxoVal)
+                                $scope.coins[i].balance = WalletMath.add($scope.coins[i].balance, results[i].Utxo[j].Value);
                             }
                         }
 
