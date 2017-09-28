@@ -534,6 +534,9 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             $scope.domain = data.data.domain;
             $scope.bbsUrl = data.data.bbs_url;
 
+            $scope.explorerUrl = data.data.explorer_url;
+            $scope.explorerSearchPath = data.data.explorer_search_path;
+
             $scope.connectNode();
         });
     };
@@ -855,7 +858,6 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
         $scope.addressBrowseURL = host.webapi_host + ':' + host.webapi_port;
-        $scope.txBrowseURL = host.webapi_host + ':' + host.webapi_port;
 
         Wallet.GetNodeHeight($http,host,(function (res) {
             if (res.status == 200) {
@@ -877,13 +879,22 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.sendTransactionData = function ($txData) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
-        Wallet.SendTransactionData($http,$txData,host,(function (res) {
+        Wallet.SendTransactionData($http, $txData, host, (function (res) {
             if (res.status == 200) {
                 var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
 
                 if (res.data.Error == 0) {
-                    // $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(txhash) + " , <a target='_blank' href='" + $scope.txBrowseURL + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>");
-                    $scope.notifier.success($translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH') + ab2hexstring(reverseArray(txhash)));
+                    var successInfo = $translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH');
+                    var clickUrl = $scope.explorerUrl + $scope.explorerSearchPath;
+
+                    if ($scope.txType === '64') {
+                        successInfo = successInfo + ab2hexstring(txhash) + " , <a target='_blank' href='" + clickUrl + ab2hexstring(txhash) + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>";
+                    } else {
+                        successInfo = successInfo + ab2hexstring(reverseArray(txhash)) + " , <a target='_blank' href='" + clickUrl + ab2hexstring(reverseArray(txhash)) + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>";
+                    }
+
+                    $scope.successInfoTimerVal = 60;
+                    $scope.notifier.success(successInfo);
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.Error)
                 }
@@ -891,7 +902,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 $scope.isDisplayAssetId = true;
                 $scope.newAssetId = ab2hexstring(txhash);
             }
-        }),(function (err) {
+        }), (function (err) {
             $scope.catchProblem(err);
         }));
 

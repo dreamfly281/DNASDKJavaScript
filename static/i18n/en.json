@@ -33,7 +33,7 @@
   "NOTIFIER_SUCCESS_CONNECTED_TO_NODE": "You are Successfully connected to node",
   "NOTIFIER_PROVIDED_BY": "provided by",
   "NOTIFIER_TRANSACTION_SUCCESS_TXID": "Transaction Success, TxID: ",
-  "NOTIFIER_CLICK_HERE": "Click Here",
+  "NOTIFIER_CLICK_HERE": "Click Here ( Need to wait 45 to 90 seconds )",
   "NOTIFIER_SUCCESS_COPY_WALLET_ADDRESS": "The wallet address has been copied to the clipboard.",
   "NOTIFIER_INPUT_DATA_CHECK_FAILED": "Input Data check failed.",
   "NOTIFIER_ISSUE_ASSETID_CHECK_FAILED": "Issue AssetID check failed.",
