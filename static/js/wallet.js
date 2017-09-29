@@ -1185,6 +1185,55 @@ Wallet.decryptWallet = function (wallet, password) {
 };
 
 /**
+ * Analyze the obtained electronic money.
+ * 返回计算好的币。
+ *
+ * @param res
+ * @return {Array}
+ */
+Wallet.analyzeCoins = function (res) {
+    if (res.status == 200) {
+        var results = res.data.Result;
+        var newCoins = [];
+
+        if (results !== null) {
+            var coins = [];
+            var tmpIndexArr = [];
+            for (i = 0; i < results.length; i++) {
+                coins[i] = results[i];
+                coins[i].balance = 0;
+                coins[i].balanceView = 0;
+                if (results[i].Utxo != null) {
+                    for (j = 0; j < results[i].Utxo.length; j++) {
+                        coins[i].balance = WalletMath.add(coins[i].balance, results[i].Utxo[j].Value);
+                        coins[i].balanceView = WalletMath.fixView(coins[i].balance);
+                    }
+                }
+
+                tmpIndexArr.push(results[i].AssetName);
+            }
+
+            /**
+             * Sorting.
+             * @type {Array.<*>}
+             */
+            tmpIndexArr = tmpIndexArr.sort();
+            for (i = 0; i < results.length; i++) {
+                for (j = 0; j < results.length; j++) {
+                    if (tmpIndexArr[i] == results[j].AssetName) {
+                        newCoins.push(results[j]);
+                    }
+                }
+            }
+        }
+
+        return newCoins;
+    } else {
+        return [];
+    }
+};
+
+/**
  *
  * @param $http
  * @param $address

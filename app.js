@@ -514,6 +514,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.Transaction.able = true;
     $scope.waitingSecond = false;
 
+    $scope.isShowNotifier = true;
+
     $interval(function () {
         var account = $scope.accounts[$scope.accountSelectIndex];
         if (account) {
@@ -660,6 +662,19 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             // get claims
             $scope.getClaims($scope.accounts[$scope.accountSelectIndex].address);
         }
+
+        $scope.registerAsset = {
+            assetName: "",
+            assetAmount: ""
+        };
+        $scope.isDisplayAssetId = false;
+
+        $scope.issueAsset = {
+            issueAssetID: "",
+            issueAmount: ""
+        };
+
+        $scope.newAssetId = '';
     };
 
     $scope.openFileDialog = function () {
@@ -783,7 +798,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     };
 
     $scope.catchProblem = function($err){
-        console.log(err);
+        console.log($err);
     };
 
     $scope.getClaims = function ($address) {
@@ -791,11 +806,11 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.claims = {};
         $scope.claims['amount'] = 0;
 
-        Wallet.GetClaims($http,$address,host,(function (res) {
+        Wallet.GetClaims($http, $address, host, (function (res) {
             if (res.status == 200) {
                 $scope.claims = res.data;
             }
-        }),(function (err) {
+        }), (function (err) {
             $scope.catchProblem(err);
         }));
 
@@ -804,80 +819,39 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.getUnspent = function ($address) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
-        Wallet.GetUnspent($http,$address, host, (function (res) {
-            if (res.status == 200) {
-                results = res.data.Result;
-                if (results !== null) {
-                    $scope.coins = [];
-                    var tmpIndexArr = [];
-                    var newCoins = [];
-                    for (i = 0; i < results.length; i++) {
-                        $scope.coins[i] = results[i];
-                        $scope.coins[i].balance = 0;
-                        if (results[i].Utxo != null) {
-                            for (j = 0; j < results[i].Utxo.length; j++) {
-                                $scope.coins[i].balance = WalletMath.add($scope.coins[i].balance, results[i].Utxo[j].Value);
-                            }
-                        }
-
-                        tmpIndexArr.push(results[i].AssetName);
-                    }
-
-                    /**
-                     * Sorting.
-                     * @type {Array.<*>}
-                     */
-                    tmpIndexArr = tmpIndexArr.sort();
-                    for (i = 0; i < results.length; i++) {
-                        for (j = 0; j < results.length; j++) {
-                            if (tmpIndexArr[i] == results[j].AssetName) {
-                                newCoins.push(results[j]);
-                            }
-                        }
-                    }
-                    $scope.coins = newCoins;
-                }
-
-                /**
-                 * 刷新当前节点高度
-                 */
-                Wallet.GetNodeHeight($http,host, (function (res) {
-                    if (res.status == 200) {
-                        if (res.data.Result > 0) {
-                            $scope.nodeHeight = res.data.Result;
-                            $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
-                        }
-                    }
-                }), (function () {
-                }));
-            }
-        }), (function (err) {
-            $scope.catchProblem(err);
-        }));
-
-
+        Wallet.GetUnspent($http, $address, host, $scope.GetUnspent_Callback, $scope.catchProblem);
+        $scope.isShowNotifier = false;
+        Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
+    };
+    $scope.GetUnspent_Callback =function (res) {
+        $scope.coins = Wallet.analyzeCoins(res);
     };
 
     $scope.connectNode = function () {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
-
         $scope.addressBrowseURL = host.webapi_host + ':' + host.webapi_port;
 
-        Wallet.GetNodeHeight($http,host,(function (res) {
-            if (res.status == 200) {
-                if (res.data.Result > 0) {
-                    $scope.nodeHeight = res.data.Result;
-                    $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
+    };
+
+    $scope.getNodeHeight_Callback = function (res) {
+        if (res.status == 200) {
+            if (res.data.Result > 0) {
+                $scope.nodeHeight = res.data.Result;
+                $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
+                if ($scope.isShowNotifier) {
                     $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.Result + "</b>.");
-                } else {
-                    $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
                 }
             } else {
-                $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
+                $scope.connectedNodeErr();
             }
-        }),(function (res) {
-            $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
-        }));
+        } else {
+            $scope.connectedNodeErr();
+        }
+    };
+
+    $scope.connectedNodeErr = function () {
+        $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
     };
 
     $scope.sendTransactionData = function ($txData) {
@@ -913,7 +887,6 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }), (function (err) {
             $scope.catchProblem(err);
         }));
-
     };
 
     $scope.MakeTxAndSend = function ($txUnsignedData) {
