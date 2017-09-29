@@ -413,9 +413,9 @@ Wallet.makeStateUpdateTransaction = function ($namespace, $key, $value, $publicK
  * 32             引用交易hash：个数为0时，则无
  * 2              引用输出索引：个数为0时，则无
  * 1              交易输出个数: 01
- * 32             资产ID
- * 8              资产数量
- * 20             资产ProgramHash
+ * 32             资产ID：个数为0时，则无
+ * 8              资产数量：个数为0时，则无
+ * 20             资产ProgramHash：个数为0时，则无
  * 1              Program长度：0x01
  * 1              参数长度 parameter
  * 参数实际长度 	  参数：签名
@@ -861,9 +861,9 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
  * 32             引用交易hash：个数为0时，则无
  * 2              引用输出索引：个数为0时，则无
  * 1              交易输出个数 : 01
- * 32             资产ID
- * 8              资产数量
- * 20             资产ProgramHash
+ * 32             资产ID：个数为0时，则无
+ * 8              资产数量：个数为0时，则无
+ * 20             资产ProgramHash：个数为0时，则无
  * 1              Program长度：0x01
  * 1              参数长度 parameter
  * 参数实际长度 	  参数：签名
