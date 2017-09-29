@@ -397,12 +397,17 @@
 
                             <div class="form-group">
                                 <label class="control-label" translate="MT_FROM_ADDRESS">From Address</label>:<br />
-                                <span>{{accounts[accountSelectIndex].address}}</span><br/><br/>
+                                <span>{{accounts[accountSelectIndex].address}}</span><br/>
                             </div>
 
-                                <div class="form-group">
-                                    <button class="btn btn-primary btn-block" ng-click="openModal()" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>
-                                </div>
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block" ng-click="openModal()" ng-disabled="!Transaction.able" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>
+                            </div>
+                            <div class="form-group" ng-show="waitingSecond">
+                                <label class="control-label" translate="MT_PLEASE_WAITING">Please waiting for</label>
+                                <span>{{countdown}}</span>
+                                <label class="control-label" translate="MT_SECOND">s</label><br/>
+                            </div>
 
                         </div>
 

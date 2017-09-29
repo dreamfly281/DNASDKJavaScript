@@ -510,6 +510,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.newAssetId = '';
 
+    $scope.countdown = '';//The countdown after the transfer,10s
+    $scope.Transaction.able = true;
+    $scope.waitingSecond = false;
+
     $interval(function () {
         var account = $scope.accounts[$scope.accountSelectIndex];
         if (account) {
@@ -895,6 +899,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                     $scope.successInfoTimerVal = 60;
                     $scope.notifier.success(successInfo);
+                    if ($scope.txType === '128'){
+                        $scope.countDown();
+                    }
+
                 } else {
                     $scope.notifier.danger($translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.Error)
                 }
@@ -1210,6 +1218,29 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
         return tx;
     };
+    $scope.countDown = function (){
+        $scope.waitingSecond = true;
+        $scope.countdown = 10;
+        $scope.Transaction.ToAddress = '';
+        $scope.Transaction.Amount = '';
+        $scope.Transaction.able = false;
+        var myTime = setInterval(function() {
+            $scope.countdown--;
+
+            // console.log($scope.countdown)
+            if ($scope.countdown ==0)
+            {
+                $scope.Transaction.able = true;
+                $scope.waitingSecond = false;
+                clearInterval(myTime);
+            }
+
+            $scope.$digest();
+        }, 1000);
+
+
+    }
+
 
 });
 

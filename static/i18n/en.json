@@ -77,6 +77,8 @@
   "MT_TO_ADDRESS": "To Other Address",
   "MT_AMOUNT_TO_SEND": "Amount to Send",
   "MT_FROM_ADDRESS": "From My Address",
+  "MT_PLEASE_WAITING" : "Please waiting for",
+  "MT_SECOND" : "s",
   "BTN_TRANSFER_TRANSACTION": "Transfer Transaction",
   "BTN_GET_TRANSFER_TRANSACTION": "Get Transfer Transaction",
   "MT_ASSET_NAME": "Asset Name",

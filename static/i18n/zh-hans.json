@@ -91,6 +91,8 @@
   "MT_YOU_ARE_CONNECTED_TO_NODE": "已连节点",
   "MT_PROVIDED_BY": "服务提供",
   "MT_ARE_YOU_SURE_TO_SEND_TRANSACTION": "您是否确认要发送这笔交易？",
+  "MT_PLEASE_WAITING" : "请等待",
+  "MT_SECOND" : "秒",
   "BTN_NO_LET_ME_THINK": "不，让我再考虑一下",
   "BTN_YES_SURE": "是的，我确认发送这笔交易",
   "MT_MODAL_DANGER_1": "严重错误：交易验证信息与填写信息不一致，无法发送交易！",
