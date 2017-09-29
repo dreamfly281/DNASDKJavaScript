@@ -1,30 +1,42 @@
-html,body{
+html,body {
 	height: 100%;
 	margin: 0;
 	padding: 0;
 }
 
-.navbar .nav>li>a{
+.nav {
+	text-transform: none;
+}
+
+.page-header {
+	margin: 0;
+}
+
+.modal-dialog {
+	margin-top: 120px;
+}
+
+.navbar-default .nav>li>a {
 	font-size: 16px;
 	font-weight: 100;
 }
 
 .main {
-	min-height: 100%;
+	/*min-height: 100%;*/
 	font-family: "Source Sans Pro", sans-serif;
 }
 
 .glyphicon {
-	margin-right:1em;
+	margin-right: 1em;
 }
 
-.alert.popup{
-	position:fixed;
-	border-radius:0;
-	margin:0
+.alert.popup {
+	position: fixed;
+	border-radius: 0;
+	margin: 0
 }
 
-.alert.popup a{
+.alert.popup a {
 	text-decoration: underline;
 }
 
@@ -37,7 +49,7 @@ span {
 }
 
 .btn-address .caretico {
-	margin-left:1em;
+	margin-left: 1em;
 }
 
 .btn-address button, .btn-address ul li a {

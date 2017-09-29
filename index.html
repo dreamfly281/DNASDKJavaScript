@@ -62,15 +62,13 @@
     <![endif]-->
 
     <header>
-        <div class="navbar navbar-default navbar-fixed-top">
+        <div class="navbar-default">
             <div class="container">
                 <div class="navbar-header">
                     <ul class="nav navbar-nav navbar-left">
                         <li>
                             <a class="logo-title" href="#" aria-expanded="false"><i class="fa fa-line-chart" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'SITE_TITLE' | translate }}</a>
                         </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-left">
                         <li>
                             <a href="#" aria-expanded="false">{{version}}</a>
                         </li>
@@ -84,8 +82,6 @@
                                 <li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)" value="{{host.hostName}}">{{host.hostName}}</a></li>
                             </ul>
                         </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
                         <!--<li class="dropdown">-->
                         <li>
                             <!--<a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp;{{langs[langSelectIndex].name}} <span class="caret"></span></a>-->
@@ -94,13 +90,9 @@
                             <!--</ul>-->
                             <a href="#" ng-click="changeLangSelectIndex()"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp; {{langs[langSelectIndex].name}}</a>
                         </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
                         <li>
                             <a target="_blank" href="{{bbsUrl}}"><i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'FEEDBACK' | translate }}</a>
                         </li>
-                    </ul>
-                    <ul class="nav navbar-nav navbar-right">
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'DOWNLOADS' | translate }} <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
@@ -115,7 +107,7 @@
 
     <div class="container main">
 
-        <br/><br/>
+        <br/>
 
         <!-- main -->
         <div class="page-header">
@@ -327,12 +319,12 @@
                                 <table class="table">
                                     <tbody>
                                     <tr>
-                                        <td align="right" width="35%"><b>{{ 'ASSETNAME' | translate }}</b></td>
+                                        <td align="left" width="35%"><b>{{ 'ASSETNAME' | translate }}</b></td>
                                         <td width="10%"></td>
                                         <td align="left"><b>{{ 'BALANCE' | translate }}</b></td>
                                     </tr>
                                     <tr ng-repeat="coin in coins">
-                                        <td align="right" width="35%">{{coin.AssetName}}</td>
+                                        <td align="left" width="35%">{{coin.AssetName}}</td>
                                         <td width="10%"></td>
                                         <td align="left">{{coin.balance}}</td>
                                     </tr>
@@ -451,33 +443,37 @@
 
         <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" ng-click="cancel()" aria-hidden="true">&times;</button>
-            <h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>
+            <!--<h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>-->
+            <h3 class="text-info">{{ 'TX_TYPE_TRANSFER_TRANSACTION' | translate }}</h3>
         </div>
 
         <div class="modal-body" ng-if="txType==128" >
-            <h3 class="text-info">[{{ 'TX_TYPE_TRANSFER_TRANSACTION' | translate }}]</h3>
             <p>{{ 'MT_TO_ADDRESS' | translate }}: <b>{{ToAddress}}</b></p>
+            <hr />
             <p>{{ 'AMOUNT' | translate }}: <b>{{ValueView}}</b></p>
             <p>{{ 'ASSETNAME' | translate }}: <b>{{AssetName}}</b></p>
             <p>{{ 'ASSETID' | translate }}: <b>{{AssetID}}</b></p>
+            <hr />
             <p>{{ 'MT_FROM_ADDRESS' | translate }}: <b>{{FromAddress}}</b></p>
             <p ng-if="txModify" class="text-danger">{{ 'MT_MODAL_DANGER_1' | translate }}</p>
-
             <hr />
-            <p>{{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }} <b>{{hostInfo[hostSelectIndex].hostName}}</b>, {{ 'MT_PROVIDED_BY' | translate }} <b>{{hostInfo[hostSelectIndex].hostProvider}}</b> </p>
+            <p>{{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }}: <b>{{hostInfo[hostSelectIndex].hostName}}</b></p>
+            <p>{{ 'MT_PROVIDED_BY' | translate }}: <b>{{hostInfo[hostSelectIndex].hostProvider}}</b> </p>
+            <hr />
             <p><b>{{ 'MT_ARE_YOU_SURE_TO_SEND_TRANSACTION' | translate }}</b></p>
         </div>
 
         <div class="modal-body" ng-if="txType==2" >
-            <h3 class="text-info">[{{ 'TX_TYPE_CLAIM_TRANSACTION' | translate }}]</h3>
             <p>{{ 'AMOUNT' | translate }}: <b>{{Value/100000000}}</b></p>
             <p>{{ 'ASSETNAME' | translate }}: <b>{{AssetName}}</b></p>
             <p>{{ 'ASSETID' | translate }}: <b>{{AssetID}}</b></p>
+            <hr />
             <p>{{ 'TX_CL_CLAIM_ADDRESS' | translate }}: <b>{{ClaimAddress}}</b></p>
             <p ng-if="txModify" class="text-danger">{{ 'MT_MODAL_DANGER_1' | translate }}</p>
-
             <hr />
-            <p>{{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }} <b>{{hostInfo[hostSelectIndex].hostName}}</b>, {{ 'MT_PROVIDED_BY' | translate }} <b>{{hostInfo[hostSelectIndex].hostProvider}}</b> </p>
+            <p>{{ 'MT_YOU_ARE_CONNECTED_TO_NODE' | translate }}: <b>{{hostInfo[hostSelectIndex].hostName}}</b></p>
+            <p>{{ 'MT_PROVIDED_BY' | translate }}: <b>{{hostInfo[hostSelectIndex].hostProvider}}</b> </p>
+            <hr />
             <p><b>{{ 'MT_ARE_YOU_SURE_TO_SEND_TRANSACTION' | translate }}</b></p>
         </div>
 

@@ -89,7 +89,7 @@
   "TX_CL_BTN_CLAIM_TRANSACTION": "Claim Transaction",
   "TX_CL_BTN_GET_CLAIM_TRANSACTION": "Get Claim Transaction",
   "MT_YOU_ARE_CONNECTED_TO_NODE": "You are connected to node",
-  "MT_PROVIDED_BY": "provided by",
+  "MT_PROVIDED_BY": "Provided by",
   "MT_ARE_YOU_SURE_TO_SEND_TRANSACTION": "Are you sure to send this transaction?",
   "BTN_NO_LET_ME_THINK": "No, Let me think about it.",
   "BTN_YES_SURE": "Yes,I am sure! Send transaction.",
