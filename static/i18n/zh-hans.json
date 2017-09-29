@@ -82,7 +82,7 @@
   "MT_ASSET_NAME": "资产名称",
   "MT_ASSET_AMOUNT": "资产总量",
   "MT_ASSET_ID": "资产ID (TXID)，请妥善保存",
-  "BTN_REGISTER_TRANSACTION": "注册资产交易",
+  "BTN_REGISTER_TRANSACTION": "注册资产",
   "BTN_GET_REGISTER_TRANSACTION": "获取 注册资产 交易数据",
   "TX_CL_CLAIM_AMOUNT": "提取总量（小蚁币）",
   "TX_CL_CLAIM_ADDRESS": "提取地址",
