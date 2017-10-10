@@ -91,27 +91,39 @@ function prefixInteger(num, length) {
     return (new Array(length).join('0') + num).slice(-length);
 }
 
+
+
 /**************************************************************
  * Accurate addition, subtraction, multiplication and division.
- * 精确的加减乘除。
+ * 精确的加/减/乘/除，比较和显示。
  *
  * @constructor
  */
 var WalletMath = function () {};
 WalletMath.add = function (arg1, arg2) {
-    return Decimal.add(arg1, arg2).toNumber();
+    return Decimal.add(arg1, arg2);
 };
 WalletMath.sub = function (arg1, arg2) {
-    return Decimal.sub(arg1, arg2).toNumber();
+    return Decimal.sub(arg1, arg2);
 };
 WalletMath.mul = function (arg1, arg2) {
-    return Decimal.mul(arg1, arg2).toNumber();
+    return Decimal.mul(arg1, arg2);
 };
 WalletMath.div = function (arg1, arg2) {
-    return Decimal.div(arg1, arg2).toNumber();
+    return Decimal.div(arg1, arg2);
+};
+WalletMath.eq = function (arg1, arg2) {
+    return new Decimal(arg1).eq(arg2);
 };
 WalletMath.fixView = function (arg) {
     return arg.toFixed(new Decimal(arg).dp());
+};
+WalletMath.toHex = function (arg) {
+    var retData = new Decimal(arg).toHexadecimal();
+    return retData.toString().substring(2); // Del 0x.
+};
+WalletMath.hexToNumToStr = function (arg) {
+    return new Decimal("0x" + arg).toString();
 };
 
 
@@ -310,12 +322,10 @@ Wallet.GetInputData = function ($coin, $amount) {
         // txid
         var pos = 1 + (x * 34);
         data.set(reverseArray(hexstring2ab(coin_ordered[x]['Txid'])), pos);
-        //data.set(hexstring2ab(coin_ordered[x]['txid']), pos);
 
         // index
         pos = 1 + (x * 34) + 32;
         inputIndex = numStoreInMemory(coin_ordered[x]['Index'].toString(16), 4);
-        //inputIndex = numStoreInMemory(coin_ordered[x]['Index'].toString(16), 2);
         data.set(hexstring2ab(inputIndex), pos);
     }
 
@@ -802,7 +812,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     // Adjust the accuracy. （调整精度之后的数据）
     var accuracyVal = 100000000;
     var newOutputAmount = WalletMath.mul($Amount, accuracyVal);
-    var newInputAmount = parseInt(WalletMath.sub(WalletMath.mul(inputAmount, accuracyVal), newOutputAmount));
+    var newInputAmount = WalletMath.sub(WalletMath.mul(inputAmount, accuracyVal), newOutputAmount);
 
     /**
      * data
@@ -824,7 +834,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     // OUTPUT
     var transactionOutputNum = "01"; //无找零
     var transactionOutputAssetID = ab2hexstring(reverseArray(hexstring2ab($coin['AssetId'])));
-    var transactionOutputValue = numStoreInMemory(newOutputAmount.toString(16), 16);
+    var transactionOutputValue = numStoreInMemory(WalletMath.toHex(newOutputAmount), 16);
     var transactionOutputProgramHash = ab2hexstring(ProgramHash);
 
     if (inputAmount === Number($Amount)) {
@@ -836,7 +846,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
         data += transactionOutputNum + transactionOutputAssetID + transactionOutputValue + transactionOutputProgramHash;
 
         // Change to yourself. 找零给自己
-        var transactionOutputValue_me = numStoreInMemory(newInputAmount.toString(16), 16);
+        var transactionOutputValue_me = numStoreInMemory(WalletMath.toHex(newInputAmount), 16);
         var transactionOutputProgramHash_me = myProgramHash.toString();
         data += transactionOutputAssetID + transactionOutputValue_me + transactionOutputProgramHash_me;
     }
@@ -845,8 +855,6 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
 };
 
 /**
- *
- *  *
  * 数据格式：
  * 字节            内容
  * 1              type ： 02
@@ -1199,15 +1207,17 @@ Wallet.analyzeCoins = function (res) {
         if (results !== null) {
             var coins = [];
             var tmpIndexArr = [];
+
             for (i = 0; i < results.length; i++) {
                 coins[i] = results[i];
                 coins[i].balance = 0;
                 coins[i].balanceView = 0;
+
                 if (results[i].Utxo != null) {
                     for (j = 0; j < results[i].Utxo.length; j++) {
                         coins[i].balance = WalletMath.add(coins[i].balance, results[i].Utxo[j].Value);
-                        coins[i].balanceView = WalletMath.fixView(coins[i].balance);
                     }
+                    coins[i].balanceView = WalletMath.fixView(coins[i].balance);
                 }
 
                 tmpIndexArr.push(results[i].AssetName);

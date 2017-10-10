@@ -80,8 +80,7 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
 
         var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
 
-        $scope.Value = WalletMath.div(parseInt(valueStr, 16), 100000000);
-        $scope.ValueView = WalletMath.fixView($scope.Value);
+        $scope.Value = WalletMath.div(WalletMath.hexToNumToStr(valueStr), 100000000);
         $scope.AssetIDRev = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
         $scope.AssetID = ab2hexstring(items.tx.outputs[0].assetid);
         $scope.AssetName = "NULL";
@@ -444,6 +443,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.hostInfo = [];
 
     $scope.version = '';
+    $scope.desktopVersion = '';
     $scope.bbsUrl = '';
 
     $scope.nodeHeight = '0';
@@ -530,13 +530,14 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
          * 加载node配置:
          */
         $http.get('wallet-conf.json').then(function (data) {
-            $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.hostInfo = data.data.host_info[0];
             $scope.hostSelectIndex = Math.floor(Math.random()*($scope.hostInfo.length))
 
             $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
 
             $scope.projectName = data.data.project_name;
             $scope.version = data.data.version;
+            $scope.desktopVersion = data.data.desktop_version;
             $scope.domain = data.data.domain;
             $scope.bbsUrl = data.data.bbs_url;
 
@@ -620,7 +621,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
 
         $http.get('wallet-conf.json').then(function (data) {
-            $scope.hostInfo = data.data.host_info[$scope.langSelectIndex];
+            $scope.hostInfo = data.data.host_info[0];
             $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
         });
     };
@@ -635,7 +636,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         var folderName = $downloadObj.name.toLowerCase();
         window.location.href = "http://" + $scope.domain +
             "/downloads/" + folderName + "/" +
-            "wallet-" + $scope.version + "-" + folderName + ".zip";
+            "wallet-" + $scope.desktopVersion + "-" + folderName + ".zip";
     };
 
     $scope.changehostSelectIndex = function ($index) {
