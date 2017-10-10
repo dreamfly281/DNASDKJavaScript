@@ -39,63 +39,63 @@
       {
         "hostName": "IPTChain-04",
         "hostProvider": "IPTChain",
-        "restapi_host": "http://srv1.iptchain.net",
+        "restapi_host": "http://srv4.iptchain.net",
         "restapi_port": "10334",
-        "webapi_host": "http://srv1.iptchain.net",
+        "webapi_host": "http://srv4.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
       {
         "hostName": "IPTChain-05",
         "hostProvider": "IPTChain",
-        "restapi_host": "http://srv2.iptchain.net",
+        "restapi_host": "http://srv5.iptchain.net",
         "restapi_port": "10334",
-        "webapi_host": "http://srv2.iptchain.net",
+        "webapi_host": "http://srv5.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
       {
         "hostName": "IPTChain-06",
         "hostProvider": "IPTChain",
-        "restapi_host": "http://srv3.iptchain.net",
+        "restapi_host": "http://srv6.iptchain.net",
         "restapi_port": "10334",
-        "webapi_host": "http://srv3.iptchain.net",
+        "webapi_host": "http://srv6.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
       {
         "hostName": "IPTChain-07",
         "hostProvider": "IPTChain",
-        "restapi_host": "http://srv1.iptchain.net",
+        "restapi_host": "http://srv7.iptchain.net",
         "restapi_port": "10334",
-        "webapi_host": "http://srv1.iptchain.net",
+        "webapi_host": "http://srv7.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
       {
         "hostName": "IPTChain-08",
         "hostProvider": "IPTChain",
-        "restapi_host": "http://srv2.iptchain.net",
+        "restapi_host": "http://srv8.iptchain.net",
         "restapi_port": "10334",
-        "webapi_host": "http://srv2.iptchain.net",
+        "webapi_host": "http://srv8.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
       {
         "hostName": "IPTChain-09",
         "hostProvider": "IPTChain",
-        "restapi_host": "http://srv3.iptchain.net",
+        "restapi_host": "http://srv9.iptchain.net",
         "restapi_port": "10334",
-        "webapi_host": "http://srv3.iptchain.net",
+        "webapi_host": "http://srv9.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
       {
         "hostName": "IPTChain-10",
         "hostProvider": "IPTChain",
-        "restapi_host": "http://srv1.iptchain.net",
+        "restapi_host": "http://srv10.iptchain.net",
         "restapi_port": "10334",
-        "webapi_host": "http://srv1.iptchain.net",
+        "webapi_host": "http://srv10.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       }

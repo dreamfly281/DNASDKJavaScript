@@ -95,7 +95,7 @@ function prefixInteger(num, length) {
 
 /**************************************************************
  * Accurate addition, subtraction, multiplication and division.
- * 精确的加/减/乘/除，比较和显示。
+ * 精确的加/减/乘/除，比较，显示和十/十六进制转换。
  *
  * @constructor
  */
@@ -114,6 +114,14 @@ WalletMath.div = function (arg1, arg2) {
 };
 WalletMath.eq = function (arg1, arg2) {
     return new Decimal(arg1).eq(arg2);
+};
+WalletMath.lt = function (arg1, arg2) {
+    // if (arg1 < arg2) return true;
+    return new Decimal(arg1).lessThan(arg2);
+};
+WalletMath.lessThanOrEqTo = function (arg1, arg2) {
+    // if (arg1 <= arg2) return true;
+    return new Decimal(arg1).lessThanOrEqualTo(arg2);
 };
 WalletMath.fixView = function (arg) {
     return arg.toFixed(new Decimal(arg).dp());
@@ -283,7 +291,7 @@ Wallet.GetInputData = function ($coin, $amount) {
     var coin_ordered = $coin['Utxo'];
     for (i = 0; i < coin_ordered.length - 1; i++) {
         for (j = 0; j < coin_ordered.length - 1 - i; j++) {
-            if (parseFloat(coin_ordered[j].Value) < parseFloat(coin_ordered[j + 1].Value)) {
+            if (WalletMath.lt(coin_ordered[j].Value, coin_ordered[j + 1].Value)) {
                 var temp = coin_ordered[j];
                 coin_ordered[j] = coin_ordered[j + 1];
                 coin_ordered[j + 1] = temp;
@@ -294,17 +302,17 @@ Wallet.GetInputData = function ($coin, $amount) {
     // calc sum
     var sum = 0;
     for (i = 0; i < coin_ordered.length; i++) {
-        sum = sum + parseFloat(coin_ordered[i].Value);
+        sum = WalletMath.add(sum, coin_ordered[i].Value);
     }
 
     // if sum < amount then exit;
-    var amount = parseFloat($amount);
-    if (sum < amount) return -1;
+    var amount = $amount;
+    if (WalletMath.lt(sum, amount)) return -1;
 
     // find input coins
     var k = 0;
-    while (parseFloat(coin_ordered[k].Value) <= amount) {
-        amount = WalletMath.sub(amount, parseFloat(coin_ordered[k].Value));
+    while (WalletMath.lessThanOrEqTo(coin_ordered[k].Value, amount)) {
+        amount = WalletMath.sub(amount, coin_ordered[k].Value);
         if (amount == 0) break;
         k = k + 1;
     }
@@ -332,7 +340,7 @@ Wallet.GetInputData = function ($coin, $amount) {
     // calc coin_amount
     var coin_amount = 0;
     for (i = 0; i < k + 1; i++) {
-        coin_amount = coin_amount + parseFloat(coin_ordered[i].Value);
+        coin_amount = WalletMath.add(coin_amount, coin_ordered[i].Value);
     }
 
     return {
@@ -837,7 +845,7 @@ Wallet.makeTransferTransaction = function ($coin, $publicKeyEncoded, $toAddress,
     var transactionOutputValue = numStoreInMemory(WalletMath.toHex(newOutputAmount), 16);
     var transactionOutputProgramHash = ab2hexstring(ProgramHash);
 
-    if (inputAmount === Number($Amount)) {
+    if (WalletMath.eq(inputAmount, $Amount)) {
         data += transactionOutputNum + transactionOutputAssetID + transactionOutputValue + transactionOutputProgramHash;
     } else {
         transactionOutputNum = "02"; //有找零
