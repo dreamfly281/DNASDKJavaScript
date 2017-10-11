@@ -81,6 +81,7 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
         var valueStr = ab2hexstring(reverseArray(items.tx.outputs[0].value));
 
         $scope.Value = WalletMath.div(WalletMath.hexToNumToStr(valueStr), 100000000);
+        $scope.ValueView = WalletMath.fixView($scope.Value);
         $scope.AssetIDRev = ab2hexstring(reverseArray(items.tx.outputs[0].assetid));
         $scope.AssetID = ab2hexstring(items.tx.outputs[0].assetid);
         $scope.AssetName = "NULL";
@@ -98,7 +99,7 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
         }
 
         // Amount Verify failed.
-        if (items.amount != $scope.Value) {
+        if (! WalletMath.eq(items.amount, $scope.Value)) {
             console.log("Amount verify failed.");
             $scope.txModify = true;
         }
@@ -634,7 +635,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
      */
     $scope.changeDownloadSelectIndex = function ($downloadObj) {
         var folderName = $downloadObj.name.toLowerCase();
-        window.location.href = "http://" + $scope.domain +
+        window.location.href = $scope.domain +
             "/downloads/" + folderName + "/" +
             "wallet-" + $scope.desktopVersion + "-" + folderName + ".zip";
     };
