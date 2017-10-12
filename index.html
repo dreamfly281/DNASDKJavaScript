@@ -250,12 +250,6 @@
                             </label>
                         </div>
 
-                        <div class="radio">
-                            <label>
-                                <input type="radio" ng-model="walletType" value="pasteprivkey" name="radioprivkey" id="radioprivkey">
-                                <span translate="PRIVATE_KEY">Private Key</span>
-                            </label>
-                        </div>
                     </div>
                     <!-- Column 1 - Select Type of Key -->
 
@@ -274,19 +268,6 @@
 
                             <div ng-if="showBtnUnlock">
                                 <h4 translate="UNLOCK_YOUR_WALLET">Unlock your wallet</h4>
-                                <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
-                            </div>
-                        </div>
-
-                        <!-- pasteprivkey -->
-                        <div id="pasteprivkey" ng-if="walletType=='pasteprivkey'">
-                            <h4 translate="MT_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key</h4>
-                            <textarea class="form-control" ng-change="onPrivateKeyChange()" ng-model="$parent.privateKeyData" placeholder="" rows="3" aria-label="privateKeyData"></textarea>
-
-                            <br />
-
-                            <div ng-if="showBtnUnlockPrivateKey">
-                                <h4 translate="UNLOCK_YOUR_WALLET">Unlock your Wallet</h4>
                                 <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
                             </div>
                         </div>
