@@ -867,12 +867,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                     var successInfo = $translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH');
                     var clickUrl = $scope.explorerUrl + $scope.explorerSearchPath;
 
-                    if ($scope.txType === '64') {
-                        successInfo = successInfo + ab2hexstring(txhash) + " , <a target='_blank' href='" + clickUrl + ab2hexstring(txhash) + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>";
-                    } else {
-                        successInfo = successInfo + ab2hexstring(reverseArray(txhash)) + " , <a target='_blank' href='" + clickUrl + ab2hexstring(reverseArray(txhash)) + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>";
-                    }
-
+                    successInfo = successInfo + ab2hexstring(txhash) + " , <a target='_blank' href='" + clickUrl + ab2hexstring(txhash) + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>";
                     $scope.successInfoTimerVal = 60;
                     $scope.notifier.success(successInfo);
                     if ($scope.txType === '128'){
