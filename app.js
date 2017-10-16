@@ -280,7 +280,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
     $scope.createType = "fromRandomPrivateKey";
     $scope.objectURL = $scope.objectName = "";
 
-    $scope.styleStringOfCreatePassword1 = $scope.styleStringOfCreatePassword2 = "";
+    $scope.styleStringOfCreatePassword1 = $scope.styleStringOfCreatePassword2 = $scope.styleStringOfcheckOldPassword = "";
     $scope.isDisplayPassword = false;
     $scope.isDisplayPrivateKey = false;
     $scope.isDisplayAssetId = false;
@@ -292,6 +292,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
 
     $scope.showChangePassword = true;
     $scope.showChangePasswordDownload = false;
+    $scope.enterNewPassword = false;
 
     $scope.notifier = Notifier;
     $scope.notifier.sce = $sce;
@@ -454,6 +455,20 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         $scope.objectName = $scope.objectURL.substring($scope.objectURL.lastIndexOf('/') + 1);
 
         $scope.notifier.success($translate.instant('NOTIFIER_SUCCESS_GENERATE_THE_WALLET') + " <b>wallet--" + $scope.objectName + ".db3</b>");
+    };
+
+    $scope.checkOldPassword = function () {
+        var ret = Wallet.decryptWallet($scope.wallet, $scope.filePasswordCheck);
+        if (ret == -1) {
+            $scope.enterNewPassword = false;
+            $scope.styleStringOfcheckOldPassword = "has-warning";
+        } else if (ret == -2) {
+            $scope.enterNewPassword = false;
+            $scope.styleStringOfcheckOldPassword = "has-warning";
+        } else {
+            $scope.enterNewPassword = true;
+            $scope.styleStringOfcheckOldPassword = "has-success";
+        }
     };
 
 });
