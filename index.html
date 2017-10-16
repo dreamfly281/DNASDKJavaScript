@@ -109,11 +109,50 @@
 
         <br/>
 
+        <div class="row jumbotron" ng-show="showOpenWallet">
+            <!-- Column 1 - Select Type of Key -->
+            <div class="form-group col-lg-4 col-md-4 col-sm-6">
+                <h4 translate="MT_INFO">How would you like to access your wallet?</h4>
+                <div class="radio">
+                    <label>
+                        <input type="radio" ng-model="walletType" value="fileupload" name="radiofile" id="radiofile">
+                        <span translate="KEYSTORE_FILE">Keystore File (DB / DB3)</span>
+                    </label>
+                </div>
+
+            </div>
+            <!-- Column 1 - Select Type of Key -->
+
+            <div class="col-lg-8 col-md-8 col-sm-8">
+
+                <!-- fileupload -->
+                <div id="fileupload" ng-if="walletType=='fileupload'">
+                    <h4 translate="SELECT_YOUR_WALLET_FILE">Select Your Wallet File</h4>
+                    <input style="display:none;" type="file" on-read-file="showContent($wallet)" id="fselector" />
+                    <button class="btn btn-default btn-block" ng-click="openFileDialog()" translate="BTN_SELECT_WALLET_FILE">Select Wallet File...</button >
+
+                    <div ng-if="requirePass" class="form-group has-success">
+                        <label class="control-label" translate="MT_YOUR_WALLET_IS_ENCRYPTED">Your wallet is encrypted. Please enter the password:</label>
+                        <input class="form-control show-password" ng-change="onFilePassChange()" ng-model="$parent.$parent.filePassword" placeholder="{{ 'PASSWORD' | translate }}" type="text" onfocus="this.type='password'" autocomplete="off"/>
+                    </div>
+
+                    <div ng-if="showBtnUnlock">
+                        <h4 translate="UNLOCK_YOUR_WALLET">Unlock your wallet</h4>
+                        <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
         <!-- main -->
-        <div class="page-header">
+        <div class="page-header" ng-show="showMainTab">
             <ul class="nav nav-tabs" id="mainTab">
                 <li role="presentation"><a href="#generateWallet" data-toggle="tab" translate="GENERATE_WALLET">Generate Wallet</a></li>
                 <li role="presentation" class="active"><a href="#sendTransaction" data-toggle="tab" translate="SEND_TRANSACTION">Send Transaction</a></li>
+                <li role="presentation"><a href="#transactionRecord" data-toggle="tab" translate="TRANSACTION_RECORD">Transaction Record</a></li>
+                <li role="presentation"><a href="#more" data-toggle="tab" translate="MORE">More</a></li>
             </ul>
         </div>
 
@@ -238,42 +277,6 @@
 
             <!-- #sendTransaction tab-->
             <div class="tab-pane fade active in" id="sendTransaction">
-
-                <div class="row jumbotron" ng-show="showOpenWallet">
-                    <!-- Column 1 - Select Type of Key -->
-                    <div class="form-group col-lg-4 col-md-4 col-sm-6">
-                        <h4 translate="MT_INFO">How would you like to access your wallet?</h4>
-                        <div class="radio">
-                            <label>
-                                <input type="radio" ng-model="walletType" value="fileupload" name="radiofile" id="radiofile">
-                                <span translate="KEYSTORE_FILE">Keystore File (DB / DB3)</span>
-                            </label>
-                        </div>
-
-                    </div>
-                    <!-- Column 1 - Select Type of Key -->
-
-                    <div class="col-lg-8 col-md-8 col-sm-8">
-
-                        <!-- fileupload -->
-                        <div id="fileupload" ng-if="walletType=='fileupload'">
-                            <h4 translate="SELECT_YOUR_WALLET_FILE">Select Your Wallet File</h4>
-                            <input style="display:none;" type="file" on-read-file="showContent($wallet)" id="fselector" />
-                            <button class="btn btn-default btn-block" ng-click="openFileDialog()" translate="BTN_SELECT_WALLET_FILE">Select Wallet File...</button >
-
-                            <div ng-if="requirePass" class="form-group has-success">
-                                <label class="control-label" translate="MT_YOUR_WALLET_IS_ENCRYPTED">Your wallet is encrypted. Please enter the password:</label>
-                                <input class="form-control show-password" ng-change="onFilePassChange()" ng-model="$parent.$parent.filePassword" placeholder="{{ 'PASSWORD' | translate }}" type="text" onfocus="this.type='password'" autocomplete="off"/>
-                            </div>
-
-                            <div ng-if="showBtnUnlock">
-                                <h4 translate="UNLOCK_YOUR_WALLET">Unlock your wallet</h4>
-                                <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
 
                 <div class="row jumbotron" ng-show="showTransaction">
                     <!-- base info -->
@@ -403,6 +406,111 @@
                 </div>
 
             </div>
+
+            <!-- #transactionRecord tab-->
+            <div class="tab-pane fade" id="transactionRecord">
+
+            </div>
+
+            <!-- #More tab-->
+            <div class="tab-pane fade" id="more">
+
+                <div class="row jumbotron" ng-show="showMore">
+
+                    <div class="form-group col-lg-4 col-md-4 col-sm-6">
+                        <ul class="nav nav-tabs nav-stacked" id="moreSetting">
+                            <li class="active"><a href="#changePassword" data-t oggle="tab" translate="CHANGE_PASSWORD">Change Password</a></li>
+                            <li ><a href="#" data-t oggle="tab" translate="MORE">More</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-lg-8 col-md-8 col-sm-8">
+
+
+                        <div id="changePassword" ng-controller="GenerateWalletCtrl" >
+
+                            <div class="form-group" ng-show="showChangePassword">
+                                <!-- password confirm -->
+                                 <div class="form-group {{styleStringOfCreatePassword1}}">
+                                <label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8 characters):</label><br />
+                                <div class="input-group">
+                                    <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="password" onfocus="this.type='password'" autocomplete="off" />
+                                    <input ng-if="isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" />
+                                    <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword">
+                                        <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                    </span>
+                                    <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPassword">
+                                        <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                    </span>
+                                </div>
+                            </div>
+
+                                <div class="form-group {{styleStringOfCreatePassword2}}">
+                                <label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
+                                <input ng-if="!isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="password" onfocus="this.type='password'" autocomplete="off"/>
+                                <input ng-if="isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" />
+                            </div>
+
+                                <div id="privateOfChangePassword" class="form-group">
+                                <label class="control-label" translate="GW_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key:</label>
+                                <div class="input-group">
+                                    <label for="privateKey"></label><input ng-if="!isDisplayPrivateKey" class="form-control" type="password" ng-model="accounts[accountSelectIndex].privatekey" id="privateKey-change-password" name="privateKey" readonly="readonly" aria-label="privateKey">
+                                    <label for=""></label><input ng-if="isDisplayPrivateKey" class="form-control" type="text" ng-model="accounts[accountSelectIndex].privatekey" id="" name="privateKey" readonly="readonly" aria-label="privateKey">
+                                    <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPrivateKey">
+                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                </span>
+                                    <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPrivateKey">
+                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                </span>
+                                    <input class="form-control" type="hidden" id="key-chang-password" name="key" readonly="readonly" aria-label="key">
+                                </div>
+                            </div>
+
+                                <div class="form-group" ng-if="showBtnGenerateWallet">
+                                <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromChangePassword()" translate="CHANGE_PASSWORD">Change Password</button>
+                            </div>
+
+                            </div>
+
+                            <div class="row jumbotron" ng-show="showChangePasswordDownload">
+
+                                <div class="col-lg-12 col-md-12 col-sm-12">
+
+                                    <h4 translate="GW_SAVE_WALLET_FILE">1. Save your Wallet File encrypted by your password.</h4>
+                                    <div class="form-group">
+                                        <a tabindex="0" role="button" class="btn btn-primary btn-block" href="{{objectURL}}" download="wallet--{{objectName}}.db3" ng-click="downloaded()" translate="DOWNLOAD">Download</a>
+                                    </div>
+
+                                    <br />
+
+                                    <h4 translate="GW_YOUR_PRIVATE_KEY">2. Your Private Key, Please keep it safe.</h4>
+                                    <div class="form-group">
+                                        <div class="input-group">
+                                            <label for="privateKey"></label><input ng-if="!isDisplayPrivateKey" class="form-control" type="password" ng-model="privateKey" id="privateKey" name="privateKey" readonly="readonly" aria-label="privateKey">
+                                            <label for=""></label><input ng-if="isDisplayPrivateKey" class="form-control" type="text" ng-model="privateKey" id="" name="privateKey" readonly="readonly" aria-label="privateKey">
+                                            <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPrivateKey">
+                                                <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                            </span>
+                                            <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPrivateKey">
+                                                <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                            </span>
+                                            <input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key">
+                                        </div>
+                                     </div>
+                                    <br />
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
 
         </div>
 

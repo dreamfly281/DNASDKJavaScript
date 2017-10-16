@@ -2,6 +2,8 @@
   "SITE_TITLE" : "钱包",
   "GENERATE_WALLET": "生成钱包",
   "SEND_TRANSACTION": "发送交易",
+  "TRANSACTION_RECORD" : "交易记录",
+  "MORE" : "更多",
   "SIGNATURE_DATA": "数据签名",
   "TOOLS": "工具",
   "GW_INFO": "您想使用哪种方式创建您的钱包?",
@@ -127,5 +129,6 @@
   "DOWNLOAD": "下载",
   "HELLO": "你好",
   "REFRESH" : "点击可以刷新",
-  "DOWNLOADS" : "桌面版"
+  "DOWNLOADS" : "桌面版",
+  "CHANGE_PASSWORD" : "修改密码"
 }

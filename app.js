@@ -290,6 +290,9 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
     $scope.showCreateWalletDownload = false;
     $scope.showBtnGenerateWallet = false;
 
+    $scope.showChangePassword = true;
+    $scope.showChangePasswordDownload = false;
+
     $scope.notifier = Notifier;
     $scope.notifier.sce = $sce;
     $scope.notifier.scope = $scope;
@@ -427,6 +430,32 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         $scope.notifier.success($translate.instant('NOTIFIER_SUCCESS_GENERATE_THE_WALLET') + " <b>wallet--" + $scope.objectName + ".db3</b>");
     };
 
+    $scope.generateWalletFileFromChangePassword= function () {
+        if ($scope.createPassword1.length < 8) return;
+        if (!$scope.isDisplayPassword) {
+            if ($scope.createPassword2.length < 8) return;
+            if ($scope.createPassword1 != $scope.createPassword2) return;
+        }
+
+        $scope.accountSelectIndex = 0;
+        $scope.privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+
+
+        if ($scope.privateKey.length != 64) {
+            $scope.notifier.warning($translate.instant('NOTIFIER_PRIVATEKEY_LENGTH_CHECK_FAILED'));
+            return;
+        }
+
+        $scope.showChangePassword = false;
+        $scope.showChangePasswordDownload = true;
+
+        var walletBlob = Wallet.createAccount($scope.privateKey, $scope.createPassword1);
+        $scope.objectURL = window.URL.createObjectURL(new Blob([walletBlob], {type: 'application/octet-stream'}));
+        $scope.objectName = $scope.objectURL.substring($scope.objectURL.lastIndexOf('/') + 1);
+
+        $scope.notifier.success($translate.instant('NOTIFIER_SUCCESS_GENERATE_THE_WALLET') + " <b>wallet--" + $scope.objectName + ".db3</b>");
+    };
+
 });
 
 app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$modal,$filter) {
@@ -468,6 +497,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.showOpenWallet = true;
     $scope.showTransaction = false;
+    $scope.showMainTab = false;
+    $scope.showMore = false;
     $scope.showBtnUnlock = $scope.showBtnUnlockPrivateKey = $scope.showBtnUnlockWIFKey = $scope.showBtnUnlockExtSig = $scope.requirePass = false;
 
     $scope.notifier = Notifier;
@@ -737,6 +768,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                 $scope.showOpenWallet = false;
                 $scope.showTransaction = true;
+                $scope.showMainTab = true;
+                $scope.showMore = true;
 
                 // get unspent coins
                 $scope.getUnspent($scope.accounts[0].address);
@@ -752,6 +785,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                     $scope.showOpenWallet = false;
                     $scope.showTransaction = true;
+                    $scope.showMainTab = true;
+                    $scope.showMore = true;
 
                     // get unspent coins
                     $scope.getUnspent($scope.accounts[0].address);
@@ -770,6 +805,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                     $scope.showOpenWallet = false;
                     $scope.showTransaction = true;
+                    $scope.showMainTab = true;
+                    $scope.showMore = true;
 
                     // get unspent coins
                     $scope.getUnspent($scope.accounts[0].address);
@@ -788,6 +825,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                     $scope.showOpenWallet = false;
                     $scope.showTransaction = true;
+                    $scope.showMainTab = true;
+                    $scope.showMore = true;
 
                     // get unspent coins
                     $scope.getUnspent($scope.accounts[0].address);
