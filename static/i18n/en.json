@@ -1,6 +1,6 @@
 {
   "SITE_TITLE" : "Wallet",
-  "GENERATE_WALLET": "Generate Wallet",
+  "GENERATE_WALLET": "Generate New Wallet",
   "SEND_TRANSACTION": "Send Transaction",
   "TRANSACTION_RECORD" : "Transaction Record",
   "MORE" : "More",

@@ -22,6 +22,7 @@
 	<script src="https://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
 	<script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;}</script>
 	<script src="static/js/vendor/plugins.js"></script>
+    <script src="static/js/vendor/yanue.pop.js"></script>
 
 	<script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
 	<script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate.min.js"></script>
@@ -46,6 +47,9 @@
 
 	<script language="javascript">
         function setTabFromURL() {
+            //The message of pop
+            var pop=new Pop("这里是标题，哈哈","http://sc.chinaz.com/","请输入你的内容简介，这里是内容简介.请输入你的内容简介，这里是内容简介.请输入你的内容简介，这里是内容简介");
+
             var url = document.location.toString();
             if (url.match('#')) {
                 $('#mainTab a[href="#'+url.split('#')[1]+'"]').tab('show');
@@ -60,6 +64,20 @@
 </head>
 
 <body ng-controller="WalletCtrl" ng-init="init()">
+
+    <div id="pop" style="display:none;	">
+        <div id="popHead"> <a id="popClose" title="关闭">关闭</a>
+            <h2>温馨提示</h2>
+        </div>
+        <div id="popContent">
+            <dl>
+                <dt id="popTitle"><a href="http://sc.chinaz.com/" target="_blank">这里是标题</a></dt>
+                <dd id="popIntro">这里是内容简介</dd>
+            </dl>
+            <p id="popMore"><a href="http://sc.chinaz.com/" target="_blank">查看 »</a></p>
+        </div>
+    </div>
+
     <!--[if lt IE 8]>
     <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
@@ -115,7 +133,7 @@
 
         <div class="row jumbotron" ng-show="showOpenWallet">
             <!-- Column 1 - Select Type of Key -->
-            <div class="form-group col-lg-4 col-md-4 col-sm-6">
+<!--            <div class="form-group col-lg-4 col-md-4 col-sm-6">
                 <h4 translate="MT_INFO">How would you like to access your wallet?</h4>
                 <div class="radio">
                     <label>
@@ -124,7 +142,7 @@
                     </label>
                 </div>
 
-            </div>
+            </div>-->
             <!-- Column 1 - Select Type of Key -->
 
             <div class="col-lg-8 col-md-8 col-sm-8">
@@ -144,16 +162,133 @@
                         <h4 translate="UNLOCK_YOUR_WALLET">Unlock your wallet</h4>
                         <button class="btn btn-primary btn-block" ng-click="decryptWallet()" translate="BTN_UNLOCK">Unlock</button>
                     </div>
+                    <div id="">
+                        <a class="btn btn-link "style="font-size: 15px;color:#000000" ng-click="showGenerateNewWallet()" translate="GENERATE_WALLET">Generate New Wallet</a>
+                        <a class="btn btn-link "style="font-size: 15px;color:#000000" ng-click="showGenerateNewWallet()" translate="FROM_PRIVATE_KEY">From Private Key</a>
+                    </div>
                 </div>
 
             </div>
         </div>
 
+        <!-- #generateWallet tab-->
+        <div class="row jumbotron" id="generateWallet" ng-show="showGenerateWallet" ng-controller="GenerateWalletCtrl">
+
+            <div class="row jumbotron" ng-show="showCreateWallet">
+
+                <!-- Column 1 - Select Type of Create -->
+                <div class="form-group col-lg-4 col-md-4 col-sm-4">
+                    <h4 translate="GW_INFO">What type would you like to create your wallet?</h4>
+                    <div class="radio">
+                        <label>
+                            <input type="radio" ng-model="createType" value="fromRandomPrivateKey" name="radioFromRandomPrivateKey" id="radioFromRandomPrivateKey">
+                            <span translate="NEW_WALLET">New Wallet</span>
+                        </label>
+                    </div>
+
+                    <div class="radio">
+                        <label>
+                            <input type="radio" ng-model="createType" value="fromPrivateKey" name="radioFromPrivateKey" id="radioFromPrivateKey">
+                            <span translate="FROM_PRIVATE_KEY">From Private Key</span>
+                        </label>
+                    </div>
+                </div>
+                <!-- Column 1 - Select Type of Key -->
+
+                <div class=" col-lg-8 col-md-8 col-sm-8">
+
+                    <!-- password confirm -->
+                    <div class="form-group {{styleStringOfCreatePassword1}}">
+                        <label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8 characters):</label><br />
+                        <div class="input-group">
+                            <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="password" onfocus="this.type='password'" autocomplete="off" />
+                            <input ng-if="isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" />
+                            <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword">
+                                        <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                    </span>
+                            <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPassword">
+                                        <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                    </span>
+                        </div>
+                    </div>
+
+                    <div class="form-group {{styleStringOfCreatePassword2}}">
+                        <label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
+                        <input ng-if="!isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="password" onfocus="this.type='password'" autocomplete="off"/>
+                        <input ng-if="isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" />
+                    </div>
+
+                    <!-- fromRandomPrivateKey -->
+                    <div id="fromRandomPrivateKey" ng-if="createType=='fromRandomPrivateKey'">
+                        <br />
+
+                        <div class="form-group" ng-if="showBtnGenerateWallet">
+                            <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromRandomPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
+                        </div>
+                    </div>
+
+                    <!-- fromPrivateKey -->
+                    <div id="fromPrivateKey" ng-if="createType=='fromPrivateKey'">
+                        <div class="form-group">
+                            <label class="control-label" translate="GW_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key:</label>
+                            <input class="form-control" type="text" ng-model="$parent.privateKey" placeholder="" aria-label="">
+                        </div>
+
+                        <div class="form-group" ng-if="showBtnGenerateWallet">
+                            <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="row jumbotron" ng-show="showCreateWalletDownload">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+
+                    <h4 translate="GW_SAVE_WALLET_FILE">1. Save your Wallet File encrypted by your password.</h4>
+                    <div class="form-group">
+                        <a tabindex="0" role="button" class="btn btn-primary btn-block" href="{{objectURL}}" download="wallet--{{objectName}}.db3" ng-click="downloaded()" translate="DOWNLOAD">Download</a>
+                    </div>
+
+                    <br />
+
+                    <h4 translate="GW_YOUR_PRIVATE_KEY">2. Your Private Key, Please keep it safe.</h4>
+                    <div class="form-group">
+                        <div class="input-group">
+                            <label for="privateKey"></label><input ng-if="!isDisplayPrivateKey" class="form-control" type="password" ng-model="privateKey" id="privateKey" name="privateKey" readonly="readonly" aria-label="privateKey">
+                            <label for=""></label><input ng-if="isDisplayPrivateKey" class="form-control" type="text" ng-model="privateKey" id="" name="privateKey" readonly="readonly" aria-label="privateKey">
+                            <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPrivateKey">
+                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                </span>
+                            <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPrivateKey">
+                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button>
+                                </span>
+                            <input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key">
+                        </div>
+                    </div>
+
+                    <br />
+
+                    <h4 translate="GW_YOUR_ADDRESS">3. Your address.</h4>
+                    <div class="form-group">
+                        <input class="form-control" type="text" ng-model="address" id="address" name="address" readonly="readonly">
+                    </div>
+
+                    <br />
+
+                    <div class="form-group" ng-if="fileDownloaded">
+                        <button class="btn btn-default btn-block" ng-click="nextstep()" translate="GW_NEXT_STEP">Next Step: Make Transaction</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
 
         <!-- main -->
         <div class="page-header" ng-show="showMainTab">
             <ul class="nav nav-tabs" id="mainTab">
-                <li role="presentation"><a href="#generateWallet" data-toggle="tab" translate="GENERATE_WALLET">Generate Wallet</a></li>
                 <li role="presentation" class="active"><a href="#sendTransaction" data-toggle="tab" translate="SEND_TRANSACTION">Send Transaction</a></li>
                 <li role="presentation"><a href="#transactionRecord" data-toggle="tab" translate="TRANSACTION_RECORD">Transaction Record</a></li>
                 <li role="presentation"><a href="#more" data-toggle="tab" translate="MORE">More</a></li>
@@ -161,123 +296,6 @@
         </div>
 
         <div class="tab-content">
-
-            <!-- #generateWallet tab-->
-            <div class="tab-pane fade" id="generateWallet" ng-controller="GenerateWalletCtrl">
-
-
-                <div class="row jumbotron" ng-show="showCreateWallet">
-
-                    <!-- Column 1 - Select Type of Create -->
-                    <div class="form-group col-lg-4 col-md-4 col-sm-4">
-                        <h4 translate="GW_INFO">What type would you like to create your wallet?</h4>
-                        <div class="radio">
-                            <label>
-                                <input type="radio" ng-model="createType" value="fromRandomPrivateKey" name="radioFromRandomPrivateKey" id="radioFromRandomPrivateKey">
-                                <span translate="NEW_WALLET">New Wallet</span>
-                            </label>
-                        </div>
-
-                        <div class="radio">
-                            <label>
-                                <input type="radio" ng-model="createType" value="fromPrivateKey" name="radioFromPrivateKey" id="radioFromPrivateKey">
-                                <span translate="FROM_PRIVATE_KEY">From Private Key</span>
-                            </label>
-                        </div>
-                    </div>
-                    <!-- Column 1 - Select Type of Key -->
-
-                    <div class=" col-lg-8 col-md-8 col-sm-8">
-
-                        <!-- password confirm -->
-                        <div class="form-group {{styleStringOfCreatePassword1}}">
-                            <label class="control-label" translate="ENTER_PWD_1">Enter a strong password (at least 8 characters):</label><br />
-                            <div class="input-group">
-                                <input ng-if="!isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="password" onfocus="this.type='password'" autocomplete="off" />
-                                <input ng-if="isDisplayPassword" class="form-control" ng-change="changeCreatePassword1()" ng-model="$parent.createPassword1" placeholder="{{ 'PASSWORD' | translate }}" aria-label="password" type="text" />
-                                <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPassword">
-                                        <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button>
-                                    </span>
-                                <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPassword">
-                                        <button type="button" class="btn btn-default" ng-click="changeDisplayPassword()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button>
-                                    </span>
-                            </div>
-                        </div>
-
-                        <div class="form-group {{styleStringOfCreatePassword2}}">
-                            <label class="control-label" translate="RE_ENTER_PASSWORD">Re-Enter password:</label>
-                            <input ng-if="!isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="password" onfocus="this.type='password'" autocomplete="off"/>
-                            <input ng-if="isDisplayPassword" class="form-control " ng-change="changeCreatePassword2()" ng-model="$parent.createPassword2" placeholder="{{ 'RE_ENTER_PASSWORD' | translate }}" type="text" />
-                        </div>
-
-                        <!-- fromRandomPrivateKey -->
-                        <div id="fromRandomPrivateKey" ng-if="createType=='fromRandomPrivateKey'">
-                            <br />
-
-                            <div class="form-group" ng-if="showBtnGenerateWallet">
-                                <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromRandomPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
-                            </div>
-                        </div>
-
-                        <!-- fromPrivateKey -->
-                        <div id="fromPrivateKey" ng-if="createType=='fromPrivateKey'">
-                            <div class="form-group">
-                                <label class="control-label" translate="GW_PASTE_YOUR_PRIVATE_KEY">Paste Your Private Key:</label>
-                                <input class="form-control" type="text" ng-model="$parent.privateKey" placeholder="" aria-label="">
-                            </div>
-
-                            <div class="form-group" ng-if="showBtnGenerateWallet">
-                                <button class="btn btn-primary btn-block" ng-click="generateWalletFileFromPrivateKey()" translate="GENERATE_WALLET">Generate Wallet</button>
-                            </div>
-                        </div>
-
-
-                    </div>
-
-                </div>
-
-                <div class="row jumbotron" ng-show="showCreateWalletDownload">
-                    <div class="col-lg-12 col-md-12 col-sm-12">
-
-                        <h4 translate="GW_SAVE_WALLET_FILE">1. Save your Wallet File encrypted by your password.</h4>
-                        <div class="form-group">
-                            <a tabindex="0" role="button" class="btn btn-primary btn-block" href="{{objectURL}}" download="wallet--{{objectName}}.db3" ng-click="downloaded()" translate="DOWNLOAD">Download</a>
-                        </div>
-
-                        <br />
-
-                        <h4 translate="GW_YOUR_PRIVATE_KEY">2. Your Private Key, Please keep it safe.</h4>
-                        <div class="form-group">
-                            <div class="input-group">
-                                <label for="privateKey"></label><input ng-if="!isDisplayPrivateKey" class="form-control" type="password" ng-model="privateKey" id="privateKey" name="privateKey" readonly="readonly" aria-label="privateKey">
-                                <label for=""></label><input ng-if="isDisplayPrivateKey" class="form-control" type="text" ng-model="privateKey" id="" name="privateKey" readonly="readonly" aria-label="privateKey">
-                                <span class="input-group-btn" style="font-size: 15px" ng-if="!isDisplayPrivateKey">
-                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye" aria-hidden="true"></i>&nbsp;&nbsp;</button>
-                                </span>
-                                <span class="input-group-btn" style="font-size: 15px" ng-if="isDisplayPrivateKey">
-                                    <button type="button" class="btn btn-default" ng-click="changeDisplayPrivateKey()">&nbsp;&nbsp;<i class="fa fa-eye-slash" aria-hidden="true"></i>&nbsp;&nbsp;</button>
-                                </span>
-                                <input class="form-control" type="hidden" id="key" name="key" readonly="readonly" aria-label="key">
-                            </div>
-                        </div>
-
-                        <br />
-
-                        <h4 translate="GW_YOUR_ADDRESS">3. Your address.</h4>
-                        <div class="form-group">
-                            <input class="form-control" type="text" ng-model="address" id="address" name="address" readonly="readonly">
-                        </div>
-
-                        <br />
-
-                        <div class="form-group" ng-if="fileDownloaded">
-                            <button class="btn btn-default btn-block" ng-click="nextstep()" translate="GW_NEXT_STEP">Next Step: Make Transaction</button>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
 
             <!-- #sendTransaction tab-->
             <div class="tab-pane fade active in" id="sendTransaction">
@@ -429,7 +447,6 @@
                     </div>
 
                     <div class="col-lg-8 col-md-8 col-sm-8">
-
 
                         <div id="changePassword" ng-controller="GenerateWalletCtrl" >
 

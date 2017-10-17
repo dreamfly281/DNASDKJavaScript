@@ -1,6 +1,6 @@
 ﻿{
   "SITE_TITLE" : "钱包",
-  "GENERATE_WALLET": "生成钱包",
+  "GENERATE_WALLET": "生成新钱包",
   "SEND_TRANSACTION": "发送交易",
   "TRANSACTION_RECORD" : "交易记录",
   "MORE" : "更多",

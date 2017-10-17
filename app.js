@@ -512,6 +512,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.showOpenWallet = true;
     $scope.showTransaction = false;
+    $scope.showGenerateWallet = false;
     $scope.showMainTab = false;
     $scope.showMore = false;
     $scope.showBtnUnlock = $scope.showBtnUnlockPrivateKey = $scope.showBtnUnlockWIFKey = $scope.showBtnUnlockExtSig = $scope.requirePass = false;
@@ -655,6 +656,11 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }, function (reason) {
         });
     };
+
+    $scope.showGenerateNewWallet = function(){
+        $scope.showOpenWallet = false;
+        $scope.showGenerateWallet = true;
+    }
 
     $scope.changeLangSelectIndex = function () {
         // $scope.langSelectIndex = $index;
