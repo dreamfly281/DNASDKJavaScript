@@ -1,2 +1,5 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea/
+node_modules/
+static/css/bootstarp-3.3.7-*
+static/css/bootstrap-4.0.0-beta.min.css

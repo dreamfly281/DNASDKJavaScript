@@ -9,8 +9,9 @@ var secp256r1 = require('secp256k1');
 var randomBytes = require('crypto').randomBytes;
 var BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 var base58 = require('base-x')(BASE58);
-//var sm2 = require('sm.js').sm2;
-//var sm3 = require('sm.js').sm3;transferTransactionUnsigned
+//var Decimal = require('decimal.js'); // 仅用于electron打包上
+
+
 
 function ab2str(buf) {
     return String.fromCharCode.apply(null, new Uint8Array(buf));
