@@ -89,6 +89,7 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
         for (i = 0; i < $scope.coins.length; i++) {
             if ($scope.coins[i].AssetId == $scope.AssetIDRev) {
                 $scope.AssetName = $scope.coins[i].AssetName;
+
             }
         }
 
@@ -290,8 +291,6 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
     $scope.showCreateWalletDownload = false;
     $scope.showBtnGenerateWallet = false;
 
-    $scope.showChangePassword = true;
-    $scope.showChangePasswordDownload = false;
     $scope.enterNewPassword = false;
 
     $scope.notifier = Notifier;
@@ -352,9 +351,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         $scope.fileDownloaded = true;
     };
 
-    $scope.nextstep = function () {
-        $('#mainTab a[href="#sendTransaction"]').tab('show');
-    };
+
 
     $scope.generateWalletFileFromRandomPrivateKey = function () {
         if ($scope.createPassword1.length < 8) return;
@@ -450,6 +447,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         $scope.showChangePassword = false;
         $scope.showChangePasswordDownload = true;
 
+
         var walletBlob = Wallet.createAccount($scope.privateKey, $scope.createPassword1);
         $scope.objectURL = window.URL.createObjectURL(new Blob([walletBlob], {type: 'application/octet-stream'}));
         $scope.objectName = $scope.objectURL.substring($scope.objectURL.lastIndexOf('/') + 1);
@@ -470,6 +468,8 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
             $scope.styleStringOfcheckOldPassword = "has-success";
         }
     };
+
+
 
 });
 
@@ -507,15 +507,37 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         {name: "Linux"}
     ];
 
+    $scope.settingSelectIndex = 0;
+    $scope.settings=[
+        {name: "HELP"},
+        {name: "NOTICE"}
+    ];
+
+
     $scope.txType = "128"; //默认下拉选项
     $scope.txTypes = [];
 
+
+    $scope.showAllMainPage = true;
+    $scope.showWalletMainPager = false;
     $scope.showOpenWallet = true;
     $scope.showTransaction = false;
     $scope.showGenerateWallet = false;
+    $scope.showGenerateWalletFromRandom = false;
+    $scope.showGenerateWalletFromPrivateKey = false;
+    $scope.showCreateWalletDownload = false;
+    $scope.showAllChangePassword = false;
+    $scope.showChangePassword = false;
+    $scope.showChangePasswordDownload = false;
+    $scope.showAllAssestMsg = false;
+    $scope.showNoticeCenter = false;
+    $scope.showTransactionRecord = false;
     $scope.showMainTab = false;
     $scope.showMore = false;
     $scope.showBtnUnlock = $scope.showBtnUnlockPrivateKey = $scope.showBtnUnlockWIFKey = $scope.showBtnUnlockExtSig = $scope.requirePass = false;
+    $scope.showMoreAssetButton = true;
+    $scope.showNoAsset = false;
+    $scope.showOnlyOneAsset = false;
 
     $scope.notifier = Notifier;
     $scope.notifier.sce = $sce;
@@ -657,10 +679,49 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         });
     };
 
-    $scope.showGenerateNewWallet = function(){
+    $scope.showGenerateNewWalletFromRandom = function(){
         $scope.showOpenWallet = false;
         $scope.showGenerateWallet = true;
+        $scope.showGenerateWalletFromRandom = true;
     }
+
+    $scope.showGenerateNewWalletFromPrivateKey = function(){
+        $scope.showOpenWallet = false;
+        $scope.showGenerateWallet = true;
+        $scope.showGenerateWalletFromPrivateKey = true;
+    }
+    $scope.returnGenerateWalletFromRandom = function(){
+        $scope.showOpenWallet = true;
+        $scope.showGenerateWallet = false;
+        $scope.showGenerateWalletFromRandom = false;
+    }
+    $scope.returnGenerateWalletFromPrivateKey = function(){
+        $scope.showOpenWallet = true;
+        $scope.showGenerateWallet = false;
+        $scope.showGenerateWalletFromPrivateKey = false;
+    }
+
+    $scope.returnOpenWalletFromChangePassword = function(){
+        $scope.showAllMainPage = true;
+        $scope.showChangePassword = false;
+        $scope.showAllChangePassword = false;
+    }
+
+    $scope.returnOpenWalletFromChangePasswordDownload = function(){
+        // $scope.showTransaction = true;
+        $scope.showAllMainPage = true;
+        $scope.showWalletMainPage = true;
+        $scope.showChangePasswordDownload = false;
+        $scope.showAllChangePassword = false;
+
+
+    }
+
+    $scope.nextstep = function () {
+        $scope.showCreateWalletDownload = false;
+        $scope.showGenerateWallet = false;
+        $scope.showOpenWallet = true;
+    };
 
     $scope.changeLangSelectIndex = function () {
         // $scope.langSelectIndex = $index;
@@ -679,6 +740,41 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         });
     };
 
+    $scope.showAllAssestMsgTab = function(){
+        $scope.showTransaction = false;
+        $scope.showAllAssestMsg = true;
+    }
+
+    $scope.showTransactionRecordTab = function(){
+        $scope.showTransaction = false;
+        $scope.showTransactionRecord = true;
+    }
+
+    $scope.showNoticeCenterTab = function(){
+        $scope.showAllMainPage = false;
+        $scope.showNoticeCenter = true;
+    }
+
+    $scope.showChangePasswordTab = function(){
+        $scope.showAllMainPage = false;
+        $scope.showChangePassword = true;
+        $scope.showAllChangePassword = true;
+    }
+
+    $scope.returnFromTransactionRecord = function(){
+        $scope.showTransaction = true;
+        $scope.showTransactionRecord = false;
+    }
+
+    $scope.returnFromAllAssestMsg = function(){
+        $scope.showTransaction = true;
+        $scope.showAllAssestMsg = false;
+    }
+
+    $scope.returnFromNoticeCenter = function(){
+        $scope.showAllMainPage = true;
+        $scope.showNoticeCenter = false;
+    }
     /**
      * Download desktop wallet file.
      * Download URL example: http://[domain]/downloads/[folderName]/wallet-v1.0.0-[folderName].zip
@@ -692,6 +788,17 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
             "wallet-" + $scope.desktopVersion + "-" + folderName + ".zip";
     };
 
+    $scope.changeSettingSelectIndex = function ($settingObj) {
+
+        if ($settingObj.name == "HELP") {
+            alert("Help");
+        }else if ($settingObj.name == "NOTICE"){
+            $scope.showNoticeCenterTab();
+        }else if ($settingObj.name == "CHANGE_PASSWORD"){
+            $scope.showChangePasswordTab();
+        }
+
+    };
     $scope.changehostSelectIndex = function ($index) {
         $scope.hostSelectIndex = $index;
         $scope.connectNode();
@@ -792,6 +899,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                 $scope.showMainTab = true;
                 $scope.showMore = true;
 
+
+
                 // get unspent coins
                 $scope.getUnspent($scope.accounts[0].address);
 
@@ -845,6 +954,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                     $scope.accounts = ret;
 
                     $scope.showOpenWallet = false;
+                    $scope.showWalletMainPager = true;
                     $scope.showTransaction = true;
                     $scope.showMainTab = true;
                     $scope.showMore = true;
@@ -884,9 +994,34 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         Wallet.GetUnspent($http, $address, host, $scope.GetUnspent_Callback, $scope.catchProblem);
         $scope.isShowNotifier = false;
         Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
+
+        $scope.settings=[
+            {name: "HELP"},
+            {name: "NOTICE"},
+            {name: "CHANGE_PASSWORD"},
+        ];
+        //$scope.getHighChartData();
+        Wallet.GetHighChartData($http,$scope.getHighChartData,$scope.catchProblem);
+
+
     };
     $scope.GetUnspent_Callback =function (res) {
         $scope.coins = Wallet.analyzeCoins(res);
+
+        if ($scope.coins.length == 0){
+            $scope.showNoAsset = true;
+            $scope.showMoreAssetButton = false;
+            $scope.showOnlyOneAsset = false;
+        }else if($scope.coins.length == 1){
+            $scope.showNoAsset = false;
+            $scope.showMoreAssetButton = false;
+            $scope.showOnlyOneAsset = true;
+        }else{
+            $scope.showNoAsset = false;
+            $scope.showOnlyOneAsset = false;
+            $scope.showMoreAssetButton = true;
+        }
+
     };
 
     $scope.connectNode = function () {
@@ -897,6 +1032,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     };
 
     $scope.getNodeHeight_Callback = function (res) {
+
         if (res.status == 200) {
             if (res.data.Result > 0) {
                 $scope.nodeHeight = res.data.Result;
@@ -1269,10 +1405,104 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }, 1000);
 
 
+    };
+
+
+    $scope.getHighChartData = function (res) {
+
+
+            console.log(res);
+            console.log(res.data.model.length);
+
+            var models = res.data.model;
+            if (models !== null) {
+                var history = [];
+                var j = 19;
+                var createTime = [];
+                var price = [];
+                for (let i = 0; i < models.length; i = i+5) {
+                    history[j] = models[i] ;
+                    createTime[j] = formatDateTime(history[j].createtime*1000);
+                    price[j] = history[j].price;
+                    j--;
+                }
+
+
+                var m = [1,2,3,4,5,6,7];
+                var nowPrice = history[19].price;
+
+                try{
+                    var title = {
+                        text: 'IPT交易数据'
+                    };
+                    var subtitle = {
+                        text: '当前交易价格：'+ nowPrice+'HKD'
+                    };
+                    var xAxis = {
+                        categories: createTime
+                    };
+                    var yAxis = {
+                        title: {
+                            text: 'Price(HKD)'
+                        },
+                        plotLines: [{
+                            value: 0,
+                            width: 1,
+                            color: '#808080'
+                        }]
+                    };
+
+                    var tooltip = {
+                        valueSuffix: 'HKD'
+                    }
+
+                    var legend = {
+                        layout: 'vertical',
+                        align: 'right',
+                        verticalAlign: 'middle',
+                        borderWidth: 0
+                    };
+
+                    var series =  [
+                        {
+                            name: 'IPT',
+                            data: price
+                        },
+                    ];
+
+                    var json = {};
+
+                    json.title = title;
+                    json.subtitle = subtitle;
+                    json.xAxis = xAxis;
+                    json.yAxis = yAxis;
+                    json.tooltip = tooltip;
+                    json.legend = legend;
+                    json.series = series;
+
+                    // return json;
+                    $('#container').highcharts(json);
+                }catch (err){
+                    console.log(err.message)
+                }
+     } else {
+        console.log(res);
+     }
     }
 
-
 });
+
+var formatDateTime = function(inputTime) {
+    var date = new Date(inputTime);
+    Y = date.getFullYear() + '-';
+    M = (date.getMonth()+1 < 10 ? '0'+(date.getMonth()+1) : date.getMonth()+1) + '-';
+    D = date.getDate() ;
+    h = date.getHours() ;
+    m = date.getMinutes() ;
+    s = date.getSeconds();
+    return M +D+' '+h + ':'+ m;
+};
+
 
 var Transaction = function Transaction() {
     this.type = 0;
@@ -1351,3 +1581,6 @@ var Notifier = {
         }, 5000);
     }
 };
+
+
+

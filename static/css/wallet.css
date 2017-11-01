@@ -8,6 +8,13 @@ html,body {
 	text-transform: none;
 }
 
+.line {
+	height:1px;
+	width:100%;
+	background:#ECF0F1;
+	overflow:hidden;
+}
+
 .page-header {
 	margin: 0;
 }
@@ -86,14 +93,14 @@ span {
 
 /* pop */
 #pop{background:#fff;width:260px;border:1px solid #e0e0e0;font-size:12px;position: fixed;right:10px;bottom:55px;}
-#popHead{line-height:32px;background:#f6f0f3;border-bottom:1px solid #e0e0e0;position:relative;font-size:12px;padding:0 0 0 10px;}
-#popHead h2{font-size:14px;color:#666;line-height:32px;height:32px;margin-top: 0px;margin-bottom: 0px}
-#popHead #popClose{position:absolute;right:10px;top:1px;}
-#popHead a#popClose:hover{color:#f00;cursor:pointer;}
+#popHead{line-height:32px;background:#2C3E50;border-bottom:1px solid #374752;position:relative;font-size:12px;padding:0 0 0 10px;}
+#popHead h2{font-size:14px;color:#ffffff;line-height:32px;height:32px;margin-top: 0px;margin-bottom: 0px}
+#popHead #popClose{position:absolute;right:10px;top:1px;color:#ffffff;}
+#popHead a#popClose:hover{color:#3498DB;cursor:pointer;}
 #popContent{padding:5px 10px;}
 #popTitle a{line-height:24px;font-size:14px;font-family:'微软雅黑';color:#333;font-weight:bold;text-decoration:none;}
-#popTitle a:hover{color:#f60;}
+#popTitle a:hover{color:#3498DB;}
 #popIntro{text-indent:24px;line-height:160%;margin:5px 0;color:#666;}
 #popMore{text-align:right;border-top:1px dotted #ccc;line-height:24px;margin:8px 0 0 0;}
-#popMore a{color:#f60;}
-#popMore a:hover{color:#f00;}
+#popMore a{color:#3498DB;}
+#popMore a:hover{color:#3498DB;}

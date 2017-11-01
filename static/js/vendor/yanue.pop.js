@@ -85,7 +85,7 @@ function Pop(title,url,intro){
 	this.intro=intro;
 	this.apearTime=1000;
 	this.hideTime=500;
-	this.delay=100000000;
+	this.delay=5000;
 	//添加信息
 	this.addInfo();
 	//显示
@@ -97,9 +97,10 @@ function Pop(title,url,intro){
 
 Pop.prototype={
   addInfo:function(){
-    $("#popTitle a").attr('href',this.url).html(this.title);
+/*    $("#popTitle a").attr('href',this.url).html(this.title);*/
+      $("#popTitle a").html(this.title);
     $("#popIntro").html(this.intro);
-    $("#popMore a").attr('href',this.url);
+/*    $("#popMore a").attr('href',this.url);*/
   },
   showDiv:function(time){
 		if (!(!$.support.style)) {
@@ -116,5 +117,15 @@ Pop.prototype={
   		  $('#pop').hide();
   		}
     );
-  }
+
+      $("#popTitle a").click(function(){
+              $('#pop').hide();
+          }
+      );
+
+      $("#popMore a").click(function(){
+              $('#pop').hide();
+          }
+      );
+  },
 }
