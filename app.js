@@ -1327,44 +1327,58 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     };
 
     $scope.getTransferTxData = function ($txData) {
-        var ba = new Buffer($txData, "hex");
-        var tx = new Transaction();
-        var k = 2;
+      var ba = new Buffer($txData, "hex");
+      var tx = new Transaction();
+      var k = 2;
 
-        // Transfer Type
-        if (ba[0] != 0x80) return;
-        tx.type = ba[0];
+      // Transfer Type
+      if (ba[0] != 0x80) return;
+      tx.type = ba[0];
 
-        // Version
-        tx.version = ba[1];
+      // Version
+      tx.version = ba[1];
 
-        // Attributes
-        if (ba[k] !== 0) {
-            k = k + 2 + ba[k + 2];
-        }
+      // Attributes
+      if (ba[k] !== 0) {
+        k = k + 2 + ba[k + 2];
+      }
 
-        // Inputs
-        k = k + 1;
+      // Inputs Length
+      k = k + 1;
+      let len = ba[k];
+      if (ba[k] < 253) {
         len = ba[k];
-        for (i = 0; i < len; i++) {
-            tx.inputs.push({txid: ba.slice(k + 1, k + 33), index: ba.slice(k + 33, k + 35)});
-            k = k + 34;
-        }
+      } else if (ba[k] === 253) {
+        len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 3))));
+        k += 2;
+      } else if (ba[k] === 254) {
+        len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 5))));
+        k += 4;
+      } else { // 255
+        len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 9))));
+        k += 8;
+      }
 
-        // Outputs
-        k = k + 1;
-        len = ba[k];
+      // Inputs
+      for (i = 0; i < len; i++) {
+        tx.inputs.push({txid: ba.slice(k + 1, k + 33), index: ba.slice(k + 33, k + 35)});
+        k = k + 34;
+      }
 
-        for (i = 0; i < len; i++) {
-            tx.outputs.push({
-                assetid: ba.slice(k + 1, k + 33),
-                value: ba.slice(k + 33, k + 41),
-                scripthash: ba.slice(k + 41, k + 61)
-            });
-            k = k + 60;
-        }
+      // Outputs
+      k = k + 1;
+      len = ba[k];
 
-        return tx;
+      for (i = 0; i < len; i++) {
+        tx.outputs.push({
+          assetid: ba.slice(k + 1, k + 33),
+          value: ba.slice(k + 33, k + 41),
+          scripthash: ba.slice(k + 41, k + 61)
+        });
+        k = k + 60;
+      }
+
+      return tx;
     };
 
     $scope.getClaimTxData = function ($txData) {

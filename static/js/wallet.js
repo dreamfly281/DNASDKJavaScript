@@ -287,6 +287,42 @@ Wallet.GetTxHash = function ($data) {
     return DataSha256_2.toString();
 };
 
+/**
+ * 配合后端的WriteVarUint
+ *
+ * @param orderNum
+ * @return {{firstVal: *, length: number, inputNum: string}}
+ * @constructor
+ */
+Wallet.InputDataLength = function (orderNum) {
+  let firstVal = orderNum + 1;
+  let len = 0;
+  let inputNum = orderNum + 1;
+
+  if (orderNum < 253) { // 0xFD
+    len = 1;
+    inputNum = numStoreInMemory(inputNum.toString(16), 2)
+  } else if (orderNum < 65535) { // 0xFFFF
+    firstVal = 253;
+    len = 3;
+    inputNum = numStoreInMemory(inputNum.toString(16), 4)
+  } else if (orderNum < 4294967295) { // 0xFFFFFFFF
+    firstVal = 254;
+    len = 5;
+    inputNum = numStoreInMemory(inputNum.toString(16), 8)
+  } else {
+    firstVal = 255;
+    len = 9;
+    inputNum = numStoreInMemory(inputNum.toString(16), 16)
+  }
+
+  return {
+    firstVal: numStoreInMemory(firstVal.toString(16), 2),
+    length: len,
+    inputNum: inputNum
+  }
+};
+
 Wallet.GetInputData = function ($coin, $amount) {
     // sort
     var coin_ordered = $coin['Utxo'];
@@ -318,22 +354,29 @@ Wallet.GetInputData = function ($coin, $amount) {
         k = k + 1;
     }
 
+    // calc length
+    var lengthData = this.InputDataLength(k);
+
     /////////////////////////////////////////////////////////////////////////
     // coin[0]- coin[k]
-    var data = new Uint8Array(1 + 34 * (k + 1));
+    var data = new Uint8Array(lengthData.length + 34 * (k + 1));
 
     // input num
-    var inputNum = numStoreInMemory((k + 1).toString(16), 2);
-    data.set(hexstring2ab(inputNum));
+    if(lengthData.length === 1) {
+      data.set(hexstring2ab(lengthData.inputNum));
+    } else {
+      data.set(hexstring2ab(lengthData.firstVal));
+      data.set(hexstring2ab(lengthData.inputNum), 1);
+    }
 
     // input coins
     for (var x = 0; x < k + 1; x++) {
         // txid
-        var pos = 1 + (x * 34);
+        var pos = lengthData.length + (x * 34);
         data.set(reverseArray(hexstring2ab(coin_ordered[x]['Txid'])), pos);
 
         // index
-        pos = 1 + (x * 34) + 32;
+        pos = lengthData.length + (x * 34) + 32;
         inputIndex = numStoreInMemory(coin_ordered[x]['Index'].toString(16), 4);
         data.set(hexstring2ab(inputIndex), pos);
     }
