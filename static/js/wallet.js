@@ -1329,8 +1329,16 @@ Wallet.GetHighChartData = function ($http,$callback,$callback_dev) {
 
     $http({
         method: 'GET',
-        //url:'https://poloniex.com/public?command=returnTradeHistory&currencyPair=BTC_NXT&start=1410158341&end=1410499372'
-        url:'http://api.hksy.com/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=1000'
+        //url:'http://api.hksy.com/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
+        url:'https://proxy1.guoxiaojie.org/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
     }).then($callback).catch($callback_dev);
 };
 
+Wallet.GetTransactionRecord = function ($http,$address,$callback,$callback_dev) {
+
+    $http({
+        method: 'GET',
+        //url:'http://info.iptchain.net/interface/address/'+$address
+        url:'https://proxy2.guoxiaojie.org/interface/address/'+$address
+    }).then($callback).catch($callback_dev);
+};
