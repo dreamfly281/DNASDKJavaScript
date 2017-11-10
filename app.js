@@ -272,6 +272,12 @@ app.controller("ToolsCtrl", function($scope,$sce) {
     }
 });
 
+app.filter('trustHtml', function ($sce) {
+    return function (input) {
+        return $sce.trustAsHtml(input);
+    }
+});
+
 app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
     new Clipboard('.copy-btn');
 
@@ -348,6 +354,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
     };
 
     $scope.downloaded = function () {
+        console.log("下载地址："+$scope.objectURL);
         $scope.fileDownloaded = true;
     };
 
@@ -411,7 +418,6 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         $scope.objectName = $scope.objectURL.substring($scope.objectURL.lastIndexOf('/') + 1);
 
         $scope.notifier.success($translate.instant('NOTIFIER_SUCCESS_GENERATE_THE_WALLET') + " <b>wallet--" + $scope.objectName + ".db3</b>");
-        console.log("地址:"+$scope.address);
     };
 
     $scope.generateWalletFileFromWIFKey = function () {
@@ -459,7 +465,31 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
 
 
         var walletBlob = Wallet.createAccount($scope.privateKey, $scope.createPassword1);
-        $scope.objectURL = window.URL.createObjectURL(new Blob([walletBlob], {type: 'application/octet-stream'}));
+/*        var db3 = new Blob([walletBlob], {type: 'application/octet-stream'});*/
+        try {
+            var db3 = new Blob([walletBlob], {type: 'application/octet-stream'});
+        }
+        catch(e){
+            // TypeError old chrome and FF
+            window.BlobBuilder = window.BlobBuilder ||
+                window.WebKitBlobBuilder ||
+                window.MozBlobBuilder ||
+                window.MSBlobBuilder;
+            if(e.name == 'TypeError' && window.BlobBuilder){
+                var bb = new BlobBuilder();
+                bb.append([walletBlob.buffer]);
+                var db3 = bb.getBlob("application/octet-stream");
+            }
+            else if(e.name == "InvalidStateError"){
+                // InvalidStateError (tested on FF13 WinXP)
+                var db3 = new Blob( [array.buffer], {type : "application/octet-stream"});
+            }
+            else{
+                // We're screwed, blob constructor unsupported entirely
+            }
+        }
+
+        $scope.objectURL = window.URL.createObjectURL(db3);
         $scope.objectName = $scope.objectURL.substring($scope.objectURL.lastIndexOf('/') + 1);
 
         $scope.notifier.success($translate.instant('NOTIFIER_SUCCESS_GENERATE_THE_WALLET') + " <b>wallet--" + $scope.objectName + ".db3</b>");
@@ -550,6 +580,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.showOnlyOneAsset = false;
     $scope.showTransactionRecordButton = false;
     $scope.showNoTransactionRecord = false;
+    $scope.showNoticeCenterList = false;
+    $scope.showNoticeCenterMsg = false;
 
     $scope.notifier = Notifier;
     $scope.notifier.sce = $sce;
@@ -604,6 +636,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     //Chart's Title
     var chartTitle = "IPT交易数据";
     var chartSubTitle = "当前交易数据:";
+
+
+    $scope.noticeMsgs = [];
+    $scope.noticeMsgIndex = 0;
 
 
     $interval(function () {
@@ -780,6 +816,37 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.showNoticeCenter = true;
         $scope.showChangePassword = false;
         $scope.showAllChangePassword = false;
+        $scope.showNoticeCenterList = true;
+        $scope.showNoticeCenterMsg = false;
+
+        Wallet.GetNotice($http,$scope.getNoticeList,$scope.catchProblem)
+    };
+
+    $scope.getNoticeList = function(res){
+
+        //console.log(res);
+
+        var Notice = res.data.data.data;
+        console.log(res.data.data);
+
+        for (let i = 0; i < Notice.length; i++) {
+
+            var noticeMsg = {
+                title:"",
+                summary:"",
+                content:"",
+                time:""
+            };
+
+            noticeMsg.title = Notice[i].title;
+            noticeMsg.summary = Notice[i].summary;
+            noticeMsg.content = Notice[i].content;
+            noticeMsg.time = Notice[i].created_at;
+            $scope.noticeMsgs[i] = noticeMsg;
+        }
+        //console.log($scope.noticeMsgs);
+
+
     };
 
     $scope.showChangePasswordTab = function () {
@@ -787,6 +854,13 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.showChangePassword = true;
         $scope.showAllChangePassword = true;
         $scope.showNoticeCenter = false;
+    };
+
+    $scope.showNoticeMsg = function($i){
+        $scope.showNoticeCenterList = false;
+        $scope.showNoticeCenterMsg = true;
+
+        $scope.noticeMsgIndex = $i;
     };
 
     $scope.returnFromTransactionRecord = function () {
@@ -803,6 +877,12 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.showAllMainPage = true;
         $scope.showNoticeCenter = false;
     };
+
+    $scope.returnFromNoticeCenterMsg = function(){
+        $scope.showNoticeCenterList = true;
+        $scope.showNoticeCenterMsg = false;
+    };
+
     /**
      * Download desktop wallet file.
      * Download URL example: http://[domain]/downloads/[folderName]/wallet-v1.0.0-[folderName].zip
@@ -1531,6 +1611,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.getTransactionRecord = function (res) {
 
+        //console.log(res);
         var record = res.data.transactions;
 
         if (record !== undefined) {

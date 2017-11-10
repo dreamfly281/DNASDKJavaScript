@@ -98,33 +98,6 @@
         "webapi_host": "http://srv10.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
-      },
-      {
-        "hostName": "DNA-1",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.65.178",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.65.178",
-        "webapi_port": "10336",
-        "node_type": "D"
-      },
-      {
-        "hostName": "DNA-2",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.99.201",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.99.201",
-        "webapi_port": "10336",
-        "node_type": "D"
-      },
-      {
-        "hostName": "DNA-3",
-        "hostProvider": "DNA",
-        "restapi_host": "http://139.219.96.154",
-        "restapi_port": "10334",
-        "webapi_host": "http://139.219.96.154",
-        "webapi_port": "10336",
-        "node_type": "D"
       }
     ]
   ],

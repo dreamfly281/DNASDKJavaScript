@@ -1385,3 +1385,11 @@ Wallet.GetTransactionRecord = function ($http,$address,$callback,$callback_dev) 
         url:'https://proxy2.guoxiaojie.org/interface/address/'+$address
     }).then($callback).catch($callback_dev);
 };
+
+Wallet.GetNotice = function ($http,$callback,$callback_dev) {
+
+    $http({
+        method: 'GET',
+        url:'https://dnacms.guoxiaojie.org/api/v1/intelligence'
+    }).then($callback).catch($callback_dev);
+};

@@ -134,7 +134,7 @@
   "PUBLIC_KEY_ENCODED": "公钥（压缩）",
   "SCRIPT": "脚本",
   "SCRIPTHASH": "脚本哈希",
-  "ADDRESS": "我的地址 ",
+  "ADDRESS": "地址 ",
   "SIGNATURE": "签名",
   "DOWNLOAD": "下载",
   "HELLO": "你好",
@@ -152,5 +152,7 @@
   "PRICE": "数量",
   "TIME": "时间",
   "IPT_TRANSACTION_DATA":"IPT交易数据",
-  "CURRENT_TRANSACTION_PRICE":"当前交易数据:"
+  "CURRENT_TRANSACTION_PRICE":"当前交易数据:",
+  "NO_ASSET_RECORD"  : "暂无资产记录",
+  "NO_TRANSACTION_RECORD" : "暂无交易记录"
 }

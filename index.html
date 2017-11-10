@@ -49,9 +49,22 @@
 	<script src="app.js?201710101549"></script>
 
 	<script language="javascript">
+
         function setTabFromURL() {
-            //The message of pop
-            var pop=new Pop("风险提示","","1、由于数字资产领域的相关法律及政策尚未健全，同时数字资产价格浮动远远高于传统金融资产，我们建议您根据自身......");
+            $(function() {
+                $.ajax({
+                    type: "get",
+                    url: "https://dnacms.guoxiaojie.org/api/v1/intelligence",
+                    async: true,
+                    success: function(res) {
+                        var Notice = res.data.data;
+                        var title = Notice[0].title;
+                        var summary = Notice[0].summary;
+                        //The message of pop
+                        var pop=new Pop(title,summary);
+                    }
+                });
+            });
 
             var url = document.location.toString();
             if (url.match('#')) {
@@ -110,12 +123,12 @@
                         <li>
                             <a href="#" ng-click="changeLangSelectIndex()"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp; {{langs[langSelectIndex].name}}</a>
                         </li>
-                        <li class="dropdown">
+<!--                        <li class="dropdown">
                             <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-server" aria-hidden="true"></i>&nbsp;&nbsp;{{hostInfo[hostSelectIndex].hostName}} <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)" value="{{host.hostName}}">{{host.hostName}}</a></li>
                             </ul>
-                        </li>
+                        </li>-->
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
@@ -360,7 +373,7 @@
                             </div>
                             <div ng-show="showNoAsset" style="text-align:center">
                                 <br/>
-                                <p>暂无资产记录</p>
+                                <p translate="NO_ASSET_RECORD">No Asset Record</p>
                                 <br/>
                                 <br/>
                             </div>
@@ -439,7 +452,7 @@
                             </div>
                             <div ng-show="showNoTransactionRecord" style="text-align:center">
                                 <br/>
-                                <p>暂无交易记录</p>
+                                <p translate="NO_TRANSACTION_RECORD">No Transaction Record</p>
                                 <br/>
                                 <br/>
                             </div>
@@ -522,11 +535,8 @@
 
         <br/>
         <br/>
-        <div id="noticeCenterList">
 
-        </div>
-
-        <div id="noticeCenterMsg">
+        <div id="noticeCenterList" ng-show="showNoticeCenterList" >
             <div style="display: flex;align-items: flex-end">
                 <div class="col-lg-8 col-md-8 col-sm-8 ">
                     <h3 translate="NOTICE">Notice</h3>
@@ -538,19 +548,46 @@
                 </div>
             </div>
             <div class="line"></div>
+
+            <br/>
+            <ul class="list-group">
+                <li ng-repeat="noticeMsg in noticeMsgs" class="list-group-item"><a class="btn btn-link "style="font-size: 15px;color:#000000;padding:0px 0px" ng-click="showNoticeMsg(noticeMsgs.indexOf(noticeMsg))">{{noticeMsg.time.substring(0,11) + noticeMsg.title}}</a></li>
+            </ul>
+            </br></br>
+            <div style="text-align:center">
+                <ul class="pagination">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">&laquo;</a>
+                    </li>
+                    <li class="page-item active">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div id="noticeCenterMsg" ng-show="showNoticeCenterMsg">
+            <div style="display: flex;align-items: flex-end">
+                <div class="col-lg-8 col-md-8 col-sm-8 ">
+                    <h3 translate="NOTICE">Notice</h3>
+                </div>
+                <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                    <div class="col-lg-4 col-md-4 col-sm-4 navbar-right " >
+                        <a class="btn btn-link "style="font-size: 15px;color:#000000" ng-click="returnFromNoticeCenterMsg()" translate="RETURN">Return</a>
+                    </div>
+                </div>
+            </div>
+            <div class="line"></div>
             <div class="form-group col-lg-1 col-md-1 col-sm-1" ></div>
             <div class="form-group col-lg-10 col-md-10 col-sm-10" >
-                <h2 style="text-align:center">风险提示</h2>
-                <p class="text-muted" style="text-align:center">2017-10-31</p>
-                <p>1、由于数字资产领域的相关法律及政策尚未健全，同时数字资产价格浮动远远高于传统金融资产，我们建议您根据自身财务状况、心理承受能力以及风险偏好，理性进行数字资产的金融投资活动。</p>
-                <p>2、请妥善保管好您的钱包密码、私钥和钱包文件等信息。特此说明，我们的服务器不储存您的任何信息，包括但不限于钱包密码、私钥和钱包文件等信息。因您遗忘、泄露钱包密码、私钥、钱包文件等信息，或者遭受他人攻击、诈骗等所引起的一切风险、责任、损失、费用，应由您自行承担。</p>
-                <p>3、由于每次转账交易时，发起方必须出具私钥并进行签名。谁掌握私钥就拥有了对钱包绝对的控制权。再次说明，我们的服务器不储存您的任何信息，包括最重要的私钥信息。因此我们建议您尽可能采用物理介质备份私钥，例如用笔抄在纸上，或者使用硬件钱包、特定的U盘等冷储存方式存放私钥，尽可能不要采用邮件、短信、微信、QQ等电子方式备份，以防被黑客窃取。</p>
-                <p>4、钱包内提供的数字资产价格及历史价格记录仅仅是抓取部分交易所或其他网站的搜索结果，并不表示为最新的报价或行情。同时，我们仅提供给您数字资产转账、收款、查询的基本功能，并不持有您的任何数字资产，因此您应自行判断相关数字资产信息的真实性、合法性和有效性，并自行承担因此产生的责任与损失。</p>
-                <br/>
-                <br/>
-                <p class="text-right">IPTChain</p>
-                <p class="text-right">2017年10月31日</p>
+                <h2 style="text-align:center">{{noticeMsgs[noticeMsgIndex].title}}</h2>
+                <p class="text-muted" style="text-align:center">{{noticeMsgs[noticeMsgIndex].time}}</p>
+                <div class="ng-binding" ng-bind-html= "noticeMsgs[noticeMsgIndex].content|trustHtml"></div>
             </div>
+            </br></br></br>
         </div>
     </div>
 

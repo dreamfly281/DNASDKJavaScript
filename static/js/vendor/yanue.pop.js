@@ -79,19 +79,22 @@
 })(jQuery)
 
 
-function Pop(title,url,intro){
-	this.title=title;
-	this.url=url;
-	this.intro=intro;
-	this.apearTime=1000;
-	this.hideTime=500;
-	this.delay=5000;
-	//添加信息
-	this.addInfo();
-	//显示
-	this.showDiv();
-	//关闭
-  this.closeDiv();
+function Pop(title,intro){
+
+
+
+    this.title = title ;
+    this.intro = intro;
+    this.apearTime=1000;
+    this.hideTime=500;
+    this.delay=5000;
+    //添加信息
+    this.addInfo();
+    //显示
+    this.showDiv();
+    //关闭
+    this.closeDiv();
+
 }
 
 
@@ -104,7 +107,7 @@ Pop.prototype={
   },
   showDiv:function(time){
 		if (!(!$.support.style)) {
-      $('#pop').slideDown(this.apearTime).delay(this.delay).fadeOut(400);;
+      $('#pop').slideDown(this.apearTime).delay(this.delay).fadeOut(400);
     } else{//调用jquery.fixed.js,解决ie6不能用fixed
       $('#pop').show();
 			jQuery(function($j){
