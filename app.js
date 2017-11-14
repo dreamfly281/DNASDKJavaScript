@@ -623,6 +623,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.claims = {};
 
     $scope.newAssetId = '';
+    $scope.registerNewAssetId = '';
+    $scope.issueNewAssetId = '';
 
     $scope.countdown = '';//The countdown after the transfer,10s
     $scope.Transaction.able = true;
@@ -1171,7 +1173,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
     };
 
-    $scope.sendTransactionData = function ($txData) {
+    $scope.sendTransactionData = function ($txData,$transactionType) {
         var host = $scope.hostInfo[$scope.hostSelectIndex];
 
         Wallet.SendTransactionData($http, $txData, host, (function (res) {
@@ -1195,10 +1197,17 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
                 $scope.isDisplayAssetId = true;
                 $scope.newAssetId = ab2hexstring(txhash);
+                if($transactionType == 0){
+                    $scope.registerNewAssetId = $scope.newAssetId;
+                }else if($transactionType == 1){
+                    $scope.issueNewAssetId = $scope.newAssetId;
+                }
             }
         }), (function (err) {
             $scope.catchProblem(err);
+            return null;
         }));
+
     };
 
     $scope.MakeTxAndSend = function ($txUnsignedData) {
@@ -1246,7 +1255,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         var sign = Wallet.signatureData(txData, privateKey);
         var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
 
-        $scope.sendTransactionData(txRawData);
+        $scope.sendTransactionData(txRawData,1);
     };
 
     $scope.issueTransactionUnsigned = function () {
@@ -1317,7 +1326,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         var sign = Wallet.signatureData(txData, privateKey);
         var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
 
-        $scope.sendTransactionData(txRawData);
+        $scope.sendTransactionData(txRawData,0);
+
     };
 
     $scope.transferTransactionUnsigned = function () {
