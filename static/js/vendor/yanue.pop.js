@@ -81,8 +81,6 @@
 
 function Pop(title,intro){
 
-
-
     this.title = title ;
     this.intro = intro;
     this.apearTime=1000;
@@ -98,37 +96,35 @@ function Pop(title,intro){
 }
 
 
-Pop.prototype={
-  addInfo:function(){
-/*    $("#popTitle a").attr('href',this.url).html(this.title);*/
-      $("#popTitle a").html(this.title);
-    $("#popIntro").html(this.intro);
-/*    $("#popMore a").attr('href',this.url);*/
-  },
-  showDiv:function(time){
-		if (!(!$.support.style)) {
-      $('#pop').slideDown(this.apearTime).delay(this.delay).fadeOut(400);
-    } else{//调用jquery.fixed.js,解决ie6不能用fixed
-      $('#pop').show();
-			jQuery(function($j){
-			    $j('#pop').positionFixed()
-			})
-    }
-  },
-  closeDiv:function(){
-  	$("#popClose").click(function(){
-  		  $('#pop').hide();
-  		}
+Pop.prototype= {
+    addInfo: function () {
+        $("#popTitle a").html(this.title);
+        $("#popIntro").html(this.intro);
+    },
+    showDiv: function (time) {
+        if (!(!$.support.style)) {
+            $('#pop').slideDown(this.apearTime).delay(this.delay).fadeOut(400);
+        } else {//调用jquery.fixed.js,解决ie6不能用fixed
+            $('#pop').show();
+            jQuery(function ($j) {
+                $j('#pop').positionFixed()
+            })
+        }
+    },
+closeDiv:function () {
+    $("#popClose").click(function () {
+            $('#pop').hide();
+        }
     );
 
-      $("#popTitle a").click(function(){
-              $('#pop').hide();
-          }
-      );
+    $("#popTitle a").click(function () {
+            $('#pop').hide();
+        }
+    );
 
-      $("#popMore a").click(function(){
-              $('#pop').hide();
-          }
-      );
-  },
-}
+    $("#popMore a").click(function () {
+            $('#pop').hide();
+        }
+    );
+},
+};

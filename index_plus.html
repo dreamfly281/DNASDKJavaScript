@@ -97,7 +97,7 @@
     <![endif]-->
 
     <header>
-        <div class="navbar-default">
+        <nav class="navbar-default">
             <div class="container">
                 <div class="navbar-header">
                     <ul class="nav navbar-nav navbar-left">
@@ -105,7 +105,7 @@
                             <a class="navbar-brand " href="#" aria-expanded="false" style="color: #ffffff;"><i class="fa fa-line-chart" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'SITE_TITLE' | translate }}</a>
                         </li>
                         <li>
-                            <a class="navbar-brand " href="#" aria-expanded="false" style="color: #ffffff;">{{version}}</a>
+                            <a class="navbar-brand" href="#" aria-expanded="false" style="color: #ffffff;">{{version}}</a>
                         </li>
                     </ul>
                 </div>
@@ -123,12 +123,12 @@
                         <li>
                             <a href="#" ng-click="changeLangSelectIndex()"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp; {{langs[langSelectIndex].name}}</a>
                         </li>
-<!--                        <li class="dropdown">
+                        <li class="dropdown">
                             <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-server" aria-hidden="true"></i>&nbsp;&nbsp;{{hostInfo[hostSelectIndex].hostName}} <span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
                                 <li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)" value="{{host.hostName}}">{{host.hostName}}</a></li>
                             </ul>
-                        </li>-->
+                        </li>
                         <li class="dropdown">
                             <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<span class="caret"></span></a>
                             <ul class="dropdown-menu" role="menu">
@@ -138,7 +138,7 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </nav>
     </header>
 
     <!-- Main Page -->
@@ -328,134 +328,192 @@
 
 
         <!-- main -->
-        <div class="tab-content " ng-show="showWalletMainPager">
+        <div class="form-group col-lg-12 col-md-12 col-sm-12" ng-show="showWalletMainPager">
             <!-- #sendTransaction tab-->
-            <div class="tab-pane fade active in row" id="sendTransaction" ng-show="showTransaction">
-                <div class="row">
-                    <!-- transaction -->
-                    <div class="col-lg-7 col-md-7 col-sm-7">
-                        <h3 translate="NAME">IPT Wallet</h3> <br />
-                        <div class="form-group">
-                            <h4 class="control-label" translate="ADDRESS">My Address </h4>
-                            <div class="line"></div>
-                        </div>
-                        <div>
-                            <div class="form-group col-lg-8 col-md-8 col-sm-8">
-                                <span id="walletAddress">{{accounts[accountSelectIndex].address}}</span>
-                            </div>
-                            <div class="text-right col-lg-4 col-md-4 col-sm-4 text-right" >
-                                <button class="btn copy-btn btn-info btn-xs" data-clipboard-text={{accounts[accountSelectIndex].address}} translate="MT_COPY_ADDRESS">Copy Address</button>
-                            </div>
-                        </div>
-                        <br/>
-                        <br/>
-                        <h4 class="control-label" translate="ASSETNAME">My Asset </h4>
+            <div class="row" id="sendTransaction" ng-show="showTransaction">
+                <!-- transaction -->
+                <div class="col-lg-7 col-md-7 col-sm-7">
+                    <h3 translate="NAME">IPT Wallet</h3> <br />
+                    <div class="form-group">
+                        <h4 class="control-label" translate="ADDRESS">My Address </h4>
                         <div class="line"></div>
-                        <div class="form-group">
-                            <table class="table table-striped table-hover ">
-                                <thead>
-                                    <tr>
-                                        <th><b>{{ 'ASSETNAME' | translate }}</b></th>
-                                        <th><b>{{ 'ASSETID' | translate }}</b></th>
-                                        <th><b>{{ 'BALANCE' | translate }}</b></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr ng-repeat="coin in coins|limitTo: 2">
-                                        <td>{{coin.AssetName}}</td>
-                                        <td width="50%">{{coin.AssetIDRev.substring(0,20)+"..."}}</td>
-                                        <td width="30%">{{coin.balanceView}}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div ng-show="showMoreAssetButton">
-                                <button class="btn copy-btn btn-info btn-xs" ng-click="showAllAssestMsgTab()" translate="CHECK_MORE">Check More</button>
-                            </div>
-                            <div ng-show="showNoAsset" style="text-align:center">
-                                <br/>
-                                <p translate="NO_ASSET_RECORD">No Asset Record</p>
-                                <br/>
-                                <br/>
-                            </div>
-                            <div ng-show="showOnlyOneAsset">
-                                <br/>
-                                <br/>
-                            </div>
+                    </div>
+                    <div>
+                        <div class="form-group col-lg-8 col-md-8 col-sm-8">
+                            <span id="walletAddress">{{accounts[accountSelectIndex].address}}</span>
                         </div>
+                        <div class="text-right col-lg-4 col-md-4 col-sm-4 text-right" >
+                            <button class="btn copy-btn btn-info btn-xs" data-clipboard-text={{accounts[accountSelectIndex].address}} translate="MT_COPY_ADDRESS">Copy Address</button>
+                        </div>
+                    </div>
+                    <br/>
+                    <br/>
 
-                        <br/>
-                        <h4 translate="TRANSFER_ACCOUNTS">Transfer accounts </h4>
-                        <div class="line"></div>
-                        <br/>
-                        <!-- Transfer Transaction -->
-                        <div ng-if="txType==128">
+                    <h4 class="control-label" translate="ASSETNAME">My Asset </h4>
+                    <div class="line"></div>
+                    <div class="form-group">
+                        <table class="table table-striped table-hover ">
+                            <thead>
+                                <tr>
+                                    <th><b>{{ 'ASSETNAME' | translate }}</b></th>
+                                    <th><b>{{ 'ASSETID' | translate }}</b></th>
+                                    <th><b>{{ 'BALANCE' | translate }}</b></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="coin in coins|limitTo: 2">
+                                    <td>{{coin.AssetName}}</td>
+                                    <td width="50%">{{coin.AssetIDRev.substring(0,20)+"..."}}</td>
+                                    <td width="30%">{{coin.balanceView}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div ng-show="showMoreAssetButton">
+                            <button class="btn copy-btn btn-info btn-xs" ng-click="showAllAssestMsgTab()" translate="CHECK_MORE">Check More</button>
+                        </div>
+                        <div ng-show="showNoAsset" style="text-align:center">
+                            <br/>
+                            <p translate="NO_ASSET_RECORD">No Asset Record</p>
+                            <br/>
+                            <br/>
+                        </div>
+                        <div ng-show="showOnlyOneAsset">
+                            <br/>
+                            <br/>
+                        </div>
+                    </div>
+
+                    <br/>
+
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#register" data-toggle="tab" translate="BTN_REGISTER_TRANSACTION" style="font-size:18px;color:#000000">Register</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#issue" data-toggle="tab" translate="BTN_ISSUE_TRANSACTION" style="font-size:18px;color:#000000">Issue</a>
+                        </li>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#transfer" data-toggle="tab" translate="TRANSFER_ACCOUNTS" style="font-size:18px;color:#000000">Transfer accounts</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade" id="register">
+                            <br/>
+                            <!-- Register Asset -->
                             <div class="form-group">
-                                <label class="control-label" translate="MT_TO_ADDRESS">To Address</label>
-                                <input class="form-control" ng-model="Transaction.ToAddress" name="toAddress" placeholder="{{ 'ADDRESS' | translate }} ..." type="text"/>
+                                <label class="control-label" translate="MT_ASSET_NAME">Asset Name</label>
+                                <input class="form-control" ng-model="registerAsset.assetName" name="assetName" placeholder="{{ 'MT_ASSET_NAME' | translate }}" type="text"/>
                             </div>
 
                             <div class="form-group">
-                                <label class="control-label" translate="MT_AMOUNT_TO_SEND">Amount to Send</label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" ng-model="Transaction.Amount" name="Amount" value="" placeholder="{{ 'AMOUNT' | translate }}" aria-label="amount" />
+                                <label class="control-label" translate="MT_ASSET_AMOUNT">Asset Amount</label>
+                                <input class="form-control" ng-model="registerAsset.assetAmount" name="assetAmount" placeholder="{{ 'MT_ASSET_AMOUNT' | translate }}" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />
+                            </div>
 
-                                    <div class="input-group-btn">
-                                        <button type="button" style="min-width: 158px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{coins[coinSelectIndex].AssetName}}&nbsp;&nbsp;<span class="caret"></span></button>
-                                        <ul class="dropdown-menu dropdown-menu-right">
-                                            <li ng-repeat="coin in coins"><a data-toggle="tab" href="#" ng-click="changeCoinSelectIndex($index)">{{coin.AssetName}}</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
+                            <div class="form-group">
+                                <label ng-if="isDisplayAssetId" class="control-label" translate="MT_ASSET_ID">Asset ID (TXID)</label>
+                                <input ng-if="isDisplayAssetId" class="form-control" type="text" ng-model="newAssetId" id="newAssetId" name="newAssetId" readonly="readonly">
                             </div>
 
                             <div class="form-group">
                                 </br>
-                                <button class="btn btn-info btn-block" ng-click="openModal()" ng-disabled="!Transaction.able" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>
+                                <button class="btn btn-info btn-block" ng-click="registerTransaction()" translate="BTN_REGISTER_TRANSACTION">Register Transaction</button>
                             </div>
-                            <div class="form-group" ng-show="waitingSecond">
-                                <label class="control-label" translate="MT_PLEASE_WAITING">Please waiting for</label>
-                                <span>{{countdown}}</span>
-                                <label class="control-label" translate="MT_SECOND">s</label><br/>
+
+                        </div>
+                        <div class="tab-pane fade" id="issue" >
+                            <br/>
+                            <!-- Issue Asset -->
+                            <div class="form-group">
+                                <label class="control-label" translate="MT_ISSUE_ASSETID">Issue AssetID</label>
+                                <input class="form-control" ng-model="issueAsset.issueAssetID" name="issueAssetID" placeholder="{{ 'MT_ISSUE_ASSETID' | translate }}" type="text" />
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label" translate="MT_ISSUE_AMOUNT">Issue Amount</label>
+                                <input class="form-control" ng-model="issueAsset.issueAmount" name="issueAmount" placeholder="{{ 'MT_ISSUE_AMOUNT' | translate }}" type="text" onkeyup="this.value=this.value.replace(/[^0-9-]+/,'');" />
+                            </div>
+
+                            <div class="form-group">
+                                </br>
+                                <button class="btn btn-info btn-block" ng-click="issueTransaction()" translate="BTN_ISSUE_TRANSACTION">Issue Transaction</button>
                             </div>
                         </div>
+                        <div class="tab-pane fade active in" id="transfer">
+                            <br/>
+                            <!-- Transfer Transaction -->
+                            <div ng-if="txType==128">
+                                <div class="form-group">
+                                    <label class="control-label" translate="MT_TO_ADDRESS">To Address</label>
+                                    <input class="form-control" ng-model="Transaction.ToAddress" name="toAddress" placeholder="{{ 'ADDRESS' | translate }} ..." type="text"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" translate="MT_AMOUNT_TO_SEND">Amount to Send</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" ng-model="Transaction.Amount" name="Amount" value="" placeholder="{{ 'AMOUNT' | translate }}" aria-label="amount" />
+
+                                        <div class="input-group-btn">
+                                            <button type="button" style="min-width: 158px;" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{coins[coinSelectIndex].AssetName}}&nbsp;&nbsp;<span class="caret"></span></button>
+                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                <li ng-repeat="coin in coins"><a data-toggle="tab" href="#" ng-click="changeCoinSelectIndex($index)">{{coin.AssetName}}</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    </br>
+                                    <button class="btn btn-info btn-block" ng-click="openModal()" ng-disabled="!Transaction.able" translate="BTN_TRANSFER_TRANSACTION">Transfer Transaction</button>
+                                </div>
+                                <div class="form-group" ng-show="waitingSecond">
+                                    <label class="control-label" translate="MT_PLEASE_WAITING">Please waiting for</label>
+                                    <span>{{countdown}}</span>
+                                    <label class="control-label" translate="MT_SECOND">s</label><br/>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
-                    <div class="col-lg-5 col-md-5 col-sm-5">
-                        <br/>
-                        <!-- chart info -->
-                        <div id="container" >
+
+                </div>
+
+                <div class="col-lg-5 col-md-5 col-sm-5">
+                    <br/>
+                    <!-- chart info -->
+                    <div id="container" >
+                    </div>
+
+
+                    <!-- #transactionRecord tab-->
+                    <div id="transactionRecordList">
+                        <hr/>
+                        <h4 translate="TRANSACTION_RECORD">Transaction Record </h4>
+                            <table class="table table-striped table-hover ">
+                                <thead>
+                                    <tr>
+                                        <th width="40%"><b>{{ 'TRANSACTION_HASH' | translate }}</b></th>
+                                        <th><b>{{ 'PRICE' | translate }}</b></th>
+                                        <th width="40%"><b>{{ 'TIME' | translate }}</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="transactionRecord in transactionRecords|limitTo: 4">
+                                        <td><a class="btn btn-link " ng-click="openTransactionBrower(transactionRecord.hash)" style="color:#000000;padding: 0px 0px">{{transactionRecord.hash.substring(0,20)+"..."}}</a></td>
+                                        <td>{{transactionRecord.price.substring(0,8)}}</td>
+                                        <td>{{transactionRecord.time}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        <div ng-show = "showTransactionRecordButton">
+                            <button class="btn copy-btn btn-info btn-xs" ng-click="showTransactionRecordTab()" translate="CHECK_MORE">Check More</button>
                         </div>
-
-
-                        <!-- #transactionRecord tab-->
-                        <div id="transactionRecordList">
-                            <hr/>
-                            <h4 translate="TRANSACTION_RECORD">Transaction Record </h4>
-                                <table class="table table-striped table-hover ">
-                                    <thead>
-                                        <tr>
-                                            <th width="40%"><b>{{ 'TRANSACTION_HASH' | translate }}</b></th>
-                                            <th><b>{{ 'PRICE' | translate }}</b></th>
-                                            <th width="40%"><b>{{ 'TIME' | translate }}</b></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr ng-repeat="transactionRecord in transactionRecords|limitTo: 4">
-                                            <td><a class="btn btn-link " ng-click="openTransactionBrower(transactionRecord.hash)" style="color:#000000;padding: 0px 0px">{{transactionRecord.hash.substring(0,20)+"..."}}</a></td>
-                                            <td>{{transactionRecord.price.substring(0,8)}}</td>
-                                            <td>{{transactionRecord.time}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            <div ng-show = "showTransactionRecordButton">
-                                <button class="btn copy-btn btn-info btn-xs" ng-click="showTransactionRecordTab()" translate="CHECK_MORE">Check More</button>
-                            </div>
-                            <div ng-show="showNoTransactionRecord" style="text-align:center">
-                                <br/>
-                                <p translate="NO_TRANSACTION_RECORD">No Transaction Record</p>
-                                <br/>
-                                <br/>
-                            </div>
+                        <div ng-show="showNoTransactionRecord" style="text-align:center">
+                            <br/>
+                            <p translate="NO_TRANSACTION_RECORD">No Transaction Record</p>
+                            <br/>
+                            <br/>
                         </div>
                     </div>
                 </div>

@@ -387,7 +387,7 @@ app.controller("GenerateWalletCtrl", function($scope,$translate,$sce) {
         //$scope.objectName = $scope.objectName.replace( /-/g, "" );
 
         $scope.notifier.success($translate.instant('NOTIFIER_SUCCESS_GENERATE_THE_WALLET') + " <b>wallet--" + $scope.objectName + ".db3</b>");
-        console.log("地址:"+$scope.address);
+
     };
 
     $scope.generateWalletFileFromPrivateKey = function () {
@@ -640,7 +640,8 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     $scope.noticeMsgs = [];
     $scope.noticeMsgIndex = 0;
-
+    $scope.noticeFirstPageURL;
+    $scope.noticeLastPageURL;
 
     $interval(function () {
         var account = $scope.accounts[$scope.accountSelectIndex];
@@ -846,7 +847,17 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         }
         //console.log($scope.noticeMsgs);
 
+        $scope.noticeFirstPageURL = res.data.data.first_page_url;
+        $scope.noticeLastPageURL = res.data.data.last_page_url;
 
+    };
+
+    $scope.getNoticeFirstPage = function(){
+        Wallet.GetNoticePage($http,$scope.noticeFirstPageURL,$scope.getNoticeList,$scope.catchProblem)
+    };
+
+    $scope.getNoticeLastPage = function(){
+        Wallet.GetNoticePage($http,$scope.noticeLastPageURL,$scope.getNoticeList,$scope.catchProblem)
     };
 
     $scope.showChangePasswordTab = function () {
@@ -1179,7 +1190,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
                     }
 
                 } else {
-                    $scope.notifier.danger($translate.instant('NOTIFIER_SEND_TRANSACTION_FAILED') + res.data.Error)
+                    $scope.notifier.danger($translate.instant('6') + res.data.Error)
                 }
 
                 $scope.isDisplayAssetId = true;

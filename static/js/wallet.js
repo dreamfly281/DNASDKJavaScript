@@ -1393,3 +1393,10 @@ Wallet.GetNotice = function ($http,$callback,$callback_dev) {
         url:'https://dnacms.guoxiaojie.org/api/v1/intelligence'
     }).then($callback).catch($callback_dev);
 };
+
+Wallet.GetNoticePage = function($http,$url,$callback,$callback_dev){
+    $http({
+        method: 'GET',
+        url:$url,
+    }).then($callback).catch($callback_dev);
+}
