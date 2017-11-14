@@ -4,7 +4,7 @@
   "desktop_version": "v1.1.0",
   "date": "2017-10-10 11:00",
   "domain": "http://wallet.iptchain.net",
-  "bbs_url": "https://forum.dnaproject.org/",
+  "bbs_url": "https://forum.iptchain.net/",
   "explorer_url": "http://info.iptchain.net/",
   "explorer_search_path": "tx/",
   "host_info": [
@@ -14,7 +14,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv1.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv1.iptchain.net",
+        "webapi_host": "http://srv1.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -23,7 +23,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv2.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv2.iptchain.net",
+        "webapi_host": "http://srv2.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -32,7 +32,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv3.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv3.iptchain.net",
+        "webapi_host": "http://srv3.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -41,7 +41,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv4.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv4.iptchain.net",
+        "webapi_host": "http://srv4.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -50,7 +50,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv5.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv5.iptchain.net",
+        "webapi_host": "http://srv5.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -59,7 +59,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv6.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv6.iptchain.net",
+        "webapi_host": "http://srv6.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -68,7 +68,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv7.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv7.iptchain.net",
+        "webapi_host": "http://srv7.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -77,16 +77,16 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv8.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv8.iptchain.net",
+        "webapi_host": "http://srv8.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
       {
         "hostName": "IPTChain-09",
         "hostProvider": "IPTChain",
-        "restapi_host": "https://srv9.iptchain.net",
+        "restapi_host": "https://srv8.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv9.iptchain.net",
+        "webapi_host": "http://srv9.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },
@@ -95,7 +95,7 @@
         "hostProvider": "IPTChain",
         "restapi_host": "https://srv10.iptchain.net",
         "restapi_port": "10443",
-        "webapi_host": "https://srv10.iptchain.net",
+        "webapi_host": "http://srv10.iptchain.net",
         "webapi_port": "10336",
         "node_type": "D"
       },

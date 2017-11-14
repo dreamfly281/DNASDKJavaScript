@@ -1260,16 +1260,17 @@ Wallet.analyzeCoins = function (res) {
             var coins = [];
             var tmpIndexArr = [];
 
-            for (i = 0; i < results.length; i++) {
+            for (let i = 0; i < results.length; i++) {
                 coins[i] = results[i];
                 coins[i].balance = 0;
                 coins[i].balanceView = 0;
-
+                coins[i].AssetIDRev = ab2hexstring(reverseArray(hexstring2ab(results[i]['AssetId'])));
                 if (results[i].Utxo != null) {
                     for (j = 0; j < results[i].Utxo.length; j++) {
                         coins[i].balance = WalletMath.add(coins[i].balance, results[i].Utxo[j].Value);
                     }
                     coins[i].balanceView = WalletMath.fixView(coins[i].balance);
+
                 }
 
                 tmpIndexArr.push(results[i].AssetName);
@@ -1294,6 +1295,7 @@ Wallet.analyzeCoins = function (res) {
         return [];
     }
 };
+
 
 /**
  *
@@ -1365,3 +1367,36 @@ Wallet.SendTransactionData = function ($http,$txData,$host,$callback,$callback_d
         headers: {"Content-Type": "application/json"}
     }).then($callback).catch($callback_dev);
 };
+
+Wallet.GetHighChartData = function ($http,$callback,$callback_dev) {
+
+    $http({
+        method: 'GET',
+        //url:'http://api.hksy.com/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
+        url:'https://proxy1.guoxiaojie.org/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
+    }).then($callback).catch($callback_dev);
+};
+
+Wallet.GetTransactionRecord = function ($http,$address,$callback,$callback_dev) {
+
+    $http({
+        method: 'GET',
+        //url:'http://info.iptchain.net/interface/address/'+$address
+        url:'https://proxy2.guoxiaojie.org/interface/address/'+$address
+    }).then($callback).catch($callback_dev);
+};
+
+Wallet.GetNotice = function ($http,$callback,$callback_dev) {
+
+    $http({
+        method: 'GET',
+        url:'https://dnacms.guoxiaojie.org/api/v1/intelligence'
+    }).then($callback).catch($callback_dev);
+};
+
+Wallet.GetNoticePage = function($http,$url,$callback,$callback_dev){
+    $http({
+        method: 'GET',
+        url:$url,
+    }).then($callback).catch($callback_dev);
+}
