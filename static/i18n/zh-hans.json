@@ -82,7 +82,7 @@
   "BTN_GET_ISSUE_TRANSACTION": "获取 发行 交易数据",
   "MT_TO_ADDRESS": "对方地址",
   "MT_AMOUNT_TO_SEND": "发送数量",
-  "MT_FROM_ADDRESS": "地址",
+  "MT_FROM_ADDRESS": "我的地址",
   "BTN_TRANSFER_TRANSACTION": "转账交易",
   "BTN_GET_TRANSFER_TRANSACTION": "获取 转账 交易数据",
   "MT_ASSET_NAME": "资产名称",

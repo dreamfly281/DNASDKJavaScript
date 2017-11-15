@@ -63,6 +63,10 @@ span {
 	text-transform: none;
 }
 
+.modal-dialog {
+	width: 720px;
+}
+
 /* hash calc */
 #dropTarget {
 	width: 100%;
