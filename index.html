@@ -729,6 +729,21 @@
 
     </script>
 
+    <!-- confirm Transaction Modal -->
+    <script type="text/ng-template" id="timeoutView.html">
+        <div class="modal-header">
+            <h2 class="modal-title modal-title-warning" translate="WARNING">Warning!</h2>
+        </div>
+        <div class="modal-body" style="height: 320px;">
+            <p style="font-family: 'Microsoft YaHei', sans-serif;font-size: 30px;font-weight: 100; text-align: center;margin-top: 100px;">
+                {{ 'MT_REFRESH_PAGE' | translate }}
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary center-block" data-dismiss="modal" ng-click="refreshPage()">{{ 'BTN_REFRESH' | translate }}</button>
+        </div>
+    </script>
+
     <!-- alert -->
     <div class="navbar-fixed-bottom alert popup {{notifier.class}} animated-show-hide" ng-show="notifier.show" role="alert" aria-live="assertive">
         <button type="button" class="close" aria-label="dismiss" ng-click="notifier.close()" ><i class="fa fa-times" aria-hidden="true"></i></button>

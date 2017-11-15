@@ -151,6 +151,15 @@ app.controller('ModalInstanceCtrl', function($scope, $modalInstance, items) {
     }
 });
 
+/**
+ * Timeout modal
+ */
+app.controller('ModalTimeoutCtrl', function($scope, $modalInstance, ) {
+  $scope.refreshPage = function () {
+    location.reload();
+  };
+});
+
 app.controller("SignatureDataCtrl", function($scope,$sce) {
     $scope.txRawData = "";
     $scope.privateKey = "";
@@ -553,10 +562,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         {name: "NOTICE"}
     ];
 
-
     $scope.txType = "128"; //默认下拉选项
     $scope.txTypes = [];
 
+    $scope.timeoutViewStatus = true; // true: allow open
 
     $scope.showAllMainPage = true;
     $scope.showWalletMainPager = false;
@@ -631,7 +640,6 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.waitingSecond = false;
 
     $scope.isShowNotifier = true;
-
 
     $scope.transactionRecords = [];
 
@@ -736,6 +744,27 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
         modalInstance.result.then(function (result) {
         }, function (reason) {
         });
+    };
+
+    // modal
+    $scope.timeoutView = function () {
+      var modalInstance = $modal.open({
+        templateUrl: 'timeoutView.html',
+        scope: $scope,
+        controller: 'ModalTimeoutCtrl', // specify controller for modal
+        resolve: {
+          items: function () {
+          }
+        }
+      });
+      modalInstance.opened.then(function () {
+        $scope.timeoutViewStatus = false; // true: allow open
+      });// 模态窗口打开之后执行的函数
+      modalInstance.result.then(function (result) {
+      }, function (reason) {
+        $scope.timeoutViewStatus = true;
+        location.reload(); // Refresh page
+      });
     };
 
     $scope.showGenerateNewWalletFromRandom = function () {
@@ -884,7 +913,7 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     $scope.returnFromAllAssestMsg = function () {
         $scope.showTransaction = true;
         $scope.showAllAssestMsg = false;
-    }
+    };
 
     $scope.returnFromNoticeCenter = function () {
         $scope.showAllMainPage = true;
@@ -1090,7 +1119,10 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
     };
 
     $scope.catchProblem = function ($err) {
-        console.log($err);
+      if ($scope.timeoutViewStatus) {
+        $scope.timeoutView();
+      }
+      console.log($err);
     };
 
     $scope.getClaims = function ($address) {
@@ -1127,22 +1159,21 @@ app.controller("WalletCtrl", function($scope,$translate,$http,$sce,$interval,$mo
 
     };
     $scope.GetUnspent_Callback = function (res) {
-        $scope.coins = Wallet.analyzeCoins(res);
+      $scope.coins = Wallet.analyzeCoins(res);
 
-        if ($scope.coins.length == 0) {
-            $scope.showNoAsset = true;
-            $scope.showMoreAssetButton = false;
-            $scope.showOnlyOneAsset = false;
-        } else if ($scope.coins.length == 1) {
-            $scope.showNoAsset = false;
-            $scope.showMoreAssetButton = false;
-            $scope.showOnlyOneAsset = true;
-        } else {
-            $scope.showNoAsset = false;
-            $scope.showOnlyOneAsset = false;
-            $scope.showMoreAssetButton = true;
-        }
-
+      if ($scope.coins.length == 0) {
+        $scope.showNoAsset = true;
+        $scope.showMoreAssetButton = false;
+        $scope.showOnlyOneAsset = false;
+      } else if ($scope.coins.length == 1) {
+        $scope.showNoAsset = false;
+        $scope.showMoreAssetButton = false;
+        $scope.showOnlyOneAsset = true;
+      } else {
+        $scope.showNoAsset = false;
+        $scope.showOnlyOneAsset = false;
+        $scope.showMoreAssetButton = true;
+      }
     };
 
     $scope.connectNode = function () {
@@ -1760,65 +1791,62 @@ var ClaimTransaction = function ClaimTransaction() {
 };
 
 var Notifier = {
-    show: false,
-    class: "",
-    icon: "",
-    message: "",
-    timer: null,
-    sce: null,
-    scope: null,
+  show: false,
+  class: "",
+  icon: "",
+  message: "",
+  timer: null,
+  sce: null,
+  scope: null,
 
-    open: function open() {
-        this.show = true;
-        if (!this.scope.$$phase) this.scope.$apply();
-    },
+  open: function open() {
+    this.show = true;
+    if (!this.scope.$$phase) this.scope.$apply();
+  },
 
-    close: function close() {
-        this.show = false;
-        if (!this.scope.$$phase) this.scope.$apply();
-    },
+  close: function close() {
+    this.show = false;
+    if (!this.scope.$$phase) this.scope.$apply();
+  },
 
-    warning: function warning(msg) {
-        this.class = "alert-warning";
-        this.icon = "fa fa-question-circle";
-        this.showAlert(this.class, msg);
-    },
+  warning: function warning(msg) {
+    this.class = "alert-warning";
+    this.icon = "fa fa-question-circle";
+    this.showAlert(this.class, msg);
+  },
 
-    info: function info(msg) {
-        this.class = "alert-info";
-        this.icon = "fa fa-info-circle";
-        this.showAlert(this.class, msg);
-        this.setTimer();
-    },
+  info: function info(msg) {
+    this.class = "alert-info";
+    this.icon = "fa fa-info-circle";
+    this.showAlert(this.class, msg);
+    this.setTimer();
+  },
 
-    danger: function danger(msg) {
-        this.class = "alert-danger";
-        this.icon = "fa fa-times-circle";
-        this.showAlert(this.class, msg);
-    },
+  danger: function danger(msg) {
+    this.class = "alert-danger";
+    this.icon = "fa fa-times-circle";
+    this.showAlert(this.class, msg);
+  },
 
-    success: function success(msg) {
-        this.class = "alert-success";
-        this.icon = "fa fa-check-circle";
-        this.showAlert(this.class, msg);
-    },
+  success: function success(msg) {
+    this.class = "alert-success";
+    this.icon = "fa fa-check-circle";
+    this.showAlert(this.class, msg);
+  },
 
-    showAlert: function showAlert(_class, msg) {
-        clearTimeout(this.timer);
-        this.class = _class;
-        this.message = this.sce.trustAsHtml(msg);
-        this.open();
-    },
+  showAlert: function showAlert(_class, msg) {
+    clearTimeout(this.timer);
+    this.class = _class;
+    this.message = this.sce.trustAsHtml(msg);
+    this.open();
+  },
 
-    setTimer: function setTimer() {
-        var _this = this;
-        clearTimeout(_this.timer);
-        _this.timer = setTimeout(function () {
-            _this.show = false;
-            if (!_this.scope.$$phase) _this.scope.$apply();
-        }, 5000);
-    }
+  setTimer: function setTimer() {
+    var _this = this;
+    clearTimeout(_this.timer);
+    _this.timer = setTimeout(function () {
+      _this.show = false;
+      if (!_this.scope.$$phase) _this.scope.$apply();
+    }, 5000);
+  }
 };
-
-
-
