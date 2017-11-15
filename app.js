@@ -161,7 +161,7 @@ app.controller('ModalInstanceCtrl',
  * Timeout modal
  */
 app.controller('ModalTimeoutCtrl',
-  function($scope, $modalInstance, ) {
+  function($scope) {
     $scope.refreshPage = function() {
       location.reload();
     };
