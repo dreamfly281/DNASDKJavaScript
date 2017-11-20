@@ -130,11 +130,12 @@ WalletMath.hexToNumToStr = function(arg) {
   return new Decimal("0x" + arg).toString();
 };
 WalletMath.toThousands = function (num) {
-  let numStart = '', numEnd = '';
+  let numStart = '';
+  let numEnd = '';
   let result = '';
   let dotLocal = num.indexOf(".");
 
-  if(dotLocal === -1) {
+  if (dotLocal === -1) {
     numStart = num;
   } else {
     numStart = num.substr(0, dotLocal);
@@ -1368,7 +1369,6 @@ Wallet.GetHighChartData = function($http, $callback, $callback_dev) {
 
   $http({
     method: 'GET',
-    //url:'http://api.hksy.com/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
     url: 'https://proxy1.guoxiaojie.org/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
   }).then($callback).
   catch($callback_dev);
@@ -1378,7 +1378,6 @@ Wallet.GetTransactionRecord = function($http, $address, $callback, $callback_dev
 
   $http({
     method: 'GET',
-    //url:'http://info.iptchain.net/interface/address/'+$address
     url: 'https://proxy2.guoxiaojie.org/interface/address/' + $address
   }).then($callback).
   catch($callback_dev);
