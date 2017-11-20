@@ -1602,7 +1602,6 @@ app.controller("WalletCtrl",
     };
 
     $scope.getHighChartData = function(res) {
-
       var models = res.data.model;
       if (models !== null) {
         var history = [];
@@ -1616,27 +1615,17 @@ app.controller("WalletCtrl",
           j--;
         }
 
-        var m = [1, 2, 3, 4, 5, 6, 7];
         var nowPrice = history[19].price;
 
         try {
-          var title = {
-            text: chartTitle
-          };
+          var title = {text: chartTitle};
           var subtitle = {
             text: chartSubTitle + nowPrice + 'HKD',
-            style: {
-              fontSize: '15px',
-              fontWeight: 600
-            }
+            style: {fontSize: '15px', fontWeight: 600}
           };
-          var xAxis = {
-            categories: createTime
-          }
+          var xAxis = {categories: createTime};
           var yAxis = {
-            title: {
-              text: 'Price(HKD)'
-            },
+            title: {text: 'Price(HKD)'},
             plotLines: [{
               value: 0,
               width: 1,
@@ -1644,22 +1633,20 @@ app.controller("WalletCtrl",
             }]
           };
 
-          var tooltip = {
-            valueSuffix: 'HKD'
-          }
+          var tooltip = {valueSuffix: 'HKD'};
 
           var legend = {
             layout: 'vertical',
-            align: 'right',
+            align: 'top',
             verticalAlign: 'middle',
-            borderWidth: 0
+            borderWidth: 0,
+            enabled: false
           };
 
           var series = [{
             name: 'IPT',
             data: price
-          },
-          ];
+          }];
 
           var json = {};
 
@@ -1672,14 +1659,14 @@ app.controller("WalletCtrl",
           json.series = series;
 
           // return json;
-          $('#container').highcharts(json);
-        } catch(err) {
+          $('#HighChartTable').highcharts(json);
+        } catch (err) {
           console.log(err.message)
         }
       } else {
         console.log(res);
       }
-    }
+    };
 
     $scope.getTransactionRecord = function(res) {
 
@@ -1772,10 +1759,9 @@ var formatDateTime = function(inputTime)  {
   var date = new Date(inputTime);
   Y = date.getFullYear() + '-';
   M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-  D = date.getDate();
-  h = date.getHours();
-  m = date.getMinutes();
-  s = date.getSeconds();
+  D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+  h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+  m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
   return M + D + ' ' + h + ':' + m;
 };
 
