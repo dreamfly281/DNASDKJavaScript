@@ -683,7 +683,7 @@ app.controller("WalletCtrl",
       /**
        * 加载node配置:
        */
-      $http.get('wallet-conf.json?20171116').then(function(data) {
+      $http.get('wallet-conf.json?20171120').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.hostSelectIndex = Math.floor(Math.random() * ($scope.hostInfo.length));
 
@@ -842,7 +842,7 @@ app.controller("WalletCtrl",
       }
       $translate.use($scope.langs[$scope.langSelectIndex].lang);
       window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
-      $http.get('wallet-conf.json?20171116').then(function(data) {
+      $http.get('wallet-conf.json?20171120').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
       });
@@ -1783,10 +1783,10 @@ var transactionRecordDateTime = function(inputTime)  {
   var date = new Date(inputTime);
   Y = date.getFullYear() + '-';
   M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-  D = date.getDate();
-  h = date.getHours();
-  m = date.getMinutes();
-  s = date.getSeconds();
+  D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+  h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+  m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+  s = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
   return Y + M + D + ' ' + h + ':' + m + ':' + s;
 };
 
