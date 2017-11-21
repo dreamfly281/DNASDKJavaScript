@@ -683,7 +683,7 @@ app.controller("WalletCtrl",
       /**
        * 加载node配置:
        */
-      $http.get('wallet-conf.json?20171120').then(function(data) {
+      $http.get('wallet-conf.json?20171121').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.hostSelectIndex = Math.floor(Math.random() * ($scope.hostInfo.length));
 
@@ -842,7 +842,7 @@ app.controller("WalletCtrl",
       }
       $translate.use($scope.langs[$scope.langSelectIndex].lang);
       window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
-      $http.get('wallet-conf.json?20171120').then(function(data) {
+      $http.get('wallet-conf.json?20171121').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
       });
@@ -918,6 +918,29 @@ app.controller("WalletCtrl",
       $scope.noticeMsgIndex = $i;
     };
 
+    $scope.goToHome = function() {
+      // no login
+      if ($scope.accounts == '') {
+        $scope.showOpenWallet = true;
+        $scope.showAllMainPage = true;
+
+        $scope.showGenerateWallet = false;
+        $scope.showGenerateWalletFromPrivateKey = false;
+        $scope.showGenerateWalletFromRandom = false;
+        $scope.showNoticeCenter = false;
+      } else {
+        // logged
+        if ($scope.showTransaction === false || $scope.showAllMainPage === false) {
+          $scope.showTransaction = true;
+          $scope.showAllMainPage = true;
+
+          $scope.showTransactionRecord = false;
+          $scope.showNoticeCenter = false;
+          $scope.showAllAssestMsg = false;
+        }
+      }
+    };
+
     $scope.returnFromTransactionRecord = function() {
       $scope.showTransaction = true;
       $scope.showTransactionRecord = false;
@@ -950,16 +973,17 @@ app.controller("WalletCtrl",
     };
 
     $scope.changeSettingSelectIndex = function($settingObj) {
-
       if ($settingObj.name == "HELP") {
         alert("Help");
       } else if ($settingObj.name == "NOTICE") {
         $scope.showNoticeCenterTab();
       } else if ($settingObj.name == "CHANGE_PASSWORD") {
         $scope.showChangePasswordTab();
+      } else if ($settingObj.name == "SIGN_OUT") {
+        location.reload();
       }
-
     };
+
     $scope.changehostSelectIndex = function($index) {
       $scope.hostSelectIndex = $index;
       $scope.connectNode();
@@ -1158,15 +1182,18 @@ app.controller("WalletCtrl",
       Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
 
       $scope.settings = [
-      //   {
-      //   name: "HELP"
-      // },
+        //   {
+        //   name: "HELP"
+        // },
         {
           name: "NOTICE"
         },
         {
           name: "CHANGE_PASSWORD"
         },
+        {
+          name: "SIGN_OUT"
+        }
       ];
       //$scope.getHighChartData();
       Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);

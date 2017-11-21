@@ -83,7 +83,7 @@
   "MT_TO_ADDRESS": "对方地址",
   "MT_AMOUNT_TO_SEND": "发送数量",
   "MT_FROM_ADDRESS": "我的地址",
-  "BTN_TRANSFER_TRANSACTION": "转账交易",
+  "BTN_TRANSFER_TRANSACTION": "发送交易",
   "BTN_GET_TRANSFER_TRANSACTION": "获取 转账 交易数据",
   "MT_ASSET_NAME": "资产名称",
   "MT_ASSET_AMOUNT": "资产总量",
@@ -152,8 +152,9 @@
   "TRANSACTION_HASH": "交易哈希",
   "PRICE": "数量",
   "TIME": "时间",
-  "IPT_TRANSACTION_DATA":"IPT交易数据",
-  "CURRENT_TRANSACTION_PRICE":"当前交易数据:",
-  "NO_ASSET_RECORD"  : "暂无资产记录",
-  "NO_TRANSACTION_RECORD" : "暂无交易记录"
+  "IPT_TRANSACTION_DATA": "IPT交易数据",
+  "CURRENT_TRANSACTION_PRICE": "当前交易数据:",
+  "NO_ASSET_RECORD": "暂无资产记录",
+  "NO_TRANSACTION_RECORD": "暂无交易记录",
+  "SIGN_OUT": "退出登录"
 }

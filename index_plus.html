@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="static/css/google-font.css" />
     <link rel="stylesheet" href="static/css/bootstrap.min.css" />
     <link rel="stylesheet" href="static/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="static/css/wallet.css?20171120" />
+    <link rel="stylesheet" href="static/css/wallet.css?20171121" />
     <!-- Javascript -->
     <script src="https://cdn.bootcss.com/modernizr/2.8.3/modernizr.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
@@ -46,8 +46,8 @@
     <!--<script src="static/js/vendor/sm.js"></script>-->
     <script src="static/js/vendor/ecdsa_bundle.js"></script>
     <script src="static/js/vendor/secp256k1_bundle.js"></script>
-    <script src="static/js/wallet.js?20171120"></script>
-    <script src="app.js?20171120"></script>
+    <script src="static/js/wallet.js?20171121"></script>
+    <script src="app.js?20171121"></script>
     <script language="javascript">
       function setTabFromURL() {
         $(function() {
@@ -95,13 +95,18 @@
 <!--[if lt IE 8]>
 <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
 <![endif]-->
+
 <header>
-    <nav class="navbar-default">
+    <div class="navbar-default">
         <div class="container">
             <div class="navbar-header">
                 <ul class="nav navbar-nav navbar-left">
-                    <li> <a class="navbar-brand" aria-expanded="false" style="color: #ffffff;"><i class="fa fa-line-chart" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'SITE_TITLE' | translate }}</a> </li>
-                    <li> <a class="navbar-brand" aria-expanded="false" style="color: #ffffff;">{{version}}</a> </li>
+                    <li>
+                        <a class="navbar-brand btn btn-link" style="color: #ffffff;" ng-click="goToHome()">
+                            <i class="fa fa-home" style="font-size: 20px;" aria-hidden="true"></i>&nbsp;&nbsp;{{ 'SITE_TITLE' | translate }}
+                        </a>
+                    </li>
+                    <li> <a class="navbar-brand" style="color: #ffffff;">{{version}}</a> </li>
                 </ul>
             </div>
             <div class="navbar-collapse collapse" id="navbar-main">
@@ -109,22 +114,21 @@
                     <li class="dropdown"> <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-download" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'DOWNLOADS' | translate }} <span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             <li ng-repeat="dl in downloads"><a href="#" ng-click="changeDownloadSelectIndex(dl)">{{dl.name + '-' + desktopVersion}}</a></li>
-                        </ul> </li>
+                        </ul>
+                    </li>
                     <li> <a target="_blank" href="{{bbsUrl}}"><i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'FEEDBACK' | translate }}</a> </li>
                     <li> <a href="#" ng-click="changeLangSelectIndex()"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp; {{langs[langSelectIndex].name}}</a> </li>
-                    <li class="dropdown"> <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-server" aria-hidden="true"></i>&nbsp;&nbsp;{{hostInfo[hostSelectIndex].hostName}} <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)" value="{{host.hostName}}">{{host.hostName}}</a></li>
-                        </ul> </li>
                     <li class="dropdown"> <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             <li ng-repeat="setting in settings"><a href="#" ng-click="changeSettingSelectIndex(setting)" value="{{setting.name}}">{{setting.name | translate}}</a></li>
-                        </ul> </li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
         </div>
-    </nav>
+    </div>
 </header>
+
 <!-- Main Page -->
 <div class="container main" ng-show="showAllMainPage">
     <br />
