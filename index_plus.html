@@ -118,6 +118,10 @@
                     </li>
                     <li> <a target="_blank" href="{{bbsUrl}}"><i class="fa fa-coffee" aria-hidden="true"></i>&nbsp;&nbsp; {{ 'FEEDBACK' | translate }}</a> </li>
                     <li> <a href="#" ng-click="changeLangSelectIndex()"><i class="fa fa-globe" aria-hidden="true"></i>&nbsp;&nbsp; {{langs[langSelectIndex].name}}</a> </li>
+                    <li class="dropdown"> <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-server" aria-hidden="true"></i>&nbsp;&nbsp;{{hostInfo[hostSelectIndex].hostName}} <span class="caret"></span></a>
+                        <ul class="dropdown-menu" role="menu">
+                            <li ng-repeat="host in hostInfo"><a href="#" ng-click="changehostSelectIndex($index)" value="{{host.hostName}}">{{host.hostName}}</a></li>
+                        </ul> </li>
                     <li class="dropdown"> <a href="#" class="dropdown-toggle" role="button" aria-expanded="false"><i class="fa fa-bars" aria-hidden="true"></i>&nbsp;&nbsp;<span class="caret"></span></a>
                         <ul class="dropdown-menu" role="menu">
                             <li ng-repeat="setting in settings"><a href="#" ng-click="changeSettingSelectIndex(setting)" value="{{setting.name}}">{{setting.name | translate}}</a></li>
