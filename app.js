@@ -577,7 +577,7 @@ app.controller("WalletCtrl",
     //   name: "HELP"
     // },
     {
-      name: "NOTICE"
+      name: "Notice"
     }];
 
     $scope.txType = "128"; //默认下拉选项
