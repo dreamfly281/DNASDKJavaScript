@@ -688,7 +688,7 @@ app.controller("WalletCtrl",
       /**
        * 加载node配置:
        */
-      $http.get('wallet-conf.json?20171121').then(function(data) {
+      $http.get('wallet-conf.json?20171123').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.hostSelectIndex = Math.floor(Math.random() * ($scope.hostInfo.length));
 
@@ -847,7 +847,7 @@ app.controller("WalletCtrl",
       }
       $translate.use($scope.langs[$scope.langSelectIndex].lang);
       window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
-      $http.get('wallet-conf.json?20171121').then(function(data) {
+      $http.get('wallet-conf.json?20171123').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
       });
