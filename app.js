@@ -573,12 +573,9 @@ app.controller("WalletCtrl",
 
     $scope.settingSelectIndex = 0;
     $scope.settings = [
-    //   {
-    //   name: "HELP"
-    // },
-    {
-      name: "NOTICE"
-    }];
+      {name: "HELP"},
+      {name: "NOTICE"}
+    ];
 
     $scope.txType = "128"; //默认下拉选项
     $scope.txTypes = [];
@@ -597,6 +594,7 @@ app.controller("WalletCtrl",
     $scope.showChangePasswordDownload = false;
     $scope.showAllAssestMsg = false;
     $scope.showNoticeCenter = false;
+    $scope.showHelpCenter = false;
     $scope.showTransactionRecord = false;
     $scope.showMainTab = false;
     $scope.showMore = false;
@@ -608,6 +606,8 @@ app.controller("WalletCtrl",
     $scope.showNoTransactionRecord = false;
     $scope.showNoticeCenterList = false;
     $scope.showNoticeCenterMsg = false;
+    $scope.showHelpCenterList = false;
+    $scope.showHelpCenterMsg = false;
 
     $scope.notifier = Notifier;
     $scope.notifier.sce = $sce;
@@ -666,8 +666,13 @@ app.controller("WalletCtrl",
 
     $scope.noticeMsgs = [];
     $scope.noticeMsgIndex = 0;
-    $scope.noticeFirstPageURL;
-    $scope.noticeLastPageURL;
+    $scope.noticeFirstPageURL = '';
+    $scope.noticeLastPageURL = '';
+
+    $scope.helpMsgs = [];
+    $scope.helpMsgIndex = 0;
+    $scope.helpFirstPageURL = '';
+    $scope.helpLastPageURL = '';
 
     $interval(function() {
         var account = $scope.accounts[$scope.accountSelectIndex];
@@ -858,22 +863,24 @@ app.controller("WalletCtrl",
       $scope.showTransactionRecord = true;
     };
 
+    /**
+     * Notice Controller
+     */
     $scope.showNoticeCenterTab = function() {
       $scope.showAllMainPage = false;
       $scope.showNoticeCenter = true;
+      $scope.showHelpCenter = false;
       $scope.showChangePassword = false;
       $scope.showAllChangePassword = false;
       $scope.showNoticeCenterList = true;
       $scope.showNoticeCenterMsg = false;
+      $scope.showHelpCenterList = false;
+      $scope.showHelpCenterMsg = false;
 
       Wallet.GetNotice($http, $scope.getNoticeList, $scope.catchProblem)
     };
-
     $scope.getNoticeList = function(res) {
-
-      //console.log(res);
       var Notice = res.data.data.data;
-      console.log(res.data.data);
 
       for (let i = 0; i < Notice.length; i++) {
 
@@ -890,33 +897,103 @@ app.controller("WalletCtrl",
         noticeMsg.time = Notice[i].created_at;
         $scope.noticeMsgs[i] = noticeMsg;
       }
-      //console.log($scope.noticeMsgs);
+      
       $scope.noticeFirstPageURL = res.data.data.first_page_url;
       $scope.noticeLastPageURL = res.data.data.last_page_url;
-
     };
-
     $scope.getNoticeFirstPage = function() {
-      Wallet.GetNoticePage($http, $scope.noticeFirstPageURL, $scope.getNoticeList, $scope.catchProblem)
+      Wallet.GetPage($http, $scope.noticeFirstPageURL, $scope.getNoticeList, $scope.catchProblem)
+    };
+    $scope.getNoticeLastPage = function() {
+      Wallet.GetPage($http, $scope.noticeLastPageURL, $scope.getNoticeList, $scope.catchProblem)
+    };
+    $scope.showNoticeMsg = function($i) {
+      $scope.showNoticeCenterList = false;
+      $scope.showNoticeCenterMsg = true;
+      $scope.showHelpCenterList = false;
+      $scope.showHelpCenterMsg = false;
+
+      $scope.noticeMsgIndex = $i;
+    };
+    $scope.returnFromNoticeCenter = function() {
+      $scope.showAllMainPage = true;
+      $scope.showNoticeCenter = false;
+      $scope.showHelpCenter = false;
+    };
+    $scope.returnFromNoticeCenterMsg = function() {
+      $scope.showNoticeCenterList = true;
+      $scope.showNoticeCenterMsg = false
+      $scope.showHelpCenterList = false;
+      $scope.showHelpCenterMsg = false;
     };
 
-    $scope.getNoticeLastPage = function() {
-      Wallet.GetNoticePage($http, $scope.noticeLastPageURL, $scope.getNoticeList, $scope.catchProblem)
+    /**
+     * Help Controller
+     */
+    $scope.showHelp = function() {
+      $scope.showAllMainPage = false;
+      $scope.showHelpCenter = true;
+      $scope.showNoticeCenter = false;
+      $scope.showChangePassword = false;
+      $scope.showAllChangePassword = false;
+      $scope.showHelpCenterList = true;
+      $scope.showHelpCenterMsg = false;
+      $scope.showNoticeCenterList = false;
+      $scope.showNoticeCenterMsg = false;
+
+      Wallet.GetHelp($http, $scope.getHelpList, $scope.catchProblem)
     };
+    $scope.getHelpList = function(res) {
+      let data = res.data.data.data;
+
+      for (let i = 0; i < data.length; i++) {
+        let helpMsg = {title: "", summary: "", content: "", time: ""};
+
+        helpMsg.title = data[i].title;
+        helpMsg.summary = data[i].summary;
+        helpMsg.content = data[i].content;
+        helpMsg.time = data[i].created_at;
+        $scope.helpMsgs[i] = helpMsg;
+      }
+      
+      $scope.helpFirstPageURL = res.data.data.first_page_url;
+      $scope.helpLastPageURL = res.data.data.last_page_url;
+    };
+    $scope.getHelpFirstPage = function() {
+      Wallet.GetPage($http, $scope.helpFirstPageURL, $scope.getHelpList, $scope.catchProblem)
+    };
+    $scope.getHelpLastPage = function() {
+      Wallet.GetPage($http, $scope.helpLastPageURL, $scope.getHelpList, $scope.catchProblem)
+    };
+    $scope.showHelpMsg = function($i) {
+      $scope.showNoticeCenterList = false;
+      $scope.showNoticeCenterMsg = false;
+      $scope.showHelpCenterList = false;
+      $scope.showHelpCenterMsg = true;
+
+      $scope.helpMsgIndex = $i;
+    };
+    $scope.returnFromHelpCenter = function() {
+      $scope.showAllMainPage = true;
+      $scope.showNoticeCenter = false;
+      $scope.showHelpCenter = false;
+    };
+    $scope.returnFromHelpCenterMsg = function() {
+      $scope.showNoticeCenterList = false;
+      $scope.showNoticeCenterMsg = false
+      $scope.showHelpCenterList = true;
+      $scope.showHelpCenterMsg = false;
+    };
+
 
     $scope.showChangePasswordTab = function() {
       $scope.showAllMainPage = false;
       $scope.showChangePassword = true;
       $scope.showAllChangePassword = true;
       $scope.showNoticeCenter = false;
+      $scope.showHelpCenter = false;
     };
 
-    $scope.showNoticeMsg = function($i) {
-      $scope.showNoticeCenterList = false;
-      $scope.showNoticeCenterMsg = true;
-
-      $scope.noticeMsgIndex = $i;
-    };
 
     $scope.goToHome = function() {
       // no login
@@ -928,6 +1005,7 @@ app.controller("WalletCtrl",
         $scope.showGenerateWalletFromPrivateKey = false;
         $scope.showGenerateWalletFromRandom = false;
         $scope.showNoticeCenter = false;
+        $scope.showHelpCenter = false;
       } else {
         // logged
         if ($scope.showTransaction === false || $scope.showAllMainPage === false) {
@@ -936,6 +1014,7 @@ app.controller("WalletCtrl",
 
           $scope.showTransactionRecord = false;
           $scope.showNoticeCenter = false;
+          $scope.showHelpCenter = false;
           $scope.showAllAssestMsg = false;
         }
       }
@@ -951,15 +1030,6 @@ app.controller("WalletCtrl",
       $scope.showAllAssestMsg = false;
     };
 
-    $scope.returnFromNoticeCenter = function() {
-      $scope.showAllMainPage = true;
-      $scope.showNoticeCenter = false;
-    };
-
-    $scope.returnFromNoticeCenterMsg = function() {
-      $scope.showNoticeCenterList = true;
-      $scope.showNoticeCenterMsg = false;
-    };
 
     /**
      * Download desktop wallet file.
@@ -974,7 +1044,7 @@ app.controller("WalletCtrl",
 
     $scope.changeSettingSelectIndex = function($settingObj) {
       if ($settingObj.name == "HELP") {
-        alert("Help");
+        $scope.showHelp();
       } else if ($settingObj.name == "NOTICE") {
         $scope.showNoticeCenterTab();
       } else if ($settingObj.name == "CHANGE_PASSWORD") {
@@ -1182,18 +1252,10 @@ app.controller("WalletCtrl",
       Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
 
       $scope.settings = [
-        //   {
-        //   name: "HELP"
-        // },
-        {
-          name: "NOTICE"
-        },
-        {
-          name: "CHANGE_PASSWORD"
-        },
-        {
-          name: "SIGN_OUT"
-        }
+        {name: "HELP"},
+        {name: "NOTICE"},
+        {name: "CHANGE_PASSWORD"},
+        {name: "SIGN_OUT"}
       ];
       //$scope.getHighChartData();
       Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);

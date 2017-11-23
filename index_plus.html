@@ -559,7 +559,7 @@
             <ul class="pagination">
                 <li class="page-item"> <a class="page-link" ng-click="getNoticeFirstPage()">&laquo;</a> </li>
                 <li class="page-item active"> <a class="page-link" href="#">1</a> </li>
-                <li class="page-item "> <a class="page-link" ng-click="getNoticeFirstPage()">&raquo;</a> </li>
+                <li class="page-item"> <a class="page-link" ng-click="getNoticeLastPage()">&raquo;</a> </li>
             </ul>
         </div>
     </div>
@@ -580,6 +580,59 @@
             <h2 style="text-align:center">{{noticeMsgs[noticeMsgIndex].title}}</h2>
             <p class="text-muted" style="text-align:center">{{noticeMsgs[noticeMsgIndex].time}}</p>
             <div class="ng-binding" ng-bind-html="noticeMsgs[noticeMsgIndex].content|trustHtml"></div>
+        </div>
+        <br />
+        <br />
+        <br />
+    </div>
+</div>
+<!-- #Help Center -->
+<div class="container main" ng-show="showHelpCenter">
+    <br />
+    <br />
+    <div ng-show="showHelpCenterList">
+        <div style="display: flex;align-items: flex-end">
+            <div class="col-lg-8 col-md-8 col-sm-8 ">
+                <h3 translate="HELP">Help</h3>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                    <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnFromHelpCenter()" translate="RETURN">Return</a>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+        <br />
+        <ul class="list-group">
+            <li ng-repeat="helpMsg in helpMsgs" class="list-group-item"><a class="btn btn-link " style="font-size: 15px;color:#000000;padding:0px 0px" ng-click="showHelpMsg(helpMsgs.indexOf(helpMsg))">{{helpMsg.time.substring(0,11) + helpMsg.title}}</a></li>
+        </ul>
+        <br />
+        <br />
+        <div style="text-align:center">
+            <ul class="pagination">
+                <li class="page-item"> <a class="page-link" ng-click="getHelpFirstPage()">&laquo;</a> </li>
+                <li class="page-item active"> <a class="page-link" href="#">1</a> </li>
+                <li class="page-item"> <a class="page-link" ng-click="getHelpLastPage()">&raquo;</a> </li>
+            </ul>
+        </div>
+    </div>
+    <div ng-show="showHelpCenterMsg">
+        <div style="display: flex;align-items: flex-end">
+            <div class="col-lg-8 col-md-8 col-sm-8 ">
+                <h3 translate="HELP">HELP</h3>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 row text-right" style="display:inline-block">
+                <div class="col-lg-4 col-md-4 col-sm-4 navbar-right ">
+                    <a class="btn btn-link " style="font-size: 15px;color:#000000" ng-click="returnFromHelpCenterMsg()" translate="RETURN">Return</a>
+                </div>
+            </div>
+        </div>
+        <div class="line"></div>
+        <div class="form-group col-lg-1 col-md-1 col-sm-1"></div>
+        <div class="form-group col-lg-10 col-md-10 col-sm-10">
+            <h2 style="text-align:center">{{helpMsgs[helpMsgIndex].title}}</h2>
+            <p class="text-muted" style="text-align:center">{{helpMsgs[helpMsgIndex].time}}</p>
+            <div class="ng-binding" ng-bind-html="helpMsgs[helpMsgIndex].content|trustHtml"></div>
         </div>
         <br />
         <br />

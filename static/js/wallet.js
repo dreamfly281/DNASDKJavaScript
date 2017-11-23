@@ -1366,7 +1366,6 @@ Wallet.SendTransactionData = function($http, $txData, $host, $callback, $callbac
 };
 
 Wallet.GetHighChartData = function($http, $callback, $callback_dev) {
-
   $http({
     method: 'GET',
     url: 'https://proxy1.guoxiaojie.org/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
@@ -1375,7 +1374,6 @@ Wallet.GetHighChartData = function($http, $callback, $callback_dev) {
 };
 
 Wallet.GetTransactionRecord = function($http, $address, $callback, $callback_dev) {
-
   $http({
     method: 'GET',
     url: 'https://proxy2.guoxiaojie.org/interface/address/' + $address
@@ -1384,7 +1382,6 @@ Wallet.GetTransactionRecord = function($http, $address, $callback, $callback_dev
 };
 
 Wallet.GetNotice = function($http, $callback, $callback_dev) {
-
   $http({
     method: 'GET',
     url: 'https://dnacms.guoxiaojie.org/api/v1/intelligence'
@@ -1392,10 +1389,19 @@ Wallet.GetNotice = function($http, $callback, $callback_dev) {
   catch($callback_dev);
 };
 
-Wallet.GetNoticePage = function($http, $url, $callback, $callback_dev) {
+Wallet.GetPage = function($http, $url, $callback, $callback_dev) {
   $http({
     method: 'GET',
     url: $url,
   }).then($callback).
   catch($callback_dev);
 };
+
+Wallet.GetHelp = function($http, $callback, $callback_dev) {
+  $http({
+    method: 'GET',
+    url: 'https://dnacms.guoxiaojie.org/api/v1/help-doc'
+  }).then($callback).
+  catch($callback_dev);
+};
+
