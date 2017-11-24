@@ -374,7 +374,6 @@ app.controller("GenerateWalletCtrl",
     };
 
     $scope.downloaded = function() {
-      console.log("下载地址：" + $scope.objectURL);
       $scope.fileDownloaded = true;
     };
 
@@ -530,528 +529,657 @@ app.controller("GenerateWalletCtrl",
 
   });
 
-app.controller("WalletCtrl",
-  function($scope, $translate, $http, $sce, $interval, $modal, $filter) {
-    $scope.wallet = null;
-    $scope.walletType = "fileupload";
-    $scope.filePassword = "";
-    $scope.privateKeyData = "";
-    $scope.WIFKeyData = "";
-    $scope.PublicKeyEncodedData = "";
+app.controller("WalletCtrl", function($scope, $translate, $http, $sce, $interval, $modal, $filter) {
+  $scope.wallet = null;
+  $scope.walletType = "fileupload";
+  $scope.filePassword = "";
+  $scope.privateKeyData = "";
+  $scope.WIFKeyData = "";
+  $scope.PublicKeyEncodedData = "";
 
-    $scope.txUnsignedData = "";
-    $scope.txSignatureData = "";
+  $scope.txUnsignedData = "";
+  $scope.txSignatureData = "";
 
-    $scope.hostSelectIndex = 0;
-    $scope.hostInfo = [];
+  $scope.hostSelectIndex = 0;
+  $scope.hostInfo = [];
 
-    $scope.version = '';
-    $scope.desktopVersion = '';
-    $scope.bbsUrl = '';
+  $scope.apiUrl = [];
 
-    $scope.nodeHeight = '0';
-    $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
+  $scope.version = '';
+  $scope.desktopVersion = '';
+  $scope.bbsUrl = '';
 
-    $scope.langSelectIndex = 0;
-    $scope.langs = [{
-      name: "English",
-      lang: "zh-hans"
-    },
-      {
-        name: "中文（简体）",
-        lang: "en"
-      }];
+  $scope.nodeHeight = '0';
+  $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
 
-    $scope.downloadSelectIndex = 0;
-    $scope.downloads = [{
-      name: "Mac"
-    }, {
-        name: "Windows"
-      }, {
-        name: "Linux"
-      }];
-
-    $scope.settingSelectIndex = 0;
-    $scope.settings = [
-    //   {
-    //   name: "HELP"
-    // },
+  $scope.langSelectIndex = 0;
+  $scope.langs = [{
+    name: "English",
+    lang: "zh-hans"
+  },
     {
-      name: "NOTICE"
+      name: "中文（简体）",
+      lang: "en"
     }];
 
-    $scope.txType = "128"; //默认下拉选项
-    $scope.txTypes = [];
+  $scope.downloadSelectIndex = 0;
+  $scope.downloads = [{
+    name: "Mac"
+  }, {
+    name: "Windows"
+  }, {
+    name: "Linux"
+  }];
 
-    $scope.timeoutViewStatus = true; // true: allow open
-    $scope.showAllMainPage = true;
-    $scope.showWalletMainPager = false;
+  $scope.settingSelectIndex = 0;
+  $scope.settings = [
+    {name: "HELP"},
+    {name: "NOTICE"}
+  ];
+
+  $scope.txType = "128"; //默认下拉选项
+  $scope.txTypes = [];
+
+  $scope.timeoutViewStatus = true; // true: allow open
+  $scope.showAllMainPage = true;
+  $scope.showWalletMainPager = false;
+  $scope.showOpenWallet = true;
+  $scope.showTransaction = false;
+  $scope.showGenerateWallet = false;
+  $scope.showGenerateWalletFromRandom = false;
+  $scope.showGenerateWalletFromPrivateKey = false;
+  $scope.showCreateWalletDownload = false;
+  $scope.showAllChangePassword = false;
+  $scope.showChangePassword = false;
+  $scope.showChangePasswordDownload = false;
+  $scope.showAllAssestMsg = false;
+  $scope.showNoticeCenter = false;
+  $scope.showHelpCenter = false;
+  $scope.showTransactionRecord = false;
+  $scope.showMainTab = false;
+  $scope.showMore = false;
+  $scope.showBtnUnlock = $scope.showBtnUnlockPrivateKey = $scope.showBtnUnlockWIFKey = $scope.showBtnUnlockExtSig = $scope.requirePass = false;
+  $scope.showMoreAssetButton = true;
+  $scope.showNoAsset = false;
+  $scope.showOnlyOneAsset = false;
+  $scope.showTransactionRecordButton = false;
+  $scope.showNoTransactionRecord = false;
+  $scope.showNoticeCenterList = false;
+  $scope.showNoticeCenterMsg = false;
+  $scope.showHelpCenterList = false;
+  $scope.showHelpCenterMsg = false;
+
+  $scope.notifier = Notifier;
+  $scope.notifier.sce = $sce;
+  $scope.notifier.scope = $scope;
+
+  $scope.account = {
+    privatekey: "",
+    publickeyEncoded: "",
+    publickeyHash: "",
+    programHash: "",
+    address: ""
+  };
+  $scope.accounts = [];
+  $scope.accountSelectIndex = 0;
+
+  $scope.stateUpdate = {
+    namespace: "",
+    key: "",
+    value: ""
+  };
+
+  $scope.issueAsset = {
+    issueAssetID: "",
+    issueAmount: ""
+  };
+
+  $scope.registerAsset = {
+    assetName: "",
+    assetAmount: ""
+  };
+
+  $scope.Transaction = {
+    ToAddress: "",
+    Amount: ""
+  };
+  $scope.coins = [];
+  $scope.coinSelectIndex = 0;
+
+  $scope.claims = {};
+
+  $scope.newAssetId = '';
+  $scope.registerNewAssetId = '';
+  $scope.issueNewAssetId = '';
+
+  $scope.countdown = ''; //The countdown after the transfer,10s
+  $scope.Transaction.able = true;
+  $scope.waitingSecond = false;
+
+  $scope.isShowNotifier = true;
+
+  $scope.transactionRecords = [];
+
+  //Chart's Title
+  var chartTitle = "IPT交易数据";
+  var chartSubTitle = "当前交易数据:";
+
+  $scope.noticeMsgs = [];
+  $scope.noticeMsgIndex = 0;
+  $scope.noticeFirstPageURL = '';
+  $scope.noticeLastPageURL = '';
+
+  $scope.helpMsgs = [];
+  $scope.helpMsgIndex = 0;
+  $scope.helpFirstPageURL = '';
+  $scope.helpLastPageURL = '';
+
+  $interval(function () {
+      let account = $scope.accounts[$scope.accountSelectIndex];
+      if (account) {
+        if (account.address != "") {
+          $scope.getUnspent(account.address);
+        }
+      }
+    },
+    30000);
+
+  $interval(function () {
+      let account = $scope.accounts[$scope.accountSelectIndex];
+      if (account) {
+        if (account.address != "") {
+          Wallet.AjaxGet($http, $scope.apiUrl.high_chart_data, $scope.getHighChartData, $scope.catchProblem_ignore);
+          Wallet.AjaxGet($http,
+            $scope.apiUrl.transaction_record + $scope.accounts[$scope.accountSelectIndex].address,
+            $scope.getTransactionRecord, $scope.catchProblem);
+        }
+      }
+    },
+    60000);
+
+  $scope.init = function () {
+    /**
+     * 加载node配置:
+     */
+    $http.get('wallet-conf.json?20171124-1').then(function (data) {
+      $scope.hostInfo = data.data.host_info[0];
+      $scope.hostSelectIndex = Math.floor(Math.random() * ($scope.hostInfo.length));
+
+      $scope.apiUrl = data.data.api_url;
+
+      $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
+
+      $scope.projectName = data.data.project_name;
+      $scope.version = data.data.version;
+      $scope.desktopVersion = data.data.desktop_version;
+      $scope.domain = data.data.domain;
+      $scope.bbsUrl = data.data.bbs_url;
+
+      $scope.explorerUrl = data.data.explorer_url;
+      $scope.explorerSearchPath = data.data.explorer_search_path;
+
+      $scope.connectNode();
+    });
+  };
+
+  // modal
+  $scope.openModal = function () {
+    var txData;
+    var tx;
+
+    if ($scope.txType == '128') {
+      if ($scope.walletType == 'externalsignature') {
+        txData = $scope.txUnsignedData;
+      } else {
+        txData = $scope.transferTransactionUnsigned();
+      }
+      if (txData == false) return;
+
+      tx = $scope.getTransferTxData(txData);
+    } else if ($scope.txType == '2') {
+      if ($scope.walletType == 'externalsignature') {
+        txData = $scope.txUnsignedData;
+      } else {
+        txData = $scope.claimTransactionUnsigned();
+      }
+      if (txData == false) return;
+
+      tx = $scope.getClaimTxData(txData);
+    } else {
+      return;
+    }
+
+    var modalInstance = $modal.open({
+      templateUrl: 'myModalContent.html',
+      scope: $scope,
+      controller: 'ModalInstanceCtrl',
+      // specify controller for modal
+      resolve: {
+        items: function () {
+          if ($scope.txType == '128') {
+            // transfer transaction
+            return {
+              'txData': txData,
+              'tx': tx,
+              'toAddress': $scope.Transaction.ToAddress,
+              'amount': $scope.Transaction.Amount,
+              'fromAddress': $scope.accounts[$scope.accountSelectIndex].programHash
+            }
+          } else if ($scope.txType == '2') {
+            // claim transaction
+            return {
+              'txData': txData,
+              'tx': tx,
+              'amount': $scope.claims['amount'],
+              'claimAddress': $scope.accounts[$scope.accountSelectIndex].programHash
+            }
+          }
+        }
+      }
+    });
+    modalInstance.opened.then(function () { // 模态窗口打开之后执行的函数
+    });
+    modalInstance.result.then(function (result) {
+      },
+      function (reason) {
+      });
+  };
+
+  // modal
+  $scope.timeoutView = function () {
+    var modalInstance = $modal.open({
+      templateUrl: 'timeoutView.html',
+      scope: $scope,
+      controller: 'ModalTimeoutCtrl',
+      // specify controller for modal
+      resolve: {
+        items: function () {
+        }
+      }
+    });
+    modalInstance.opened.then(function () {
+      $scope.timeoutViewStatus = false; // true: allow open
+    }); // 模态窗口打开之后执行的函数
+    modalInstance.result.then(function (result) {
+      },
+      function (reason) {
+        $scope.timeoutViewStatus = true;
+        location.reload(); // Refresh page
+      });
+  };
+
+  $scope.showGenerateNewWalletFromRandom = function () {
+    $scope.showOpenWallet = false;
+    $scope.showGenerateWallet = true;
+    $scope.showGenerateWalletFromRandom = true;
+  };
+
+  $scope.showGenerateNewWalletFromPrivateKey = function () {
+    $scope.showOpenWallet = false;
+    $scope.showGenerateWallet = true;
+    $scope.showGenerateWalletFromPrivateKey = true;
+  };
+  $scope.returnGenerateWalletFromRandom = function () {
     $scope.showOpenWallet = true;
-    $scope.showTransaction = false;
     $scope.showGenerateWallet = false;
     $scope.showGenerateWalletFromRandom = false;
+  };
+  $scope.returnGenerateWalletFromPrivateKey = function () {
+    $scope.showOpenWallet = true;
+    $scope.showGenerateWallet = false;
     $scope.showGenerateWalletFromPrivateKey = false;
-    $scope.showCreateWalletDownload = false;
-    $scope.showAllChangePassword = false;
+  };
+
+  $scope.returnOpenWalletFromChangePassword = function () {
+    $scope.showAllMainPage = true;
     $scope.showChangePassword = false;
+    $scope.showAllChangePassword = false;
+  };
+
+  $scope.returnOpenWalletFromChangePasswordDownload = function () {
+    // $scope.showTransaction = true;
+    $scope.showAllMainPage = true;
+    $scope.showWalletMainPage = true;
     $scope.showChangePasswordDownload = false;
-    $scope.showAllAssestMsg = false;
+    $scope.showAllChangePassword = false;
+
+  };
+
+  $scope.nextstep = function () {
+    $scope.showCreateWalletDownload = false;
+    $scope.showGenerateWallet = false;
+    $scope.showOpenWallet = true;
+  };
+
+  $scope.changeLangSelectIndex = function () {
+    if ($scope.langSelectIndex === 0) {
+      $scope.langSelectIndex = 1;
+      chartTitle = "IPT Transaction Data";
+      chartSubTitle = "Current transaction data:";
+      Wallet.AjaxGet($http, $scope.apiUrl.high_chart_data, $scope.getHighChartData, $scope.catchProblem_ignore);
+    } else {
+      $scope.langSelectIndex = 0;
+      chartTitle = "IPT交易数据";
+      chartSubTitle = "当前交易数据:";
+      Wallet.AjaxGet($http, $scope.apiUrl.high_chart_data, $scope.getHighChartData, $scope.catchProblem_ignore);
+    }
+    $translate.use($scope.langs[$scope.langSelectIndex].lang);
+    window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
+    $http.get('wallet-conf.json?20171124-1').then(function (data) {
+      $scope.hostInfo = data.data.host_info[0];
+      $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
+    });
+
+  };
+  $scope.showAllAssestMsgTab = function () {
+    $scope.showTransaction = false;
+    $scope.showAllAssestMsg = true;
+  };
+
+  $scope.showTransactionRecordTab = function () {
+    $scope.showTransaction = false;
+    $scope.showTransactionRecord = true;
+  };
+
+  /**
+   * Notice Controller
+   */
+  $scope.showNoticeCenterTab = function () {
+    $scope.showAllMainPage = false;
+    $scope.showNoticeCenter = true;
+    $scope.showHelpCenter = false;
+    $scope.showChangePassword = false;
+    $scope.showAllChangePassword = false;
+    $scope.showNoticeCenterList = true;
+    $scope.showNoticeCenterMsg = false;
+    $scope.showHelpCenterList = false;
+    $scope.showHelpCenterMsg = false;
+
+    Wallet.AjaxGet($http, $scope.apiUrl.notice, $scope.getNoticeList, $scope.catchProblem);
+  };
+  $scope.getNoticeList = function (res) {
+    var Notice = res.data.data.data;
+
+    for (let i = 0; i < Notice.length; i++) {
+
+      var noticeMsg = {
+        title: "",
+        summary: "",
+        content: "",
+        time: ""
+      };
+
+      noticeMsg.title = Notice[i].title;
+      noticeMsg.summary = Notice[i].summary;
+      noticeMsg.content = Notice[i].content;
+      noticeMsg.time = Notice[i].created_at;
+      $scope.noticeMsgs[i] = noticeMsg;
+    }
+
+    $scope.noticeFirstPageURL = res.data.data.first_page_url;
+    $scope.noticeLastPageURL = res.data.data.last_page_url;
+  };
+  $scope.getNoticeFirstPage = function () {
+    Wallet.AjaxGet($http, $scope.noticeFirstPageURL, $scope.getNoticeList, $scope.catchProblem);
+  };
+  $scope.getNoticeLastPage = function () {
+    Wallet.AjaxGet($http, $scope.noticeLastPageURL, $scope.getNoticeList, $scope.catchProblem);
+  };
+  $scope.showNoticeMsg = function ($i) {
+    $scope.showNoticeCenterList = false;
+    $scope.showNoticeCenterMsg = true;
+    $scope.showHelpCenterList = false;
+    $scope.showHelpCenterMsg = false;
+
+    $scope.noticeMsgIndex = $i;
+  };
+  $scope.returnFromNoticeCenter = function () {
+    $scope.showAllMainPage = true;
     $scope.showNoticeCenter = false;
-    $scope.showTransactionRecord = false;
-    $scope.showMainTab = false;
-    $scope.showMore = false;
-    $scope.showBtnUnlock = $scope.showBtnUnlockPrivateKey = $scope.showBtnUnlockWIFKey = $scope.showBtnUnlockExtSig = $scope.requirePass = false;
-    $scope.showMoreAssetButton = true;
-    $scope.showNoAsset = false;
-    $scope.showOnlyOneAsset = false;
-    $scope.showTransactionRecordButton = false;
-    $scope.showNoTransactionRecord = false;
+    $scope.showHelpCenter = false;
+  };
+  $scope.returnFromNoticeCenterMsg = function () {
+    $scope.showNoticeCenterList = true;
+    $scope.showNoticeCenterMsg = false
+    $scope.showHelpCenterList = false;
+    $scope.showHelpCenterMsg = false;
+  };
+
+  /**
+   * Help Controller
+   */
+  $scope.showHelp = function () {
+    $scope.showAllMainPage = false;
+    $scope.showHelpCenter = true;
+    $scope.showNoticeCenter = false;
+    $scope.showChangePassword = false;
+    $scope.showAllChangePassword = false;
+    $scope.showHelpCenterList = true;
+    $scope.showHelpCenterMsg = false;
     $scope.showNoticeCenterList = false;
     $scope.showNoticeCenterMsg = false;
 
-    $scope.notifier = Notifier;
-    $scope.notifier.sce = $sce;
-    $scope.notifier.scope = $scope;
+    Wallet.AjaxGet($http, $scope.apiUrl.help, $scope.getHelpList, $scope.catchProblem);
+  };
+  $scope.getHelpList = function (res) {
+    let data = res.data.data.data;
 
-    $scope.account = {
-      privatekey: "",
-      publickeyEncoded: "",
-      publickeyHash: "",
-      programHash: "",
-      address: ""
-    };
-    $scope.accounts = [];
-    $scope.accountSelectIndex = 0;
+    for (let i = 0; i < data.length; i++) {
+      let helpMsg = {title: "", summary: "", content: "", time: ""};
 
-    $scope.stateUpdate = {
-      namespace: "",
-      key: "",
-      value: ""
+      helpMsg.title = data[i].title;
+      helpMsg.summary = data[i].summary;
+      helpMsg.content = data[i].content;
+      helpMsg.time = data[i].created_at;
+      $scope.helpMsgs[i] = helpMsg;
+    }
+
+    $scope.helpFirstPageURL = res.data.data.first_page_url;
+    $scope.helpLastPageURL = res.data.data.last_page_url;
+  };
+  $scope.getHelpFirstPage = function () {
+    Wallet.AjaxGet($http, $scope.helpFirstPageURL, $scope.getNoticeList, $scope.catchProblem);
+  };
+  $scope.getHelpLastPage = function () {
+    Wallet.AjaxGet($http, $scope.helpLastPageURL, $scope.getNoticeList, $scope.catchProblem);
+  };
+  $scope.showHelpMsg = function ($i) {
+    $scope.showNoticeCenterList = false;
+    $scope.showNoticeCenterMsg = false;
+    $scope.showHelpCenterList = false;
+    $scope.showHelpCenterMsg = true;
+
+    $scope.helpMsgIndex = $i;
+  };
+  $scope.returnFromHelpCenter = function () {
+    $scope.showAllMainPage = true;
+    $scope.showNoticeCenter = false;
+    $scope.showHelpCenter = false;
+  };
+  $scope.returnFromHelpCenterMsg = function () {
+    $scope.showNoticeCenterList = false;
+    $scope.showNoticeCenterMsg = false
+    $scope.showHelpCenterList = true;
+    $scope.showHelpCenterMsg = false;
+  };
+
+
+  $scope.showChangePasswordTab = function () {
+    $scope.showAllMainPage = false;
+    $scope.showChangePassword = true;
+    $scope.showAllChangePassword = true;
+    $scope.showNoticeCenter = false;
+    $scope.showHelpCenter = false;
+  };
+
+
+  $scope.goToHome = function () {
+    // no login
+    if ($scope.accounts == '') {
+      $scope.showOpenWallet = true;
+      $scope.showAllMainPage = true;
+
+      $scope.showGenerateWallet = false;
+      $scope.showGenerateWalletFromPrivateKey = false;
+      $scope.showGenerateWalletFromRandom = false;
+      $scope.showNoticeCenter = false;
+      $scope.showHelpCenter = false;
+    } else {
+      // logged
+      if ($scope.showTransaction === false || $scope.showAllMainPage === false) {
+        $scope.showTransaction = true;
+        $scope.showAllMainPage = true;
+
+        $scope.showTransactionRecord = false;
+        $scope.showNoticeCenter = false;
+        $scope.showHelpCenter = false;
+        $scope.showAllAssestMsg = false;
+      }
+    }
+  };
+
+  $scope.returnFromTransactionRecord = function () {
+    $scope.showTransaction = true;
+    $scope.showTransactionRecord = false;
+  };
+
+  $scope.returnFromAllAssestMsg = function () {
+    $scope.showTransaction = true;
+    $scope.showAllAssestMsg = false;
+  };
+
+
+  /**
+   * Download desktop wallet file.
+   * Download URL example: http://[domain]/downloads/[folderName]/wallet-v1.0.0-[folderName].zip
+   *
+   * @param $downloadObj
+   */
+  $scope.changeDownloadSelectIndex = function ($downloadObj) {
+    var folderName = $downloadObj.name.toLowerCase();
+    window.location.href = $scope.domain + "/downloads/" + folderName + "/" + "wallet-" + $scope.desktopVersion + "-" + folderName + ".zip";
+  };
+
+  $scope.changeSettingSelectIndex = function ($settingObj) {
+    if ($settingObj.name == "HELP") {
+      $scope.showHelp();
+    } else if ($settingObj.name == "NOTICE") {
+      $scope.showNoticeCenterTab();
+    } else if ($settingObj.name == "CHANGE_PASSWORD") {
+      $scope.showChangePasswordTab();
+    } else if ($settingObj.name == "SIGN_OUT") {
+      location.reload();
+    }
+  };
+
+  $scope.changehostSelectIndex = function ($index) {
+    $scope.hostSelectIndex = $index;
+    $scope.connectNode();
+    if ($scope.accounts[$scope.accountSelectIndex]) {
+      $scope.getUnspent($scope.accounts[$scope.accountSelectIndex].address);
+    }
+  };
+
+  $scope.changeCoinSelectIndex = function ($index) {
+    $scope.coinSelectIndex = $index;
+  };
+
+  $scope.changeAcountSelectIndex = function ($index) {
+    $scope.accountSelectIndex = $index;
+    $scope.getUnspent($scope.accounts[$index].address);
+    $scope.getClaims($scope.accounts[$index].address);
+  };
+
+  $scope.changeTxType = function () {
+    // ClaimTransaction
+    if ($scope.txType == '2') {
+      // get claims
+      $scope.getClaims($scope.accounts[$scope.accountSelectIndex].address);
+    }
+
+    $scope.registerAsset = {
+      assetName: "",
+      assetAmount: ""
     };
+    $scope.isDisplayAssetId = false;
 
     $scope.issueAsset = {
       issueAssetID: "",
       issueAmount: ""
     };
 
-    $scope.registerAsset = {
-      assetName: "",
-      assetAmount: ""
-    };
-
-    $scope.Transaction = {
-      ToAddress: "",
-      Amount: ""
-    };
-    $scope.coins = [];
-    $scope.coinSelectIndex = 0;
-
-    $scope.claims = {};
-
     $scope.newAssetId = '';
-    $scope.registerNewAssetId = '';
-    $scope.issueNewAssetId = '';
+  };
 
-    $scope.countdown = ''; //The countdown after the transfer,10s
-    $scope.Transaction.able = true;
-    $scope.waitingSecond = false;
+  $scope.openFileDialog = function () {
+    document.getElementById('fselector').click();
+  };
 
-    $scope.isShowNotifier = true;
+  $scope.showContent = function ($wallet) {
+    $scope.wallet = $wallet;
+    $scope.requirePass = true;
 
-    $scope.transactionRecords = [];
+    $scope.notifier.info($translate.instant('NOTIFIER_FILE_SELECTED') + document.getElementById('fselector').files[0].name);
+  };
 
-    //Chart's Title
-    var chartTitle = "IPT交易数据";
-    var chartSubTitle = "当前交易数据:";
+  $scope.onFilePassChange = function () {
+    if ($scope.filePassword.length > 0) {
+      $scope.showBtnUnlock = true;
+    } else {
+      $scope.showBtnUnlock = false;
+    }
+  };
 
-    $scope.noticeMsgs = [];
-    $scope.noticeMsgIndex = 0;
-    $scope.noticeFirstPageURL;
-    $scope.noticeLastPageURL;
+  $scope.onPrivateKeyChange = function () {
+    if ($scope.privateKeyData.length == 64) {
+      $scope.showBtnUnlockPrivateKey = true;
+    } else {
+      $scope.showBtnUnlockPrivateKey = false;
+    }
+  };
 
-    $interval(function() {
-        var account = $scope.accounts[$scope.accountSelectIndex];
-        if (account) {
-          if (account.address != "") {
-            $scope.getUnspent(account.address);
-          }
+  $scope.onWIFKeyChange = function () {
+    if ($scope.WIFKeyData.length == 52) {
+      $scope.showBtnUnlockWIFKey = true;
+    } else {
+      $scope.showBtnUnlockWIFKey = false;
+    }
+  };
+
+  $scope.onPublicKeyEncodedChange = function () {
+    if ($scope.PublicKeyEncodedData.length == 66) {
+      $scope.showBtnUnlockExtSig = true;
+    } else {
+      $scope.showBtnUnlockExtSig = false;
+    }
+  };
+
+  $scope.decryptWallet = function () {
+    try {
+      if ($scope.walletType == "externalsignature") {
+        var ret = Wallet.GetAccountsFromPublicKeyEncoded($scope.PublicKeyEncodedData);
+        if (ret == -1) {
+          $scope.notifier.danger($translate.instant('NOTIFIER_PUBLICKEY_VERIFY_FAILED'));
+          return;
         }
-      },
-      30000);
 
-    $scope.init = function() {
-      /**
-       * 加载node配置:
-       */
-      $http.get('wallet-conf.json?20171120').then(function(data) {
-        $scope.hostInfo = data.data.host_info[0];
-        $scope.hostSelectIndex = Math.floor(Math.random() * ($scope.hostInfo.length));
+        $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_DECRYPT_THE_WALLET'));
+        $scope.accounts = ret;
 
-        $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
+        $scope.showOpenWallet = false;
+        $scope.showTransaction = true;
+        $scope.showMainTab = true;
+        $scope.showMore = true;
 
-        $scope.projectName = data.data.project_name;
-        $scope.version = data.data.version;
-        $scope.desktopVersion = data.data.desktop_version;
-        $scope.domain = data.data.domain;
-        $scope.bbsUrl = data.data.bbs_url;
+        // get unspent coins
+        $scope.getUnspent($scope.accounts[0].address);
 
-        $scope.explorerUrl = data.data.explorer_url;
-        $scope.explorerSearchPath = data.data.explorer_search_path;
+      } else if ($scope.walletType == "pasteprivkey") {
 
-        $scope.connectNode();
-      });
-    };
-
-    // modal
-    $scope.openModal = function() {
-      var txData;
-      var tx;
-
-      if ($scope.txType == '128') {
-        if ($scope.walletType == 'externalsignature') {
-          txData = $scope.txUnsignedData;
-        } else {
-          txData = $scope.transferTransactionUnsigned();
-        }
-        if (txData == false) return;
-
-        tx = $scope.getTransferTxData(txData);
-      } else if ($scope.txType == '2') {
-        if ($scope.walletType == 'externalsignature') {
-          txData = $scope.txUnsignedData;
-        } else {
-          txData = $scope.claimTransactionUnsigned();
-        }
-        if (txData == false) return;
-
-        tx = $scope.getClaimTxData(txData);
-      } else {
-        return;
-      }
-
-      var modalInstance = $modal.open({
-        templateUrl: 'myModalContent.html',
-        scope: $scope,
-        controller: 'ModalInstanceCtrl',
-        // specify controller for modal
-        resolve: {
-          items: function() {
-            if ($scope.txType == '128') {
-              // transfer transaction
-              return {
-                'txData': txData,
-                'tx': tx,
-                'toAddress': $scope.Transaction.ToAddress,
-                'amount': $scope.Transaction.Amount,
-                'fromAddress': $scope.accounts[$scope.accountSelectIndex].programHash
-              }
-            } else if ($scope.txType == '2') {
-              // claim transaction
-              return {
-                'txData': txData,
-                'tx': tx,
-                'amount': $scope.claims['amount'],
-                'claimAddress': $scope.accounts[$scope.accountSelectIndex].programHash
-              }
-            }
-          }
-        }
-      });
-      modalInstance.opened.then(function() { // 模态窗口打开之后执行的函数
-      });
-      modalInstance.result.then(function(result) {},
-        function(reason) {});
-    };
-
-    // modal
-    $scope.timeoutView = function() {
-      var modalInstance = $modal.open({
-        templateUrl: 'timeoutView.html',
-        scope: $scope,
-        controller: 'ModalTimeoutCtrl',
-        // specify controller for modal
-        resolve: {
-          items: function() {}
-        }
-      });
-      modalInstance.opened.then(function() {
-        $scope.timeoutViewStatus = false; // true: allow open
-      }); // 模态窗口打开之后执行的函数
-      modalInstance.result.then(function(result) {},
-        function(reason) {
-          $scope.timeoutViewStatus = true;
-          location.reload(); // Refresh page
-        });
-    };
-
-    $scope.showGenerateNewWalletFromRandom = function() {
-      $scope.showOpenWallet = false;
-      $scope.showGenerateWallet = true;
-      $scope.showGenerateWalletFromRandom = true;
-    };
-
-    $scope.showGenerateNewWalletFromPrivateKey = function() {
-      $scope.showOpenWallet = false;
-      $scope.showGenerateWallet = true;
-      $scope.showGenerateWalletFromPrivateKey = true;
-    };
-    $scope.returnGenerateWalletFromRandom = function() {
-      $scope.showOpenWallet = true;
-      $scope.showGenerateWallet = false;
-      $scope.showGenerateWalletFromRandom = false;
-    };
-    $scope.returnGenerateWalletFromPrivateKey = function() {
-      $scope.showOpenWallet = true;
-      $scope.showGenerateWallet = false;
-      $scope.showGenerateWalletFromPrivateKey = false;
-    };
-
-    $scope.returnOpenWalletFromChangePassword = function() {
-      $scope.showAllMainPage = true;
-      $scope.showChangePassword = false;
-      $scope.showAllChangePassword = false;
-    };
-
-    $scope.returnOpenWalletFromChangePasswordDownload = function() {
-      // $scope.showTransaction = true;
-      $scope.showAllMainPage = true;
-      $scope.showWalletMainPage = true;
-      $scope.showChangePasswordDownload = false;
-      $scope.showAllChangePassword = false;
-
-    };
-
-    $scope.nextstep = function() {
-      $scope.showCreateWalletDownload = false;
-      $scope.showGenerateWallet = false;
-      $scope.showOpenWallet = true;
-    };
-
-    $scope.changeLangSelectIndex = function() {
-      // $scope.langSelectIndex = $index;
-      if ($scope.langSelectIndex === 0) {
-        $scope.langSelectIndex = 1;
-        chartTitle = "IPT Transaction Data";
-        chartSubTitle = "Current transaction data:";
-        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);
-      } else {
-        $scope.langSelectIndex = 0;
-        chartTitle = "IPT交易数据";
-        chartSubTitle = "当前交易数据:";
-        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);
-      }
-      $translate.use($scope.langs[$scope.langSelectIndex].lang);
-      window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
-      $http.get('wallet-conf.json?20171120').then(function(data) {
-        $scope.hostInfo = data.data.host_info[0];
-        $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
-      });
-
-    };
-    $scope.showAllAssestMsgTab = function() {
-      $scope.showTransaction = false;
-      $scope.showAllAssestMsg = true;
-    };
-
-    $scope.showTransactionRecordTab = function() {
-      $scope.showTransaction = false;
-      $scope.showTransactionRecord = true;
-    };
-
-    $scope.showNoticeCenterTab = function() {
-      $scope.showAllMainPage = false;
-      $scope.showNoticeCenter = true;
-      $scope.showChangePassword = false;
-      $scope.showAllChangePassword = false;
-      $scope.showNoticeCenterList = true;
-      $scope.showNoticeCenterMsg = false;
-
-      Wallet.GetNotice($http, $scope.getNoticeList, $scope.catchProblem)
-    };
-
-    $scope.getNoticeList = function(res) {
-
-      //console.log(res);
-      var Notice = res.data.data.data;
-      console.log(res.data.data);
-
-      for (let i = 0; i < Notice.length; i++) {
-
-        var noticeMsg = {
-          title: "",
-          summary: "",
-          content: "",
-          time: ""
-        };
-
-        noticeMsg.title = Notice[i].title;
-        noticeMsg.summary = Notice[i].summary;
-        noticeMsg.content = Notice[i].content;
-        noticeMsg.time = Notice[i].created_at;
-        $scope.noticeMsgs[i] = noticeMsg;
-      }
-      //console.log($scope.noticeMsgs);
-      $scope.noticeFirstPageURL = res.data.data.first_page_url;
-      $scope.noticeLastPageURL = res.data.data.last_page_url;
-
-    };
-
-    $scope.getNoticeFirstPage = function() {
-      Wallet.GetNoticePage($http, $scope.noticeFirstPageURL, $scope.getNoticeList, $scope.catchProblem)
-    };
-
-    $scope.getNoticeLastPage = function() {
-      Wallet.GetNoticePage($http, $scope.noticeLastPageURL, $scope.getNoticeList, $scope.catchProblem)
-    };
-
-    $scope.showChangePasswordTab = function() {
-      $scope.showAllMainPage = false;
-      $scope.showChangePassword = true;
-      $scope.showAllChangePassword = true;
-      $scope.showNoticeCenter = false;
-    };
-
-    $scope.showNoticeMsg = function($i) {
-      $scope.showNoticeCenterList = false;
-      $scope.showNoticeCenterMsg = true;
-
-      $scope.noticeMsgIndex = $i;
-    };
-
-    $scope.returnFromTransactionRecord = function() {
-      $scope.showTransaction = true;
-      $scope.showTransactionRecord = false;
-    };
-
-    $scope.returnFromAllAssestMsg = function() {
-      $scope.showTransaction = true;
-      $scope.showAllAssestMsg = false;
-    };
-
-    $scope.returnFromNoticeCenter = function() {
-      $scope.showAllMainPage = true;
-      $scope.showNoticeCenter = false;
-    };
-
-    $scope.returnFromNoticeCenterMsg = function() {
-      $scope.showNoticeCenterList = true;
-      $scope.showNoticeCenterMsg = false;
-    };
-
-    /**
-     * Download desktop wallet file.
-     * Download URL example: http://[domain]/downloads/[folderName]/wallet-v1.0.0-[folderName].zip
-     *
-     * @param $downloadObj
-     */
-    $scope.changeDownloadSelectIndex = function($downloadObj) {
-      var folderName = $downloadObj.name.toLowerCase();
-      window.location.href = $scope.domain + "/downloads/" + folderName + "/" + "wallet-" + $scope.desktopVersion + "-" + folderName + ".zip";
-    };
-
-    $scope.changeSettingSelectIndex = function($settingObj) {
-
-      if ($settingObj.name == "HELP") {
-        alert("Help");
-      } else if ($settingObj.name == "NOTICE") {
-        $scope.showNoticeCenterTab();
-      } else if ($settingObj.name == "CHANGE_PASSWORD") {
-        $scope.showChangePasswordTab();
-      }
-
-    };
-    $scope.changehostSelectIndex = function($index) {
-      $scope.hostSelectIndex = $index;
-      $scope.connectNode();
-      if ($scope.accounts[$scope.accountSelectIndex]) {
-        $scope.getUnspent($scope.accounts[$scope.accountSelectIndex].address);
-      }
-    };
-
-    $scope.changeCoinSelectIndex = function($index) {
-      $scope.coinSelectIndex = $index;
-    };
-
-    $scope.changeAcountSelectIndex = function($index) {
-      $scope.accountSelectIndex = $index;
-      $scope.getUnspent($scope.accounts[$index].address);
-      $scope.getClaims($scope.accounts[$index].address);
-    };
-
-    $scope.changeTxType = function() {
-      // ClaimTransaction
-      if ($scope.txType == '2') {
-        // get claims
-        $scope.getClaims($scope.accounts[$scope.accountSelectIndex].address);
-      }
-
-      $scope.registerAsset = {
-        assetName: "",
-        assetAmount: ""
-      };
-      $scope.isDisplayAssetId = false;
-
-      $scope.issueAsset = {
-        issueAssetID: "",
-        issueAmount: ""
-      };
-
-      $scope.newAssetId = '';
-    };
-
-    $scope.openFileDialog = function() {
-      document.getElementById('fselector').click();
-    };
-
-    $scope.showContent = function($wallet) {
-      $scope.wallet = $wallet;
-      $scope.requirePass = true;
-
-      $scope.notifier.info($translate.instant('NOTIFIER_FILE_SELECTED') + document.getElementById('fselector').files[0].name);
-    };
-
-    $scope.onFilePassChange = function() {
-      if ($scope.filePassword.length > 0) {
-        $scope.showBtnUnlock = true;
-      } else {
-        $scope.showBtnUnlock = false;
-      }
-    };
-
-    $scope.onPrivateKeyChange = function() {
-      if ($scope.privateKeyData.length == 64) {
-        $scope.showBtnUnlockPrivateKey = true;
-      } else {
-        $scope.showBtnUnlockPrivateKey = false;
-      }
-    };
-
-    $scope.onWIFKeyChange = function() {
-      if ($scope.WIFKeyData.length == 52) {
-        $scope.showBtnUnlockWIFKey = true;
-      } else {
-        $scope.showBtnUnlockWIFKey = false;
-      }
-    };
-
-    $scope.onPublicKeyEncodedChange = function() {
-      if ($scope.PublicKeyEncodedData.length == 66) {
-        $scope.showBtnUnlockExtSig = true;
-      } else {
-        $scope.showBtnUnlockExtSig = false;
-      }
-    };
-
-    $scope.decryptWallet = function() {
-
-      try {
-        if ($scope.walletType == "externalsignature") {
-          var ret = Wallet.GetAccountsFromPublicKeyEncoded($scope.PublicKeyEncodedData);
-          if (ret == -1) {
-            $scope.notifier.danger($translate.instant('NOTIFIER_PUBLICKEY_VERIFY_FAILED'));
-            return;
-          }
-
+        var ret = Wallet.GetAccountsFromPrivateKey($scope.privateKeyData);
+        if (ret == -1) {
+          $scope.notifier.danger($translate.instant('NOTIFIER_PRIVATEKEY_LENGTH_CHECK_FAILED'));
+        } else if (ret) {
           $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_DECRYPT_THE_WALLET'));
           $scope.accounts = ret;
 
@@ -1062,720 +1190,684 @@ app.controller("WalletCtrl",
 
           // get unspent coins
           $scope.getUnspent($scope.accounts[0].address);
-
-        } else if ($scope.walletType == "pasteprivkey") {
-
-          var ret = Wallet.GetAccountsFromPrivateKey($scope.privateKeyData);
-          if (ret == -1) {
-            $scope.notifier.danger($translate.instant('NOTIFIER_PRIVATEKEY_LENGTH_CHECK_FAILED'));
-          } else if (ret) {
-            $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_DECRYPT_THE_WALLET'));
-            $scope.accounts = ret;
-
-            $scope.showOpenWallet = false;
-            $scope.showTransaction = true;
-            $scope.showMainTab = true;
-            $scope.showMore = true;
-
-            // get unspent coins
-            $scope.getUnspent($scope.accounts[0].address);
-          }
-
-        } else if ($scope.walletType == "pastewifkey") {
-
-          var ret = Wallet.GetAccountsFromWIFKey($scope.WIFKeyData);
-          if (ret == -1) {
-            $scope.notifier.danger($translate.instant('NOTIFIER_WIF_LENGTH_CHECK_FAILED'));
-          } else if (ret == -2) {
-            $scope.notifier.danger($translate.instant('NOTIFIER_WIF_VERIFY_FAILED'));
-          } else if (ret) {
-            $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_DECRYPT_THE_WALLET'));
-            $scope.accounts = ret;
-
-            $scope.showOpenWallet = false;
-            $scope.showTransaction = true;
-            $scope.showMainTab = true;
-            $scope.showMore = true;
-
-            // get unspent coins
-            $scope.getUnspent($scope.accounts[0].address);
-          }
-
-        } else if ($scope.walletType == "fileupload") {
-
-          var ret = Wallet.decryptWallet($scope.wallet, $scope.filePassword);
-          if (ret == -1) {
-            $scope.notifier.danger($translate.instant('NOTIFIER_PASSWORD_VERIFY_FAILED'));
-          } else if (ret == -2) {
-            $scope.notifier.danger($translate.instant('NOTIFIER_ACCOUNTS_VERIFY_FAILED'));
-          } else {
-            $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_DECRYPT_THE_WALLET'));
-            $scope.accounts = ret;
-
-            $scope.showOpenWallet = false;
-            $scope.showWalletMainPager = true;
-            $scope.showTransaction = true;
-            $scope.showMainTab = true;
-            $scope.showMore = true;
-
-            // get unspent coins
-            $scope.getUnspent($scope.accounts[0].address);
-          }
-
         }
-      } catch(e) {
-        //$scope.notifier.danger("");
-      }
-    };
 
-    $scope.catchProblem = function($err) {
-      if ($scope.timeoutViewStatus) {
-        $scope.timeoutView();
-      }
-      console.log($err);
-    };
+      } else if ($scope.walletType == "pastewifkey") {
 
-    $scope.getClaims = function($address) {
-      var host = $scope.hostInfo[$scope.hostSelectIndex];
-      $scope.claims = {};
-      $scope.claims['amount'] = 0;
+        var ret = Wallet.GetAccountsFromWIFKey($scope.WIFKeyData);
+        if (ret == -1) {
+          $scope.notifier.danger($translate.instant('NOTIFIER_WIF_LENGTH_CHECK_FAILED'));
+        } else if (ret == -2) {
+          $scope.notifier.danger($translate.instant('NOTIFIER_WIF_VERIFY_FAILED'));
+        } else if (ret) {
+          $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_DECRYPT_THE_WALLET'));
+          $scope.accounts = ret;
 
-      Wallet.GetClaims($http, $address, host, (function(res) {
-        if (res.status == 200) {
-          $scope.claims = res.data;
+          $scope.showOpenWallet = false;
+          $scope.showTransaction = true;
+          $scope.showMainTab = true;
+          $scope.showMore = true;
+
+          // get unspent coins
+          $scope.getUnspent($scope.accounts[0].address);
         }
-      }), (function(err) {
-        $scope.catchProblem(err);
-      }));
 
-    };
-
-    $scope.getUnspent = function($address) {
-      var host = $scope.hostInfo[$scope.hostSelectIndex];
-
-      Wallet.GetUnspent($http, $address, host, $scope.GetUnspent_Callback, $scope.catchProblem);
-      $scope.isShowNotifier = false;
-      Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
-
-      $scope.settings = [
-      //   {
-      //   name: "HELP"
-      // },
-        {
-          name: "NOTICE"
-        },
-        {
-          name: "CHANGE_PASSWORD"
-        },
-      ];
-      //$scope.getHighChartData();
-      Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);
-
-      Wallet.GetTransactionRecord($http, $scope.accounts[$scope.accountSelectIndex].address, $scope.getTransactionRecord, $scope.catchProblem);
-
-    };
-    $scope.GetUnspent_Callback = function(res) {
-      $scope.coins = Wallet.analyzeCoins(res);
-
-      if ($scope.coins.length == 0) {
-        $scope.showNoAsset = true;
-        $scope.showMoreAssetButton = false;
-        $scope.showOnlyOneAsset = false;
-      } else if ($scope.coins.length == 1) {
-        $scope.showNoAsset = false;
-        $scope.showMoreAssetButton = false;
-        $scope.showOnlyOneAsset = true;
-      } else {
-        $scope.showNoAsset = false;
-        $scope.showOnlyOneAsset = false;
-        $scope.showMoreAssetButton = true;
-      }
-    };
-
-    $scope.connectNode = function() {
-      var host = $scope.hostInfo[$scope.hostSelectIndex];
-      $scope.addressBrowseURL = host.webapi_host + ':' + host.webapi_port;
-
-      Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
-    };
-
-    $scope.getNodeHeight_Callback = function(res) {
-
-      if (res.status == 200) {
-        if (res.data.Result > 0) {
-          $scope.nodeHeight = res.data.Result;
-          $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
-          if ($scope.isShowNotifier) {
-            $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.Result + "</b>.");
-          }
+      } else if ($scope.walletType == "fileupload") {
+        let ret = Wallet.decryptWallet($scope.wallet, $scope.filePassword);
+        if (ret == -1) {
+          $scope.notifier.danger($translate.instant('NOTIFIER_PASSWORD_VERIFY_FAILED'));
+        } else if (ret == -2) {
+          $scope.notifier.danger($translate.instant('NOTIFIER_ACCOUNTS_VERIFY_FAILED'));
         } else {
-          $scope.connectedNodeErr();
+          $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_DECRYPT_THE_WALLET'));
+          $scope.accounts = ret;
+
+          $scope.settings = [
+            {name: "HELP"},
+            {name: "NOTICE"},
+            {name: "CHANGE_PASSWORD"},
+            {name: "SIGN_OUT"}
+          ];
+
+          $scope.showOpenWallet = false;
+          $scope.showWalletMainPager = true;
+          $scope.showTransaction = true;
+          $scope.showMainTab = true;
+          $scope.showMore = true;
+
+          // get unspent coins
+          $scope.getUnspent($scope.accounts[0].address);
+
+          // Get HighChart data and transaction record.
+          Wallet.AjaxGet($http, $scope.apiUrl.high_chart_data, $scope.getHighChartData, $scope.catchProblem_ignore);
+          Wallet.AjaxGet($http,
+            $scope.apiUrl.transaction_record + $scope.accounts[$scope.accountSelectIndex].address,
+            $scope.getTransactionRecord, $scope.catchProblem);
+        }
+      }
+    } catch (e) {
+      //$scope.notifier.danger("");
+    }
+  };
+
+  $scope.catchProblem = function ($err) {
+    if ($scope.timeoutViewStatus) {
+      $scope.timeoutView();
+    }
+    console.log($err);
+  };
+
+  $scope.catchProblem_ignore = function ($err) {
+    // console.log($err);
+  };
+
+  $scope.getClaims = function ($address) {
+    var host = $scope.hostInfo[$scope.hostSelectIndex];
+    $scope.claims = {};
+    $scope.claims['amount'] = 0;
+
+    Wallet.GetClaims($http, $address, host, (function (res) {
+      if (res.status == 200) {
+        $scope.claims = res.data;
+      }
+    }), (function (err) {
+      $scope.catchProblem(err);
+    }));
+
+  };
+
+  /**
+   * Get unspent.
+   * 获取最新的utox。
+   *
+   * @param $address
+   */
+  $scope.getUnspent = function ($address) {
+    var host = $scope.hostInfo[$scope.hostSelectIndex];
+
+    Wallet.GetUnspent($http, $address, host, $scope.GetUnspent_Callback, $scope.catchProblem);
+    $scope.isShowNotifier = false;
+    // Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
+  };
+  $scope.GetUnspent_Callback = function (res) {
+    $scope.coins = Wallet.analyzeCoins(res);
+
+    if ($scope.coins.length == 0) {
+      $scope.showNoAsset = true;
+      $scope.showMoreAssetButton = false;
+      $scope.showOnlyOneAsset = false;
+    } else if ($scope.coins.length == 1) {
+      $scope.showNoAsset = false;
+      $scope.showMoreAssetButton = false;
+      $scope.showOnlyOneAsset = true;
+    } else {
+      $scope.showNoAsset = false;
+      $scope.showOnlyOneAsset = false;
+      $scope.showMoreAssetButton = true;
+    }
+  };
+
+  $scope.connectNode = function () {
+    var host = $scope.hostInfo[$scope.hostSelectIndex];
+    $scope.addressBrowseURL = host.webapi_host + ':' + host.webapi_port;
+
+    Wallet.GetNodeHeight($http, host, $scope.getNodeHeight_Callback, $scope.connectedNodeErr);
+  };
+
+  $scope.getNodeHeight_Callback = function (res) {
+    if (res.status == 200) {
+      if (res.data.Result > 0) {
+        $scope.nodeHeight = res.data.Result;
+        $scope.getNodeHeightLastTime = $filter('date')(new Date(), 'yyyy-MM-dd HH:mm:ss');
+        if ($scope.isShowNotifier) {
+          $scope.notifier.info($translate.instant('NOTIFIER_SUCCESS_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b>, " + $translate.instant('NOTIFIER_PROVIDED_BY') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostProvider + "</b>, " + $translate.instant('NOTIFIER_NODE_HEIGHT') + " <b>" + res.data.Result + "</b>.");
         }
       } else {
         $scope.connectedNodeErr();
       }
-    };
+    } else {
+      $scope.connectedNodeErr();
+    }
+  };
+  $scope.connectedNodeErr = function () {
+    $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
+  };
 
-    $scope.connectedNodeErr = function() {
-      $scope.notifier.danger($translate.instant('NOTIFIER_CONNECTED_TO_NODE') + " <b>" + $scope.hostInfo[$scope.hostSelectIndex].hostName + "</b> " + $translate.instant('NOTIFIER_FAILURE'));
-    };
+  $scope.sendTransactionData = function ($txData, $transactionType) {
+    var host = $scope.hostInfo[$scope.hostSelectIndex];
 
-    $scope.sendTransactionData = function($txData, $transactionType) {
-      var host = $scope.hostInfo[$scope.hostSelectIndex];
+    Wallet.SendTransactionData($http, $txData, host, (function (res) {
+      if (res.status == 200) {
+        var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
 
-      Wallet.SendTransactionData($http, $txData, host, (function(res) {
-        if (res.status == 200) {
-          var txhash = reverseArray(hexstring2ab(Wallet.GetTxHash($txData.substring(0, $txData.length - 103 * 2))));
+        if (res.data.Error == 0) {
+          var successInfo = $translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH');
+          var clickUrl = $scope.explorerUrl + $scope.explorerSearchPath;
 
-          if (res.data.Error == 0) {
-            var successInfo = $translate.instant('NOTIFIER_TRANSACTION_SUCCESS_TXHASH');
-            var clickUrl = $scope.explorerUrl + $scope.explorerSearchPath;
-
-            successInfo = successInfo + ab2hexstring(txhash) + " , <a target='_blank' href='" + clickUrl + ab2hexstring(txhash) + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>";
-            $scope.successInfoTimerVal = 60;
-            $scope.notifier.success(successInfo);
-            if ($scope.txType === '128') {
-              $scope.countDown();
-            }
-
-          } else {
-            $scope.notifier.danger($translate.instant('6') + res.data.Error)
+          successInfo = successInfo + ab2hexstring(txhash) + " , <a target='_blank' href='" + clickUrl + ab2hexstring(txhash) + "'><b>" + $translate.instant('NOTIFIER_CLICK_HERE') + "</b></a>";
+          $scope.successInfoTimerVal = 60;
+          $scope.notifier.success(successInfo);
+          if ($scope.txType === '128') {
+            $scope.countDown();
           }
 
-          $scope.isDisplayAssetId = true;
-          $scope.newAssetId = ab2hexstring(txhash);
-          if ($transactionType == 0) {
-            $scope.registerNewAssetId = $scope.newAssetId;
-          } else if ($transactionType == 1) {
-            $scope.issueNewAssetId = $scope.newAssetId;
-          }
-        }
-      }), (function(err) {
-        $scope.catchProblem(err);
-        return null;
-      }));
-
-    };
-
-    $scope.MakeTxAndSend = function($txUnsignedData) {
-      if ($txUnsignedData.length > 0 && $scope.txSignatureData.length == 128) {
-        var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-        var txRawData = Wallet.AddContract($txUnsignedData, $scope.txSignatureData, publicKeyEncoded);
-
-        $scope.sendTransactionData(txRawData);
-      } else {
-        $scope.notifier.warning($translate.instant('NOTIFIER_INPUT_DATA_CHECK_FAILED'));
-      }
-    };
-
-    $scope.stateUpdateTransaction = function() {
-      if ($scope.stateUpdate.namespace.length == 0 || $scope.stateUpdate.key.length == 0 || $scope.stateUpdate.value.length == 0) {
-        $scope.notifier.warning("Please checked input.");
-        return;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var txData = Wallet.makeStateUpdateTransaction($scope.stateUpdate.namespace, $scope.stateUpdate.key, $scope.stateUpdate.value, publicKeyEncoded);
-
-      var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
-      var sign = Wallet.signatureData(txData, privateKey);
-      var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
-
-      $scope.sendTransactionData(txRawData);
-    };
-
-    $scope.issueTransaction = function() {
-      if ($scope.issueAsset.issueAssetID.length != 64) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_ASSETID_CHECK_FAILED'));
-        return;
-      }
-
-      if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
-        return;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var txData = Wallet.makeIssueTransaction($scope.issueAsset.issueAssetID, $scope.issueAsset.issueAmount, publicKeyEncoded);
-
-      var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
-      var sign = Wallet.signatureData(txData, privateKey);
-      var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
-
-      $scope.sendTransactionData(txRawData, 1);
-    };
-
-    $scope.issueTransactionUnsigned = function() {
-      if ($scope.issueAsset.issueAssetID.length != 64) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_ASSETID_CHECK_FAILED'));
-        return;
-      }
-
-      if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
-        return;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var txData = Wallet.makeIssueTransaction($scope.issueAsset.issueAssetID, $scope.issueAsset.issueAmount, publicKeyEncoded);
-
-      $scope.txUnsignedData = txData;
-    };
-
-    $scope.registerTransactionUnsigned = function() {
-      if ($scope.registerAsset.assetAmount > parseInt("fffffffff", 16)) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
-        return;
-      }
-
-      if ($scope.registerAsset.assetName.length > 127) {
-        return;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-
-      /**
-       * 注册资产请求数据构造,lyx
-       */
-      var txData;
-      if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
-        txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
-      } else {
-        txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
-      }
-
-      $scope.txUnsignedData = txData;
-    };
-
-    $scope.registerTransaction = function() {
-      if ($scope.registerAsset.assetAmount > parseInt("fffffffff", 16)) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
-        return;
-      }
-
-      if ($scope.registerAsset.assetName.length > 127) {
-        return;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-
-      /**
-       * 注册资产请求数据构造,lyx
-       */
-      var txData;
-      if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
-        txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
-      } else {
-        txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].programHash);
-      }
-
-      var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
-      var sign = Wallet.signatureData(txData, privateKey);
-      var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
-
-      $scope.sendTransactionData(txRawData, 0);
-
-    };
-
-    $scope.transferTransactionUnsigned = function() {
-      var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;
-      var r = $scope.Transaction.Amount.match(reg);
-      if (r == null) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED'));
-        return false;
-      }
-
-      if ($scope.Transaction.Amount <= 0) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
-        return false;
-      }
-
-      if (parseFloat($scope.coins[$scope.coinSelectIndex].balance) < parseFloat($scope.Transaction.Amount)) {
-        $scope.notifier.danger($translate.instant('NOTIFIER_NOT_ENOUGH_VALUE') + ", " + $translate.instant('ASSET') + ": " + $scope.coins[$scope.coinSelectIndex].AssetName + ", " + $translate.instant('BALANCE') + ": <b>" + $scope.coins[$scope.coinSelectIndex].balance + "</b>, " + $translate.instant('NOTIFIER_SEND_AMOUNT') + ": <b>" + $scope.Transaction.Amount + "</b>");
-        return false;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var txData = Wallet.makeTransferTransaction($scope.coins[$scope.coinSelectIndex], publicKeyEncoded, $scope.Transaction.ToAddress, $scope.Transaction.Amount);
-      if (txData == -1) {
-        $scope.notifier.danger($translate.instant('NOTIFIER_ADDRESS_VERIFY_FAILED'));
-        return false;
-      }
-
-      $scope.txUnsignedData = txData;
-      return txData;
-    };
-
-    $scope.transferTransaction = function() {
-      var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;
-      var r = $scope.Transaction.Amount.match(reg);
-      if (r == null) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED'));
-        return false;
-      }
-
-      if ($scope.Transaction.Amount <= 0) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
-        return false;
-      }
-
-      if (parseFloat($scope.coins[$scope.coinSelectIndex].balance) < parseFloat($scope.Transaction.Amount)) {
-        $scope.notifier.danger($translate.instant('NOTIFIER_NOT_ENOUGH_VALUE') + ", " + $translate.instant('ASSET') + ": " + $scope.coins[$scope.coinSelectIndex].AssetName + ", " + $translate.instant('BALANCE') + ": <b>" + $scope.coins[$scope.coinSelectIndex].balance + "</b>, " + $translate.instant('NOTIFIER_SEND_AMOUNT') + ": <b>" + $scope.Transaction.Amount + "</b>");
-        return false;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var txData = Wallet.makeTransferTransaction($scope.coins[$scope.coinSelectIndex], publicKeyEncoded, $scope.Transaction.ToAddress, $scope.Transaction.Amount);
-      if (txData == -1) {
-        $scope.notifier.danger($translate.instant('NOTIFIER_ADDRESS_VERIFY_FAILED'));
-        return;
-      }
-
-      var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
-      var sign = Wallet.signatureData(txData, privateKey);
-      var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
-
-      $scope.sendTransactionData(txRawData);
-    };
-
-    $scope.claimTransactionUnsigned = function() {
-      if ($scope.claims['amount'] <= 0) {
-        $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
-        return false;
-      }
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var txData = Wallet.ClaimTransaction($scope.claims, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].address, $scope.claims['amount']);
-
-      $scope.txUnsignedData = txData;
-      return txData;
-    };
-
-    $scope.claimTransaction = function() {
-      var txData = $scope.claimTransactionUnsigned();
-
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
-      var sign = Wallet.signatureData(txData, privateKey);
-      var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
-
-      $scope.sendTransactionData(txRawData);
-
-      $scope.claims = {};
-      $scope.claims['amount'] = 0;
-    };
-
-    $scope.SignTxAndSend = function($txData) {
-      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
-      var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
-      var sign = Wallet.signatureData($txData, privateKey);
-      var txRawData = Wallet.AddContract($txData, sign, publicKeyEncoded);
-
-      $scope.sendTransactionData(txRawData);
-    };
-
-    $scope.getTransferTxData = function($txData) {
-      var ba = new Buffer($txData, "hex");
-      var tx = new Transaction();
-      var k = 2;
-
-      // Transfer Type
-      if (ba[0] != 0x80) return;
-      tx.type = ba[0];
-
-      // Version
-      tx.version = ba[1];
-
-      // Attributes
-      if (ba[k] !== 0) {
-        k = k + 2 + ba[k + 2];
-      }
-
-      // Inputs Length
-      k = k + 1;
-      let len = ba[k];
-      if (ba[k] < 253) {
-        len = ba[k];
-      } else if (ba[k] === 253) {
-        len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 3))));
-        k += 2;
-      } else if (ba[k] === 254) {
-        len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 5))));
-        k += 4;
-      } else { // 255
-        len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 9))));
-        k += 8;
-      }
-
-      // Inputs
-      for (i = 0; i < len; i++) {
-        tx.inputs.push({
-          txid: ba.slice(k + 1, k + 33),
-          index: ba.slice(k + 33, k + 35)
-        });
-        k = k + 34;
-      }
-
-      // Outputs
-      k = k + 1;
-      len = ba[k];
-
-      for (i = 0; i < len; i++) {
-        tx.outputs.push({
-          assetid: ba.slice(k + 1, k + 33),
-          value: ba.slice(k + 33, k + 41),
-          scripthash: ba.slice(k + 41, k + 61)
-        });
-        k = k + 60;
-      }
-
-      return tx;
-    };
-
-    $scope.getClaimTxData = function($txData) {
-      var ba = new Buffer($txData, "hex");
-      var tx = new ClaimTransaction();
-
-      // Transfer Type
-      if (ba[0] != 0x02) return;
-      tx.type = ba[0];
-
-      // Version
-      tx.version = ba[1];
-
-      // Claim
-      var k = 2;
-      var len = ba[k];
-      for (i = 0; i < len; i++) {
-        tx.claims.push({
-          txid: ba.slice(k + 1, k + 33),
-          index: ba.slice(k + 33, k + 35)
-        });
-        k = k + 34;
-      }
-
-      // Attributes
-      k = k + 1;
-      len = ba[k];
-      for (i = 0; i < len; i++) {
-        k = k + 1;
-      }
-
-      // Inputs
-      k = k + 1;
-      len = ba[k];
-      // Input len = 0
-      // Outputs
-      k = k + 1;
-      len = ba[k];
-      for (i = 0; i < len; i++) {
-        tx.outputs.push({
-          assetid: ba.slice(k + 1, k + 33),
-          value: ba.slice(k + 33, k + 41),
-          scripthash: ba.slice(k + 41, k + 61)
-        });
-        k = k + 60;
-      }
-
-      return tx;
-    };
-    $scope.countDown = function() {
-      $scope.waitingSecond = true;
-      $scope.countdown = 10;
-      $scope.Transaction.ToAddress = '';
-      $scope.Transaction.Amount = '';
-      $scope.Transaction.able = false;
-      var myTime = setInterval(function() {
-          $scope.countdown--;
-
-          // console.log($scope.countdown)
-          if ($scope.countdown == 0) {
-            $scope.Transaction.able = true;
-            $scope.waitingSecond = false;
-            clearInterval(myTime);
-          }
-
-          $scope.$digest();
-        },
-        1000);
-
-    };
-
-    $scope.getHighChartData = function(res) {
-
-      var models = res.data.model;
-      if (models !== null) {
-        var history = [];
-        var j = 19;
-        var createTime = [];
-        var price = [];
-        for (let i = 0; i < models.length; i = i + 5) {
-          history[j] = models[i];
-          createTime[j] = formatDateTime(history[j].createtime * 1000);
-          price[j] = history[j].price;
-          j--;
+        } else {
+          $scope.notifier.danger($translate.instant('6') + res.data.Error)
         }
 
-        var m = [1, 2, 3, 4, 5, 6, 7];
-        var nowPrice = history[19].price;
-
-        try {
-          var title = {
-            text: chartTitle
-          };
-          var subtitle = {
-            text: chartSubTitle + nowPrice + 'HKD',
-            style: {
-              fontSize: '15px',
-              fontWeight: 600
-            }
-          };
-          var xAxis = {
-            categories: createTime
-          }
-          var yAxis = {
-            title: {
-              text: 'Price(HKD)'
-            },
-            plotLines: [{
-              value: 0,
-              width: 1,
-              color: '#808080'
-            }]
-          };
-
-          var tooltip = {
-            valueSuffix: 'HKD'
-          }
-
-          var legend = {
-            layout: 'vertical',
-            align: 'right',
-            verticalAlign: 'middle',
-            borderWidth: 0
-          };
-
-          var series = [{
-            name: 'IPT',
-            data: price
-          },
-          ];
-
-          var json = {};
-
-          json.title = title;
-          json.subtitle = subtitle;
-          json.xAxis = xAxis;
-          json.yAxis = yAxis;
-          json.tooltip = tooltip;
-          json.legend = legend;
-          json.series = series;
-
-          // return json;
-          $('#container').highcharts(json);
-        } catch(err) {
-          console.log(err.message)
+        $scope.isDisplayAssetId = true;
+        $scope.newAssetId = ab2hexstring(txhash);
+        if ($transactionType == 0) {
+          $scope.registerNewAssetId = $scope.newAssetId;
+        } else if ($transactionType == 1) {
+          $scope.issueNewAssetId = $scope.newAssetId;
         }
-      } else {
-        console.log(res);
       }
+    }), (function (err) {
+      $scope.catchProblem(err);
+      return null;
+    }));
+
+  };
+
+  $scope.MakeTxAndSend = function ($txUnsignedData) {
+    if ($txUnsignedData.length > 0 && $scope.txSignatureData.length == 128) {
+      var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+      var txRawData = Wallet.AddContract($txUnsignedData, $scope.txSignatureData, publicKeyEncoded);
+
+      $scope.sendTransactionData(txRawData);
+    } else {
+      $scope.notifier.warning($translate.instant('NOTIFIER_INPUT_DATA_CHECK_FAILED'));
+    }
+  };
+
+  $scope.stateUpdateTransaction = function () {
+    if ($scope.stateUpdate.namespace.length == 0 || $scope.stateUpdate.key.length == 0 || $scope.stateUpdate.value.length == 0) {
+      $scope.notifier.warning("Please checked input.");
+      return;
     }
 
-    $scope.getTransactionRecord = function(res) {
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var txData = Wallet.makeStateUpdateTransaction($scope.stateUpdate.namespace, $scope.stateUpdate.key, $scope.stateUpdate.value, publicKeyEncoded);
 
-      //console.log(res);
-      var record = res.data.transactions;
+    var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+    var sign = Wallet.signatureData(txData, privateKey);
+    var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
 
-      if (record !== undefined) {
-        var Record = [];
-        var j = 0;
-        for (let i = 0; i < record.length; i++) {
-          try {
-            var recordName = record[i].utxoInputs[0].output.asset.name;
-            if (recordName == "IPT") {
-              Record[j] = record[i];
-              j++;
-            }
-          } catch(error) {}
+    $scope.sendTransactionData(txRawData);
+  };
+
+  $scope.issueTransaction = function () {
+    if ($scope.issueAsset.issueAssetID.length != 64) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_ASSETID_CHECK_FAILED'));
+      return;
+    }
+
+    if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
+      return;
+    }
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var txData = Wallet.makeIssueTransaction($scope.issueAsset.issueAssetID, $scope.issueAsset.issueAmount, publicKeyEncoded);
+
+    var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+    var sign = Wallet.signatureData(txData, privateKey);
+    var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
+
+    $scope.sendTransactionData(txRawData, 1);
+  };
+
+  $scope.issueTransactionUnsigned = function () {
+    if ($scope.issueAsset.issueAssetID.length != 64) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_ASSETID_CHECK_FAILED'));
+      return;
+    }
+
+    if ($scope.issueAsset.issueAmount > parseInt("fffffffff", 16)) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_ISSUE_AMOUNT_CHECK_FAILED'));
+      return;
+    }
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var txData = Wallet.makeIssueTransaction($scope.issueAsset.issueAssetID, $scope.issueAsset.issueAmount, publicKeyEncoded);
+
+    $scope.txUnsignedData = txData;
+  };
+
+  $scope.registerTransactionUnsigned = function () {
+    if ($scope.registerAsset.assetAmount > parseInt("fffffffff", 16)) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
+      return;
+    }
+
+    if ($scope.registerAsset.assetName.length > 127) {
+      return;
+    }
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+
+    /**
+     * 注册资产请求数据构造,lyx
+     */
+    var txData;
+    if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
+      txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+    } else {
+      txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+    }
+
+    $scope.txUnsignedData = txData;
+  };
+
+  $scope.registerTransaction = function () {
+    if ($scope.registerAsset.assetAmount > parseInt("fffffffff", 16)) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_REGISTER_AMOUNT_CHECK_FAILED'));
+      return;
+    }
+
+    if ($scope.registerAsset.assetName.length > 127) {
+      return;
+    }
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+
+    /**
+     * 注册资产请求数据构造,lyx
+     */
+    var txData;
+    if ($scope.hostInfo[$scope.hostSelectIndex].node_type === 'D') {
+      txData = Wallet.makeRegisterTransaction_D($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded);
+    } else {
+      txData = Wallet.makeRegisterTransaction_N($scope.registerAsset.assetName, $scope.registerAsset.assetAmount, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].programHash);
+    }
+
+    var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+    var sign = Wallet.signatureData(txData, privateKey);
+    var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
+
+    $scope.sendTransactionData(txRawData, 0);
+
+  };
+
+  $scope.transferTransactionUnsigned = function () {
+    var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;
+    var r = $scope.Transaction.Amount.match(reg);
+    if (r == null) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED'));
+      return false;
+    }
+
+    if ($scope.Transaction.Amount <= 0) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
+      return false;
+    }
+
+    if (parseFloat($scope.coins[$scope.coinSelectIndex].balance) < parseFloat($scope.Transaction.Amount)) {
+      $scope.notifier.danger($translate.instant('NOTIFIER_NOT_ENOUGH_VALUE') + ", " + $translate.instant('ASSET') + ": " + $scope.coins[$scope.coinSelectIndex].AssetName + ", " + $translate.instant('BALANCE') + ": <b>" + $scope.coins[$scope.coinSelectIndex].balance + "</b>, " + $translate.instant('NOTIFIER_SEND_AMOUNT') + ": <b>" + $scope.Transaction.Amount + "</b>");
+      return false;
+    }
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var txData = Wallet.makeTransferTransaction($scope.coins[$scope.coinSelectIndex], publicKeyEncoded, $scope.Transaction.ToAddress, $scope.Transaction.Amount);
+    if (txData == -1) {
+      $scope.notifier.danger($translate.instant('NOTIFIER_ADDRESS_VERIFY_FAILED'));
+      return false;
+    }
+
+    $scope.txUnsignedData = txData;
+    return txData;
+  };
+
+  $scope.transferTransaction = function () {
+    var reg = /^[0-9]{1,19}([.][0-9]{0,8}){0,1}$/;
+    var r = $scope.Transaction.Amount.match(reg);
+    if (r == null) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_FORMAT_CHECK_FAILED'));
+      return false;
+    }
+
+    if ($scope.Transaction.Amount <= 0) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
+      return false;
+    }
+
+    if (parseFloat($scope.coins[$scope.coinSelectIndex].balance) < parseFloat($scope.Transaction.Amount)) {
+      $scope.notifier.danger($translate.instant('NOTIFIER_NOT_ENOUGH_VALUE') + ", " + $translate.instant('ASSET') + ": " + $scope.coins[$scope.coinSelectIndex].AssetName + ", " + $translate.instant('BALANCE') + ": <b>" + $scope.coins[$scope.coinSelectIndex].balance + "</b>, " + $translate.instant('NOTIFIER_SEND_AMOUNT') + ": <b>" + $scope.Transaction.Amount + "</b>");
+      return false;
+    }
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var txData = Wallet.makeTransferTransaction($scope.coins[$scope.coinSelectIndex], publicKeyEncoded, $scope.Transaction.ToAddress, $scope.Transaction.Amount);
+    if (txData == -1) {
+      $scope.notifier.danger($translate.instant('NOTIFIER_ADDRESS_VERIFY_FAILED'));
+      return;
+    }
+
+    var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+    var sign = Wallet.signatureData(txData, privateKey);
+    var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
+
+    $scope.sendTransactionData(txRawData);
+  };
+
+  $scope.claimTransactionUnsigned = function () {
+    if ($scope.claims['amount'] <= 0) {
+      $scope.notifier.warning($translate.instant('NOTIFIER_AMOUNT_MUST_GREATER_ZERO'));
+      return false;
+    }
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var txData = Wallet.ClaimTransaction($scope.claims, publicKeyEncoded, $scope.accounts[$scope.accountSelectIndex].address, $scope.claims['amount']);
+
+    $scope.txUnsignedData = txData;
+    return txData;
+  };
+
+  $scope.claimTransaction = function () {
+    var txData = $scope.claimTransactionUnsigned();
+
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+    var sign = Wallet.signatureData(txData, privateKey);
+    var txRawData = Wallet.AddContract(txData, sign, publicKeyEncoded);
+
+    $scope.sendTransactionData(txRawData);
+
+    $scope.claims = {};
+    $scope.claims['amount'] = 0;
+  };
+
+  $scope.SignTxAndSend = function ($txData) {
+    var publicKeyEncoded = $scope.accounts[$scope.accountSelectIndex].publickeyEncoded;
+    var privateKey = $scope.accounts[$scope.accountSelectIndex].privatekey;
+    var sign = Wallet.signatureData($txData, privateKey);
+    var txRawData = Wallet.AddContract($txData, sign, publicKeyEncoded);
+
+    $scope.sendTransactionData(txRawData);
+  };
+
+  $scope.getTransferTxData = function ($txData) {
+    var ba = new Buffer($txData, "hex");
+    var tx = new Transaction();
+    var k = 2;
+
+    // Transfer Type
+    if (ba[0] != 0x80) return;
+    tx.type = ba[0];
+
+    // Version
+    tx.version = ba[1];
+
+    // Attributes
+    if (ba[k] !== 0) {
+      k = k + 2 + ba[k + 2];
+    }
+
+    // Inputs Length
+    k = k + 1;
+    let len = ba[k];
+    if (ba[k] < 253) {
+      len = ba[k];
+    } else if (ba[k] === 253) {
+      len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 3))));
+      k += 2;
+    } else if (ba[k] === 254) {
+      len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 5))));
+      k += 4;
+    } else { // 255
+      len = WalletMath.hexToNumToStr(ab2hexstring(reverseArray(ba.slice(k + 1, k + 9))));
+      k += 8;
+    }
+
+    // Inputs
+    for (i = 0; i < len; i++) {
+      tx.inputs.push({
+        txid: ba.slice(k + 1, k + 33),
+        index: ba.slice(k + 33, k + 35)
+      });
+      k = k + 34;
+    }
+
+    // Outputs
+    k = k + 1;
+    len = ba[k];
+
+    for (i = 0; i < len; i++) {
+      tx.outputs.push({
+        assetid: ba.slice(k + 1, k + 33),
+        value: ba.slice(k + 33, k + 41),
+        scripthash: ba.slice(k + 41, k + 61)
+      });
+      k = k + 60;
+    }
+
+    return tx;
+  };
+
+  $scope.getClaimTxData = function ($txData) {
+    var ba = new Buffer($txData, "hex");
+    var tx = new ClaimTransaction();
+
+    // Transfer Type
+    if (ba[0] != 0x02) return;
+    tx.type = ba[0];
+
+    // Version
+    tx.version = ba[1];
+
+    // Claim
+    var k = 2;
+    var len = ba[k];
+    for (i = 0; i < len; i++) {
+      tx.claims.push({
+        txid: ba.slice(k + 1, k + 33),
+        index: ba.slice(k + 33, k + 35)
+      });
+      k = k + 34;
+    }
+
+    // Attributes
+    k = k + 1;
+    len = ba[k];
+    for (i = 0; i < len; i++) {
+      k = k + 1;
+    }
+
+    // Inputs
+    k = k + 1;
+    len = ba[k];
+    // Input len = 0
+    // Outputs
+    k = k + 1;
+    len = ba[k];
+    for (i = 0; i < len; i++) {
+      tx.outputs.push({
+        assetid: ba.slice(k + 1, k + 33),
+        value: ba.slice(k + 33, k + 41),
+        scripthash: ba.slice(k + 41, k + 61)
+      });
+      k = k + 60;
+    }
+
+    return tx;
+  };
+  $scope.countDown = function () {
+    $scope.waitingSecond = true;
+    $scope.countdown = 10;
+    $scope.Transaction.ToAddress = '';
+    $scope.Transaction.Amount = '';
+    $scope.Transaction.able = false;
+    var myTime = setInterval(function () {
+        $scope.countdown--;
+        if ($scope.countdown == 0) {
+          $scope.Transaction.able = true;
+          $scope.waitingSecond = false;
+          clearInterval(myTime);
         }
 
-        for (let i = 0; i < Record.length; i++) {
-          var Sender = Record[i].utxoInputs;
-          var Receiver = Record[i].outputs;
-          var sendTransaction = false; //"true" is sending money，"false" is receiving money
-          var price = 0;
-          var transactionPrice = "";
+        $scope.$digest();
+      },
+      1000);
+
+  };
+
+  $scope.getHighChartData = function (res) {
+    var models = res.data.model;
+    if (models !== null) {
+      var history = [];
+      var createTime = [];
+      var price = [];
+      for (let i = 0, j = 19; i < models.length; i++, j--) {
+        history[j] = models[i];
+        createTime[j] = formatDateTime(history[j].createtime * 1000);
+        price[j] = history[j].price;
+      }
+
+      var nowPrice = history[19].price;
+
+      try {
+        var title = {text: chartTitle};
+        var subtitle = {
+          text: chartSubTitle + nowPrice + 'HKD',
+          style: {fontSize: '15px', fontWeight: 600}
+        };
+        var xAxis = {categories: createTime};
+        var yAxis = {
+          title: {text: 'Price(HKD)'},
+          plotLines: [{
+            value: 0,
+            width: 1,
+            color: '#808080'
+          }]
+        };
+
+        var tooltip = {valueSuffix: 'HKD'};
+
+        var legend = {
+          layout: 'vertical',
+          align: 'top',
+          verticalAlign: 'middle',
+          borderWidth: 0,
+          enabled: false
+        };
+
+        var series = [{
+          name: 'IPT',
+          data: price
+        }];
+
+        var json = {};
+
+        json.title = title;
+        json.subtitle = subtitle;
+        json.xAxis = xAxis;
+        json.yAxis = yAxis;
+        json.tooltip = tooltip;
+        json.legend = legend;
+        json.series = series;
+
+        $('#HighChartTable').highcharts(json);
+      } catch (err) {
+        console.log(err.message)
+      }
+    } else {
+      console.log(res);
+    }
+  };
+
+  $scope.getTransactionRecord = function (res) {
+    var record = res.data.transactions;
+
+    if (record !== undefined) {
+      var Record = [];
+      var j = 0;
+      for (let i = 0; i < record.length; i++) {
+        try {
+          var recordName = record[i].utxoInputs[0].output.asset.name;
+          if (recordName == "IPT") {
+            Record[j] = record[i];
+            j++;
+          }
+        } catch (error) {
+        }
+      }
+
+      for (let i = 0; i < Record.length; i++) {
+        var Sender = Record[i].utxoInputs;
+        var Receiver = Record[i].outputs;
+        var sendTransaction = false; //"true" is sending money，"false" is receiving money
+        var price = 0;
+        var transactionPrice = "";
+        for (let j = 0; j < Sender.length; j++) {
+          if (Sender[j].output.address == $scope.accounts[$scope.accountSelectIndex].address) {
+            sendTransaction = true;
+          }
+        }
+        if (!sendTransaction) { //receive money
+          for (let j = 0; j < Receiver.length; j++) {
+            if (Receiver[j].address == $scope.accounts[$scope.accountSelectIndex].address) {
+              price = Receiver[j].value;
+            }
+          }
+          transactionPrice = "+" + price;
+        } else { //send money
+          var sendTotalAmount = 0;
+          var giveChange = 0;
+          var m = 0
+
           for (let j = 0; j < Sender.length; j++) {
             if (Sender[j].output.address == $scope.accounts[$scope.accountSelectIndex].address) {
-              sendTransaction = true;
+              sendTotalAmount = sendTotalAmount + Sender[j].output.value;
             }
           }
-          if (!sendTransaction) { //receive money
-            for (let j = 0; j < Receiver.length; j++) {
-              if (Receiver[j].address == $scope.accounts[$scope.accountSelectIndex].address) {
-                price = Receiver[j].value;
-              }
-            }
-            transactionPrice = "+" + price;
-          } else { //send money
-            var sendTotalAmount = 0;
-            var giveChange = 0;
-            var m = 0
-
-            for (let j = 0; j < Sender.length; j++) {
-              if (Sender[j].output.address == $scope.accounts[$scope.accountSelectIndex].address) {
-                sendTotalAmount = sendTotalAmount + Sender[j].output.value;
-              }
-            }
-            for (let j = 0; j < Receiver.length; j++) {
-              if (Receiver[j].address == $scope.accounts[$scope.accountSelectIndex].address) {
-                m++
-              }
-            }
-            if (m > 1) {
-              transactionPrice = "0";
-            } else {
-              for (let j = 0; j < Receiver.length; j++) {
-                if (Receiver[j].address == $scope.accounts[$scope.accountSelectIndex].address) {
-                  giveChange = Receiver[j].value;
-                }
-              }
-              price = sendTotalAmount - giveChange;
-              transactionPrice = "-" + price;
+          for (let j = 0; j < Receiver.length; j++) {
+            if (Receiver[j].address == $scope.accounts[$scope.accountSelectIndex].address) {
+              m++
             }
           }
-
-          $scope.transactionRecords[i] = {
-            hash: Record[i].hash,
-            price: transactionPrice,
-            time: transactionRecordDateTime(Record[i].timestamp * 1000)
-          };
-          $scope.showTransactionRecordButton = true;
-          $scope.showNoTransactionRecord = false;
+          if (m > 1) {
+            transactionPrice = "0";
+          } else {
+            for (let j = 0; j < Receiver.length; j++) {
+              if (Receiver[j].address == $scope.accounts[$scope.accountSelectIndex].address) {
+                giveChange = Receiver[j].value;
+              }
+            }
+            price = sendTotalAmount - giveChange;
+            transactionPrice = "-" + price;
+          }
         }
 
-      } else {
-        $scope.showTransactionRecordButton = false;
-        $scope.showNoTransactionRecord = true;
+        $scope.transactionRecords[i] = {
+          hash: Record[i].hash,
+          price: transactionPrice,
+          time: transactionRecordDateTime(Record[i].timestamp * 1000)
+        };
+        $scope.showTransactionRecordButton = true;
+        $scope.showNoTransactionRecord = false;
       }
-    };
 
-    $scope.openTransactionBrower = function(hash) {
-      console.log(hash);
-      var url = "http://info.iptchain.net/tx/" + hash;
-      window.open(url, '_blank');
+    } else {
+      $scope.showTransactionRecordButton = false;
+      $scope.showNoTransactionRecord = true;
     }
+  };
 
-  });
+  $scope.openTransactionBrower = function (hash) {
+    var url = $scope.explorerUrl + "tx/" + hash;
+    window.open(url, '_blank');
+  }
+
+});
 
 var formatDateTime = function(inputTime)  {
   var date = new Date(inputTime);
   Y = date.getFullYear() + '-';
   M = (date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1) + '-';
-  D = date.getDate();
-  h = date.getHours();
-  m = date.getMinutes();
-  s = date.getSeconds();
+  D = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+  h = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+  m = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
   return M + D + ' ' + h + ':' + m;
 };
 
