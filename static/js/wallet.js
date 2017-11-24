@@ -1362,22 +1362,6 @@ Wallet.SendTransactionData = function($http, $txData, $host, $callback, $callbac
   }).then($callback).catch($callbackDev);
 };
 
-Wallet.GetHighChartData = function($http, $apiUrl, $callback, $callbackDev) {
-  $http({method: 'GET', url: $apiUrl.high_chart_data}).then($callback).catch($callbackDev);
-};
-
-Wallet.GetTransactionRecord = function($http, $apiUrl, $address, $callback, $callbackDev) {
-  $http({method: 'GET', url: $apiUrl.transaction_record + $address}).then($callback).catch($callbackDev);
-};
-
-Wallet.GetNotice = function($http, $apiUrl, $callback, $callbackDev) {
-  $http({method: 'GET', url: $apiUrl.notice}).then($callback).catch($callbackDev);
-};
-
-Wallet.GetPage = function($http, $url, $callback, $callbackDev) {
-  $http({method: 'GET', url: $url}).then($callback).catch($callbackDev);
-};
-
-Wallet.GetHelp = function($http, $apiUrl, $callback, $callbackDev) {
-  $http({method: 'GET', url: $apiUrl.help}).then($callback).catch($callbackDev);
+Wallet.AjaxGet = function ($http, url, $callback, $catch) {
+  $http({method: 'GET', url: url}).then($callback).catch($catch);
 };
