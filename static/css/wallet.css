@@ -46,11 +46,6 @@ html,body {
     font-weight: 100;
 }
 
-.main {
-    /*min-height: 100%;*/
-    font-family: "Source Sans Pro", sans-serif;
-}
-
 .glyphicon {
     margin-right: 1em;
 }
@@ -160,7 +155,6 @@ span {
 #popTitle a {
     line-height: 24px;
     font-size: 14px;
-    font-family: '微软雅黑';
     color: #333;
     font-weight: bold;
     text-decoration: none;
@@ -190,4 +184,10 @@ span {
 
 #popMore a:hover {
     color: #3498DB;
+}
+
+html,body,
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6,
+input, button, select, textarea {
+    font-family: Verdana, "Microsoft YaHei", 微软雅黑, sans-serif;
 }

@@ -374,7 +374,6 @@ app.controller("GenerateWalletCtrl",
     };
 
     $scope.downloaded = function() {
-      console.log("下载地址：" + $scope.objectURL);
       $scope.fileDownloaded = true;
     };
 
@@ -688,7 +687,7 @@ app.controller("WalletCtrl",
       /**
        * 加载node配置:
        */
-      $http.get('wallet-conf.json?20171123').then(function(data) {
+      $http.get('wallet-conf.json?20171124').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.hostSelectIndex = Math.floor(Math.random() * ($scope.hostInfo.length));
 
@@ -838,16 +837,16 @@ app.controller("WalletCtrl",
         $scope.langSelectIndex = 1;
         chartTitle = "IPT Transaction Data";
         chartSubTitle = "Current transaction data:";
-        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);
+        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem_ignore);
       } else {
         $scope.langSelectIndex = 0;
         chartTitle = "IPT交易数据";
         chartSubTitle = "当前交易数据:";
-        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);
+        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem_ignore);
       }
       $translate.use($scope.langs[$scope.langSelectIndex].lang);
       window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
-      $http.get('wallet-conf.json?20171123').then(function(data) {
+      $http.get('wallet-conf.json?20171124').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
       });
@@ -1229,6 +1228,10 @@ app.controller("WalletCtrl",
       console.log($err);
     };
 
+    $scope.catchProblem_ignore = function($err) {
+      console.log($err);
+    };
+
     $scope.getClaims = function($address) {
       var host = $scope.hostInfo[$scope.hostSelectIndex];
       $scope.claims = {};
@@ -1257,8 +1260,7 @@ app.controller("WalletCtrl",
         {name: "CHANGE_PASSWORD"},
         {name: "SIGN_OUT"}
       ];
-      //$scope.getHighChartData();
-      Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem);
+      Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem_ignore);
 
       Wallet.GetTransactionRecord($http, $scope.accounts[$scope.accountSelectIndex].address, $scope.getTransactionRecord, $scope.catchProblem);
 
@@ -1676,8 +1678,6 @@ app.controller("WalletCtrl",
       $scope.Transaction.able = false;
       var myTime = setInterval(function() {
           $scope.countdown--;
-
-          // console.log($scope.countdown)
           if ($scope.countdown == 0) {
             $scope.Transaction.able = true;
             $scope.waitingSecond = false;
@@ -1758,8 +1758,6 @@ app.controller("WalletCtrl",
     };
 
     $scope.getTransactionRecord = function(res) {
-
-      //console.log(res);
       var record = res.data.transactions;
 
       if (record !== undefined) {
@@ -1837,8 +1835,7 @@ app.controller("WalletCtrl",
     };
 
     $scope.openTransactionBrower = function(hash) {
-      console.log(hash);
-      var url = "http://info.iptchain.net/tx/" + hash;
+      var url = $scope.explorerUrl + "tx/" + hash;
       window.open(url, '_blank');
     }
 
