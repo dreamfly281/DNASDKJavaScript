@@ -1,12 +1,18 @@
 {
   "project_name": "ipt",
-  "version": "v1.2.6 Beta",
+  "version": "v1.2.7 Beta",
   "desktop_version": "v1.2.2",
   "date": "2017-11-21 14:00",
   "domain": "http://wallet.iptchain.net",
   "bbs_url": "https://forum.iptchain.net/",
   "explorer_url": "http://info.iptchain.net/",
   "explorer_search_path": "tx/",
+  "api_url": {
+    "high_chart_data": "https://api.hksy.com/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=20",
+    "transaction_record": "https://proxy2.guoxiaojie.org/interface/address/",
+    "notice": "https://dnacms.guoxiaojie.org/api/v1/intelligence",
+    "help": "https://dnacms.guoxiaojie.org/api/v1/help-doc"
+  },
   "host_info": [
     [
       {

@@ -544,6 +544,8 @@ app.controller("WalletCtrl",
     $scope.hostSelectIndex = 0;
     $scope.hostInfo = [];
 
+    $scope.apiUrl = [];
+
     $scope.version = '';
     $scope.desktopVersion = '';
     $scope.bbsUrl = '';
@@ -687,9 +689,11 @@ app.controller("WalletCtrl",
       /**
        * 加载node配置:
        */
-      $http.get('wallet-conf.json?20171124').then(function(data) {
+      $http.get('wallet-conf.json?20171124-1').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.hostSelectIndex = Math.floor(Math.random() * ($scope.hostInfo.length));
+
+        $scope.apiUrl = data.data.api_url;
 
         $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
 
@@ -837,16 +841,16 @@ app.controller("WalletCtrl",
         $scope.langSelectIndex = 1;
         chartTitle = "IPT Transaction Data";
         chartSubTitle = "Current transaction data:";
-        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem_ignore);
+        Wallet.GetHighChartData($http, $scope.apiUrl, $scope.getHighChartData, $scope.catchProblem_ignore);
       } else {
         $scope.langSelectIndex = 0;
         chartTitle = "IPT交易数据";
         chartSubTitle = "当前交易数据:";
-        Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem_ignore);
+        Wallet.GetHighChartData($http, $scope.apiUrl, $scope.getHighChartData, $scope.catchProblem_ignore);
       }
       $translate.use($scope.langs[$scope.langSelectIndex].lang);
       window.localStorage.lang = $scope.langs[$scope.langSelectIndex].lang;
-      $http.get('wallet-conf.json?20171124').then(function(data) {
+      $http.get('wallet-conf.json?20171124-1').then(function(data) {
         $scope.hostInfo = data.data.host_info[0];
         $scope.txTypes = data.data.tx_types[$scope.langSelectIndex];
       });
@@ -876,7 +880,7 @@ app.controller("WalletCtrl",
       $scope.showHelpCenterList = false;
       $scope.showHelpCenterMsg = false;
 
-      Wallet.GetNotice($http, $scope.getNoticeList, $scope.catchProblem)
+      Wallet.GetNotice($http, $scope.apiUrl, $scope.getNoticeList, $scope.catchProblem)
     };
     $scope.getNoticeList = function(res) {
       var Notice = res.data.data.data;
@@ -940,7 +944,7 @@ app.controller("WalletCtrl",
       $scope.showNoticeCenterList = false;
       $scope.showNoticeCenterMsg = false;
 
-      Wallet.GetHelp($http, $scope.getHelpList, $scope.catchProblem)
+      Wallet.GetHelp($http, $scope.apiUrl, $scope.getHelpList, $scope.catchProblem)
     };
     $scope.getHelpList = function(res) {
       let data = res.data.data.data;
@@ -1260,9 +1264,9 @@ app.controller("WalletCtrl",
         {name: "CHANGE_PASSWORD"},
         {name: "SIGN_OUT"}
       ];
-      Wallet.GetHighChartData($http, $scope.getHighChartData, $scope.catchProblem_ignore);
+      Wallet.GetHighChartData($http, $scope.apiUrl, $scope.getHighChartData, $scope.catchProblem_ignore);
 
-      Wallet.GetTransactionRecord($http, $scope.accounts[$scope.accountSelectIndex].address, $scope.getTransactionRecord, $scope.catchProblem);
+      Wallet.GetTransactionRecord($http, $scope.apiUrl, $scope.accounts[$scope.accountSelectIndex].address, $scope.getTransactionRecord, $scope.catchProblem);
 
     };
     $scope.GetUnspent_Callback = function(res) {
@@ -1694,14 +1698,12 @@ app.controller("WalletCtrl",
       var models = res.data.model;
       if (models !== null) {
         var history = [];
-        var j = 19;
         var createTime = [];
         var price = [];
-        for (let i = 0; i < models.length; i = i + 5) {
+        for (let i = 0, j = 19; i < models.length; i++, j--) {
           history[j] = models[i];
           createTime[j] = formatDateTime(history[j].createtime * 1000);
           price[j] = history[j].price;
-          j--;
         }
 
         var nowPrice = history[19].price;
@@ -1747,7 +1749,6 @@ app.controller("WalletCtrl",
           json.legend = legend;
           json.series = series;
 
-          // return json;
           $('#HighChartTable').highcharts(json);
         } catch (err) {
           console.log(err.message)
