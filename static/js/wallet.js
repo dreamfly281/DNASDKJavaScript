@@ -129,6 +129,29 @@ WalletMath.toHex = function(arg) {
 WalletMath.hexToNumToStr = function(arg) {
   return new Decimal("0x" + arg).toString();
 };
+WalletMath.toThousands = function (num) {
+  let numStart = '';
+  let numEnd = '';
+  let result = '';
+  let dotLocal = num.indexOf(".");
+
+  if (dotLocal === -1) {
+    numStart = num;
+  } else {
+    numStart = num.substr(0, dotLocal);
+    numEnd = num.substr(dotLocal);
+  }
+
+  while (numStart.length > 3) {
+    result = ',' + numStart.slice(-3) + result;
+    numStart = numStart.slice(0, numStart.length - 3);
+  }
+  if (numStart) {
+    result = numStart + result;
+  }
+
+  return result + numEnd;
+};
 
 /**************************************************************
  * Wallet Class.
@@ -1231,13 +1254,15 @@ Wallet.analyzeCoins = function(res) {
         coins[i] = results[i];
         coins[i].balance = 0;
         coins[i].balanceView = 0;
+        coins[i].balanceViewFormat = 0;
+        coins[i].AssetID = ab2hexstring(hexstring2ab(results[i]['AssetId']));
         coins[i].AssetIDRev = ab2hexstring(reverseArray(hexstring2ab(results[i]['AssetId'])));
         if (results[i].Utxo != null) {
           for (j = 0; j < results[i].Utxo.length; j++) {
             coins[i].balance = WalletMath.add(coins[i].balance, results[i].Utxo[j].Value);
           }
           coins[i].balanceView = WalletMath.fixView(coins[i].balance);
-
+          coins[i].balanceViewFormat = WalletMath.toThousands(coins[i].balanceView);
         }
 
         tmpIndexArr.push(results[i].AssetName);
@@ -1269,15 +1294,15 @@ Wallet.analyzeCoins = function(res) {
  * @param $address
  * @param $host
  * @param $callback
- * @param $callback_dev
+ * @param $callbackDev
  * @constructor
  */
-Wallet.GetClaims = function($http, $address, $host, $callback, $callback_dev) {
+Wallet.GetClaims = function($http, $address, $host, $callback, $callbackDev) {
   $http({
     method: 'GET',
     url: $host.webapi_host + ':' + $host.webapi_port + '/api/v1/address/get_claims/' + $address
   }).then($callback).
-  catch($callback_dev);
+  catch($callbackDev);
 };
 
 /**
@@ -1288,15 +1313,14 @@ Wallet.GetClaims = function($http, $address, $host, $callback, $callback_dev) {
  * @param $address
  * @param $host
  * @param $callback
- * @param $callback_dev
+ * @param $callbackDev
  * @constructor
  */
-Wallet.GetUnspent = function($http, $address, $host, $callback, $callback_dev) {
+Wallet.GetUnspent = function($http, $address, $host, $callback, $callbackDev) {
   $http({
     method: 'GET',
     url: $host.restapi_host + ':' + $host.restapi_port + '/api/v1/asset/utxos/' + $address
-  }).then($callback).
-  catch($callback_dev);
+  }).then($callback).catch($callbackDev);
 };
 
 /**
@@ -1306,15 +1330,14 @@ Wallet.GetUnspent = function($http, $address, $host, $callback, $callback_dev) {
  * @param $http
  * @param $host
  * @param $callback
- * @param $callback_dev
+ * @param $callbackDev
  * @constructor
  */
-Wallet.GetNodeHeight = function($http, $host, $callback, $callback_dev) {
+Wallet.GetNodeHeight = function($http, $host, $callback, $callbackDev) {
   $http({
     method: 'GET',
     url: $host.restapi_host + ':' + $host.restapi_port + '/api/v1/block/height?auth_type=getblockheight'
-  }).then($callback).
-  catch($callback_dev);
+  }).then($callback).catch($callbackDev);
 };
 
 /**
@@ -1325,10 +1348,10 @@ Wallet.GetNodeHeight = function($http, $host, $callback, $callback_dev) {
  * @param $txData
  * @param $host
  * @param $callback
- * @param $callback_dev
+ * @param $callbackDev
  * @constructor
  */
-Wallet.SendTransactionData = function($http, $txData, $host, $callback, $callback_dev) {
+Wallet.SendTransactionData = function($http, $txData, $host, $callback, $callbackDev) {
   $http({
     method: 'POST',
     url: $host.restapi_host + ':' + $host.restapi_port + '/api/v1/transaction',
@@ -1336,43 +1359,9 @@ Wallet.SendTransactionData = function($http, $txData, $host, $callback, $callbac
     headers: {
       "Content-Type": "application/json"
     }
-  }).then($callback).
-  catch($callback_dev);
+  }).then($callback).catch($callbackDev);
 };
 
-Wallet.GetHighChartData = function($http, $callback, $callback_dev) {
-
-  $http({
-    method: 'GET',
-    //url:'http://api.hksy.com/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
-    url: 'https://proxy1.guoxiaojie.org/pc/tradeCenter/v1/selectClinchInfoByCoinName?coinName=IPT&payCoinName=HKD&size=100'
-  }).then($callback).
-  catch($callback_dev);
-};
-
-Wallet.GetTransactionRecord = function($http, $address, $callback, $callback_dev) {
-
-  $http({
-    method: 'GET',
-    //url:'http://info.iptchain.net/interface/address/'+$address
-    url: 'https://proxy2.guoxiaojie.org/interface/address/' + $address
-  }).then($callback).
-  catch($callback_dev);
-};
-
-Wallet.GetNotice = function($http, $callback, $callback_dev) {
-
-  $http({
-    method: 'GET',
-    url: 'https://dnacms.guoxiaojie.org/api/v1/intelligence'
-  }).then($callback).
-  catch($callback_dev);
-};
-
-Wallet.GetNoticePage = function($http, $url, $callback, $callback_dev) {
-  $http({
-    method: 'GET',
-    url: $url,
-  }).then($callback).
-  catch($callback_dev);
+Wallet.AjaxGet = function ($http, url, $callback, $catch) {
+  $http({method: 'GET', url: url}).then($callback).catch($catch);
 };
