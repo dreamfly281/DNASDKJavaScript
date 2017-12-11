@@ -3,51 +3,59 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
-    <title>{{ 'SITE_TITLE' | translate }}</title>
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{{ 'SITE_TITLE' | translate }}</title>
+
     <link rel="apple-touch-icon" href="static/icon/Wallet_my_zzt.png" />
-    <link rel="icon" href="static/icon/Wallet_my_zzt.png" type="image/x-icon" />
+    <!--<link rel="icon" href="static/icon/Wallet_my_zzt.png" type="image/x-icon" />-->
     <link rel="shortcut icon" href="static/icon/Wallet_my_zzt.png" type="image/x-icon" />
-    <!-- CSS -->
+
+    <!-- Vendor CSS & Javascript -->
     <link rel="stylesheet" href="static/css/google-font.css" />
     <link rel="stylesheet" href="static/css/bootstrap.min.css" />
     <link rel="stylesheet" href="static/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="static/css/wallet.css?20171124-1" />
     <!-- Javascript -->
-    <script src="https://cdn.bootcss.com/modernizr/2.8.3/modernizr.min.js"></script>
     <script src="https://cdn.bootcss.com/jquery/1.12.0/jquery.min.js"></script>
-    <!--<script src="static/js/vendor/modernizr-2.8.3.min.js"></script>-->
     <!--<script src="static/js/vendor/jquery-1.12.0.min.js"></script>-->
-    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;}</script>
-    <script src="static/js/vendor/plugins.js"></script>
-    <script src="static/js/vendor/yanue.pop.js"></script>
-    <script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>
-    <script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate.min.js"></script>
-    <script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
-    <script src="https://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>
-    <script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>
-    <!--<script src="static/js/vendor/angular.min.js"></script>-->
-    <!--<script src="static/js/vendor/angular-translate.min.js"></script>-->
-    <!--<script src="static/js/vendor/angular-translate-loader-static-files-v2.15.1.min.js"></script>-->
-    <!--<script src="static/js/vendor/ui-bootstrap-tpls-0.11.2.js"></script>-->
-    <!--<script src="static/js/vendor/bootstrap.min.js"></script>-->
-    <!--<script src="static/js/vendor/sql.js"></script>-->
-    <!--<script src="static/js/vendor/clipboard-v1.7.1.min.js"></script>-->
+    <script src="static/js/vendor/jQuery/plugins.js"></script>
+    <script src="static/js/vendor/jQuery/yanue.pop.js"></script>
+    <!--<script src="https://cdn.bootcss.com/angular.js/1.6.4/angular.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/angular-translate/2.15.1/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/angular-ui-bootstrap/0.11.2/ui-bootstrap-tpls.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>-->
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/1.7.1/clipboard.min.js"></script>-->
+    <script src="static/js/vendor/Angular/angular.min.js"></script>
+    <script src="static/js/vendor/Angular/angular-translate.min.js"></script>
+    <script src="static/js/vendor/Angular/angular-translate-loader-static-files-v2.15.1.min.js"></script>
+    <script src="static/js/vendor/Angular/ui-bootstrap-tpls-0.11.2.js"></script>
+    <script src="static/js/vendor/Bootstrap/bootstrap.min.js"></script>
+    <script src="static/js/vendor/clipboard-v1.7.1.min.js"></script>
     <!--<script src="http://code.highcharts.com/highcharts.js"></script>-->
-    <script src="static/js/vendor/CryptoJS/sha256.js"></script>
-    <script src="static/js/vendor/CryptoJS/ripemd160.js"></script>
-    <script src="static/js/vendor/CryptoJS/aes.js"></script>
-    <script src="static/js/vendor/CryptoJS/pad-nopadding.js"></script>
     <script src="static/js/vendor/highcharts.js"></script>
-    <script src="static/js/vendor/decimal-7.3.0.min.js"></script>
-    <!--<script src="static/js/vendor/sm.js"></script>-->
-    <script src="static/js/vendor/ecdsa_bundle.js"></script>
-    <script src="static/js/vendor/secp256k1_bundle.js"></script>
+
+    <!-- Wallet SDK Javascript -->
+    <script src="https://cdn.bootcss.com/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src="https://cdn.bootcss.com/sql.js/0.4.0/js/sql.js"></script>
+    <!--<script src="static/js/wallet/modernizr-2.8.3.min.js"></script>-->
+    <!--<script src="static/js/wallet/sql.js"></script>-->
+    <script src="static/js/wallet/sha256.js"></script>
+    <script src="static/js/wallet/ripemd160.js"></script>
+    <script src="static/js/wallet/aes.js"></script>
+    <script src="static/js/wallet/pad-nopadding.js"></script>
+    <script src="static/js/wallet/decimal-7.3.0.min.js"></script>
+    <script src="static/js/wallet/ecdsa_bundle.js"></script>
+    <script src="static/js/wallet/secp256k1_bundle.js"></script>
+
+    <!-- APP CSS & Javascript -->
+    <link rel="stylesheet" href="static/css/wallet.css?20171124-1" />
     <script src="static/js/wallet.js?20171124-1"></script>
-    <script src="app.js?20171124-1"></script>
+    <script src="static/js/app.js?20171124-1"></script>
+
+    <script>if (typeof module === 'object') {window.jQuery = window.$ = module.exports;}</script>
+
     <script language="javascript">
       function setTabFromURL() {
         $(function() {
