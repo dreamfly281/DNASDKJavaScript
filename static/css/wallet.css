@@ -189,6 +189,6 @@ span {
 html,body,
 h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6,
 input, button, select, textarea {
-    /*font-family: Verdana, "Microsoft YaHei", 微软雅黑, sans-serif;*/
-    font-family: Roboto,-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI","Oxygen","Ubuntu","Cantarell","Open Sans",sans-serif;
+    font-family: Verdana, "Microsoft YaHei", 微软雅黑, sans-serif;
+    /*font-family: Roboto,-apple-system,BlinkMacSystemFont,"Helvetica Neue","Segoe UI","Oxygen","Ubuntu","Cantarell","Open Sans",sans-serif;*/
 }
