@@ -1,12 +1,12 @@
 var ecurve = require('ecurve');
 var BigInteger = require('bigi');
-var ecdsa = require('ecdsa');
-var CoinKey = require('CoinKey');
+// var ecdsa = require('ecdsa');
+// var CoinKey = require('CoinKey');
 var Buffer = require('Buffer');
-var sr = require('secure-random');
-var cryptos = require('crypto');
+// var sr = require('secure-random');
+// var cryptos = require('crypto');
 var secp256r1 = require('secp256k1');
-var randomBytes = require('crypto').randomBytes;
+// var randomBytes = require('crypto').randomBytes;
 var BASE58 = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
 var base58 = require('base-x')(BASE58);
 //var Decimal = require('decimal.js'); // 仅用于electron打包上
